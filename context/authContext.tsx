@@ -7,17 +7,9 @@ type AuthContextType = {
   isLoading: boolean;
 };
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const useAuth = () => {
-  const value = useContext(AuthContext);
-
-  if (!value) {
-    throw new Error('useAuth must be used within an AuthContext Provider');
-  }
-
-  return value;
-};
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
