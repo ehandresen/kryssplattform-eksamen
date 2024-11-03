@@ -1,10 +1,21 @@
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, UserCredential } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 
-export const signIn = async (email: string, password: string) => {
-  await signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => console.log('user signed in', userCredential))
-    .catch((error) => console.log('could not sign in', error));
+export const signIn = async (
+  email: string,
+  password: string
+): Promise<UserCredential | void> => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    console.log('user signed in', userCredential);
+    return userCredential;
+  } catch (error) {
+    console.log('could not sign in', error);
+  }
 };
 
 export const signOut = async () => {

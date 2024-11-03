@@ -1,9 +1,18 @@
-import { createContext, ReactNode, useContext, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import { auth } from '@/firebaseConfig';
 import * as authApi from '@/api/authApi';
+import { onAuthStateChanged, UserCredential } from 'firebase/auth';
 
 type AuthContextType = {
-  signIn: (email: string, password: string) => void;
-  signOut: () => void;
+  signIn: (email: string, password: string) => Promise<UserCredential | void>;
+  signOut: () => Promise<void>;
+  session?: string | null;
   isLoading: boolean;
 };
 
@@ -12,13 +21,45 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 );
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [session, setSession] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setSession(user.email);
+      } else {
+        setSession(null);
+      }
+
+      setIsLoading(false);
+    });
+  }, []);
+
+  const signIn = async (
+    email: string,
+    password: string
+  ): Promise<UserCredential | void> => {
+    try {
+      const userCredential = await authApi.signIn(email, password);
+      if (userCredential) {
+        setSession(userCredential.user.email); // Update session with user email after sign-in
+        return userCredential;
+      }
+    } catch (error) {
+      console.error('Error during sign-in:', error);
+    }
+  };
 
   return (
     <AuthContext.Provider
       value={{
-        signIn: (email, password) => authApi.signIn(email, password),
-        signOut: () => authApi.signOut(),
+        signIn,
+        signOut: async () => {
+          await authApi.signOut();
+          setSession(null);
+        },
+        session,
         isLoading,
       }}
     >
