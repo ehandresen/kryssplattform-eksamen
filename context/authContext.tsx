@@ -1,6 +1,8 @@
 import {
   createContext,
+  Dispatch,
   ReactNode,
+  SetStateAction,
   useContext,
   useEffect,
   useState,
@@ -14,6 +16,7 @@ type AuthContextType = {
   signOut: () => Promise<void>;
   session?: string | null;
   isLoading: boolean;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -61,6 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         },
         session,
         isLoading,
+        setIsLoading: (value) => setIsLoading(value),
       }}
     >
       {children}

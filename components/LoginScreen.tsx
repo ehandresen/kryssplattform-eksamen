@@ -1,7 +1,7 @@
 import {
+  ActivityIndicator,
   Alert,
   Button,
-  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -10,57 +10,100 @@ import {
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { router } from 'expo-router';
+import { signUp } from '@/api/authApi';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [username, setUsername] = useState('');
+  const [isSignUpMode, setIsSignUpMode] = useState(false);
 
-  const { signIn, session } = useAuth();
+  const { signIn, isLoading, setIsLoading } = useAuth();
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Validation Error', 'Email and password are required');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const user = await signIn(email, password);
       if (user) {
-        router.navigate('/'); // Navigate to the home page upon successful login
-        setIsLoading(false);
+        router.navigate('/'); // Navigate to the index/home page after successful login
       }
     } catch (error) {
       Alert.alert('Error', 'Invalid email or password');
     } finally {
       setIsLoading(false);
     }
-    // if (session) {
-    //   Alert.alert('successfully signed in');
-    // } else {
-    //   Alert.alert('Invalid email or password');
-    // }
+  };
+
+  const handleSignUp = async () => {
+    if (!email || !password || !username) {
+      Alert.alert('All fields are required to sign up');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await signUp(email, password, username);
+      router.navigate('/');
+    } catch (error) {
+      Alert.alert('Sign Up Error', 'An error occurred during sign up');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
+
+      {isSignUpMode && (
+        <TextInput
+          style={styles.input}
+          placeholder="Username"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+          placeholderTextColor="#888"
+        />
+      )}
       <TextInput
         style={styles.input}
-        placeholder="email"
+        placeholder="Email"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
+        placeholderTextColor="#888"
       />
       <TextInput
         style={styles.input}
-        placeholder="password"
+        placeholder="Password"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry={true} // hide input
+        placeholderTextColor="#888"
+        secureTextEntry={true} // hide text input
       />
-      <Button
-        title={isLoading ? 'Logging in...' : 'Login'}
-        onPress={handleLogin}
-        disabled={isLoading}
-      />
+
+      {isLoading ? (
+        // blue spinner
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <>
+          <Button
+            title={isSignUpMode ? 'Create User' : 'Login'}
+            onPress={isSignUpMode ? handleSignUp : handleLogin}
+            disabled={isLoading}
+          />
+          <Button
+            title={isSignUpMode ? 'Switch to Login' : 'Switch to Sign Up'}
+            onPress={() => setIsSignUpMode(!isSignUpMode)}
+          />
+        </>
+      )}
     </View>
   );
 };
