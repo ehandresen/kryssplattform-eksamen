@@ -1,5 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { getDownloadURL, getStorage, ref } from 'firebase/storage';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 // Your web app's Firebase configuration
@@ -20,3 +22,14 @@ const app = initializeApp(firebaseConfig);
 export const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
 });
+
+//  Initializes firestore
+export const db = getFirestore(app);
+
+// initializes firebase storage but doesn’t export it directly.
+const storage = getStorage(app);
+
+// a helper function to create references to specific file paths in firebase storage. You call getStorageRef('path/to/file') to get a reference for that file location.
+export const getStorageRef = (path) => ref(storage, path);
+
+export const getDownloadUrl = (path) => getDownloadURL(ref(storage, path));
