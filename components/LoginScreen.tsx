@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { signUp } from '@/api/authApi';
 
 const LoginScreen = () => {
@@ -18,7 +18,7 @@ const LoginScreen = () => {
   const [username, setUsername] = useState('');
   const [isSignUpMode, setIsSignUpMode] = useState(false);
 
-  const { signIn, isLoading, setIsLoading } = useAuth();
+  const { signIn, isLoading, setIsLoading, session } = useAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -48,13 +48,17 @@ const LoginScreen = () => {
     setIsLoading(true);
     try {
       await signUp(email, password, username);
-      router.navigate('/');
     } catch (error) {
       Alert.alert('Sign Up Error', 'An error occurred during sign up');
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (session) {
+    signIn(email, password);
+    return <Redirect href="/" />;
+  }
 
   return (
     <View style={styles.container}>
