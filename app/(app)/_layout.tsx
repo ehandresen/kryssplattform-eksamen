@@ -17,7 +17,16 @@ const AppLayout = () => {
     return <Redirect href="/login" />;
   }
 
-  return <Stack />;
+  return (
+    <Stack>
+      <Stack.Screen
+        name="(tabs)"
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Stack>
+  );
 };
 
 export default AppLayout;
