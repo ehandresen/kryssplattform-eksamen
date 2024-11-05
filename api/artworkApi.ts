@@ -1,7 +1,9 @@
 import { Artwork } from '@/types/artwork';
 import { uploadImageToFirebase } from './imageApi';
 import { db, getDownloadUrl } from '@/firebaseConfig';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs } from 'firebase/firestore';
+
+const COLLECTION_NAME = 'artworks';
 
 export const addArtworkToFirestore = async (artwork: Artwork) => {
   try {
@@ -23,7 +25,7 @@ export const addArtworkToFirestore = async (artwork: Artwork) => {
 
     // save to 'artworks' firestore collection
     const docRef = await addDoc(
-      collection(db, 'artworks'),
+      collection(db, COLLECTION_NAME),
       artworkWithNewImageUrl
     );
     console.log('document written with ID:', docRef.id);
@@ -31,3 +33,35 @@ export const addArtworkToFirestore = async (artwork: Artwork) => {
     console.log('error adding document', error);
   }
 };
+
+export const getAllArtworks = async (): Promise<Artwork[]> => {
+  try {
+    const artworksDocs = await getDocs(collection(db, COLLECTION_NAME));
+
+    return artworksDocs.docs.map((doc) => {
+      return {
+        ...doc.data(),
+        id: doc.id,
+      } as Artwork;
+    });
+  } catch (error) {
+    console.log('error fetching artworks from firebase', error);
+    return [];
+  }
+};
+
+export const getArtworkById = async (id: string) => {
+  try {
+    const artworkDoc = await getDoc(doc(db, COLLECTION_NAME, id));
+    console.log('artwork by id:', id);
+
+    return {
+      ...artworkDoc.data(),
+      id: artworkDoc.id,
+    } as Artwork;
+  } catch (error) {
+    console.log('error fetching post with id:', id);
+  }
+};
+
+// TODO add delete
