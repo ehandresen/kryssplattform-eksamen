@@ -1,14 +1,32 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import React from 'react';
 
-const ArtworkCard = ({ title, artist, image }) => {
+type ArtworkCardProps = {
+  title: string;
+  artist: string;
+  imageUrl: string;
+  caption: string;
+  viewsCount: number;
+  likesCount: number;
+};
+
+const ArtworkCard = ({
+  title,
+  artist,
+  imageUrl,
+  caption,
+  viewsCount,
+  likesCount,
+}: ArtworkCardProps) => {
   return (
     <View style={styles.cardContainer}>
+      <Image source={{ uri: imageUrl }} style={styles.image} />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.artist}>{artist}</Text>
-      {/* Replace with Image component if needed */}
-      <View style={styles.imagePlaceholder}>
-        <Text>Image Placeholder</Text>
+      <Text style={styles.caption}>{caption}</Text>
+      <View style={styles.statsContainer}>
+        <Text style={styles.stats}>Views: {viewsCount}</Text>
+        <Text style={styles.stats}>Likes: {likesCount}</Text>
       </View>
     </View>
   );
@@ -26,25 +44,36 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2, // shadow
+    elevation: 2,
     width: 200,
-    height: 300,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginVertical: 4,
   },
   artist: {
     fontSize: 14,
     color: '#555',
+    marginBottom: 4,
+  },
+  caption: {
+    fontSize: 12,
+    color: '#777',
     marginBottom: 8,
   },
-  imagePlaceholder: {
+  image: {
     height: 150,
-    backgroundColor: '#ddd',
-    justifyContent: 'center',
-    alignItems: 'center',
     borderRadius: 8,
+    marginBottom: 8,
+    backgroundColor: '#ddd',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  stats: {
+    fontSize: 12,
+    color: '#555',
   },
 });
