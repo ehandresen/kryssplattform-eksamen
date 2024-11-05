@@ -1,5 +1,5 @@
 import { getStorageRef } from '@/firebaseConfig';
-import { uploadBytes } from 'firebase/storage';
+import { uploadBytes, uploadBytesResumable } from 'firebase/storage';
 
 // This function converts a local image URI into a Blob and uploads it to Firebase Storage under a specific path based on its file name.
 export const uploadImageToFirebase = async (uri: string) => {
@@ -17,6 +17,7 @@ export const uploadImageToFirebase = async (uri: string) => {
   const imageRef = getStorageRef(uploadPath);
 
   try {
+    // uploadBytesResumable() teacher mentions this can be more stable with larger image files
     await uploadBytes(imageRef, blob);
     console.log('uploading image to', uploadPath);
     return uploadPath;
