@@ -1,3 +1,5 @@
+import { Comment } from './comment';
+
 export type Artwork = {
   id: string;
   title: string;
@@ -9,5 +11,5 @@ export type Artwork = {
   category?: string;
   viewsCount?: number;
   likesCount?: number;
-  comments?: Comment[];
+  comments: string[];
 };

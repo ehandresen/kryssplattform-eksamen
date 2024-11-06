@@ -1,14 +1,16 @@
 import { View, Text, Button, FlatList } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Link } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 import ArtworkCard from '@/components/ArtworkCard';
 import * as artworkApi from '@/api/artworkApi';
 import { Artwork } from '@/types/artwork';
 
+// todo add username[session] top corner?
+
 const HomeScreen = () => {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
-  const { signOut } = useAuth();
+  const { signOut, session } = useAuth();
 
   useEffect(() => {
     fetchArtworksFromFirebase();
@@ -32,6 +34,11 @@ const HomeScreen = () => {
         padding: 16,
       }}
     >
+      <Stack.Screen
+        options={{
+          headerLeft: () => <Text style={{ paddingLeft: 16 }}>{session}</Text>,
+        }}
+      />
       <FlatList
         data={artworks}
         renderItem={({ item }) => (

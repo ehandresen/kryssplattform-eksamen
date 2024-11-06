@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     onAuthStateChanged(auth, (user) => {
       console.log('user:', user?.displayName);
       if (user) {
-        setSession(user.email);
+        setSession(user.displayName);
       } else {
         setSession(null);
       }
