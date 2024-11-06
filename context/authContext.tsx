@@ -28,16 +28,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log("user:", user?.displayName);
-      if (user) {
-        setSession(user.displayName);
-      } else {
-        setSession(null);
-      }
-
+      setSession(user ? user.email : null); // Use user email for session
       setIsLoading(false);
     });
+
+    return unsubscribe; // Clean up on component unmount
   }, []);
 
   const signIn = async (
@@ -55,17 +52,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const signOut = async () => {
+    try {
+      await authApi.signOut();
+      setSession(null); // Clear session on sign-out
+    } catch (error) {
+      console.error("Error during sign-out:", error);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
         signIn,
-        signOut: async () => {
-          await authApi.signOut();
-          setSession(null);
-        },
+        signOut,
         session,
         isLoading,
-        setIsLoading: (value) => setIsLoading(value),
+        setIsLoading,
       }}
     >
       {children}

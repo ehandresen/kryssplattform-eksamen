@@ -23,7 +23,7 @@ const LoginScreen = () => {
   useEffect(() => {
     // Redirect to gallery if already logged in
     if (session) {
-      router.navigate("/(app)/(tabs)/gallery");
+      router.navigate("/(app)/(tabs)/gallery"); // Absolute path
     }
   }, [session]);
 
@@ -37,7 +37,7 @@ const LoginScreen = () => {
     try {
       const user = await signIn(email, password);
       if (user) {
-        router.navigate("../(app)/(tabs)/gallery");
+        router.navigate("/(app)/(tabs)/gallery"); // Absolute path
       }
     } catch (error) {
       Alert.alert("Error", "Invalid email or password");

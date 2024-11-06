@@ -16,8 +16,7 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome to ArtVista</Text>
-      <Text style={styles.subText}>Redirecting to login...</Text>
+      <Text style={styles.welcomeText}>ArtVista</Text>
     </View>
   );
 }
