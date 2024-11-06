@@ -24,27 +24,27 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 );
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // Set session to a non-null value to simulate a logged-in state
-  const [session, setSession] = useState<string | null>("bypassed-session");
-  const [isLoading, setIsLoading] = useState(false); // Set isLoading to false by default
+  const [session, setSession] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Comment out the useEffect that listens for authentication state changes
-  /*
-    useEffect(() => {
-      onAuthStateChanged(auth, (user) => {
-        console.log("user:", user?.displayName);
-        setSession(user ? user.displayName : null);
-        setIsLoading(false);
-      });
-    }, []);
-    */
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      console.log("user:", user?.displayName);
+      if (user) {
+        setSession(user.displayName);
+      } else {
+        setSession(null);
+      }
+
+      setIsLoading(false);
+    });
+  }, []);
 
   const signIn = async (
     email: string,
     password: string
   ): Promise<UserCredential | void> => {
     try {
-      setIsLoading(true); // Set loading before attempting sign-in
       const userCredential = await authApi.signIn(email, password);
       if (userCredential) {
         setSession(userCredential.user.email); // Update session with user email after sign-in
@@ -52,8 +52,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (error) {
       console.error("Error during sign-in:", error);
-    } finally {
-      setIsLoading(false); // Set loading back to false after attempt
     }
   };
 

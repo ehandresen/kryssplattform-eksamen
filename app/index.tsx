@@ -8,7 +8,7 @@ export default function Index() {
   useEffect(() => {
     // Redirect to the authentication screen after 3 seconds
     const timer = setTimeout(() => {
-      router.push("/(app)/(tabs)/gallery");
+      router.push("/login");
     }, 3000);
 
     return () => clearTimeout(timer);

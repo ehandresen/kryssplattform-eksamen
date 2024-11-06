@@ -7,7 +7,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { router } from "expo-router"; // Use `router` to handle navigation
 import { signUp } from "@/api/authApi";
@@ -19,6 +19,13 @@ const LoginScreen = () => {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
 
   const { signIn, isLoading, setIsLoading, session } = useAuth();
+
+  useEffect(() => {
+    // Redirect to gallery if already logged in
+    if (session) {
+      router.navigate("/(app)/(tabs)/gallery");
+    }
+  }, [session]);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -55,12 +62,6 @@ const LoginScreen = () => {
     }
   };
 
-  // Redirect to gallery if already logged in
-  if (session) {
-    router.navigate("/(app)/(tabs)/gallery");
-    return null; // Return null to avoid rendering the login screen
-  }
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{isSignUpMode ? "Sign Up" : "Login"}</Text>
@@ -94,7 +95,6 @@ const LoginScreen = () => {
       />
 
       {isLoading ? (
-        // blue spinner
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <>

@@ -10,11 +10,9 @@ export default function AppLayout() {
   const { session, isLoading } = useAuth();
   const isProfileScreen = pathname === "/profile";
 
-  /*
-  if (!isLoading && !session && pathname !== "/login") {
+  if (!session) {
     return <Redirect href="/login" />;
   }
-  */
 
   return (
     <SafeAreaView style={styles.safeArea}>
