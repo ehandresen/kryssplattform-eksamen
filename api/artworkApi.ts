@@ -3,7 +3,7 @@ import { uploadImageToFirebase } from './imageApi';
 import { db, getDownloadUrl } from '@/firebaseConfig';
 import { addDoc, collection, doc, getDoc, getDocs } from 'firebase/firestore';
 
-const COLLECTION_NAME = 'artworks';
+export const ARTWORKS_COLLECTION = 'artworks';
 
 export const addArtworkToFirestore = async (artwork: Artwork) => {
   try {
@@ -25,7 +25,7 @@ export const addArtworkToFirestore = async (artwork: Artwork) => {
 
     // save to 'artworks' firestore collection
     const docRef = await addDoc(
-      collection(db, COLLECTION_NAME),
+      collection(db, ARTWORKS_COLLECTION),
       artworkWithNewImageUrl
     );
     console.log('document written with ID:', docRef.id);
@@ -36,7 +36,7 @@ export const addArtworkToFirestore = async (artwork: Artwork) => {
 
 export const getAllArtworks = async (): Promise<Artwork[]> => {
   try {
-    const artworksDocs = await getDocs(collection(db, COLLECTION_NAME));
+    const artworksDocs = await getDocs(collection(db, ARTWORKS_COLLECTION));
 
     return artworksDocs.docs.map((doc) => {
       return {
@@ -52,7 +52,7 @@ export const getAllArtworks = async (): Promise<Artwork[]> => {
 
 export const getArtworkById = async (id: string) => {
   try {
-    const artworkDoc = await getDoc(doc(db, COLLECTION_NAME, id));
+    const artworkDoc = await getDoc(doc(db, ARTWORKS_COLLECTION, id));
     console.log('artwork by id:', id);
 
     return {
