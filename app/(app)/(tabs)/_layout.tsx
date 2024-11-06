@@ -1,11 +1,10 @@
-// app/(app)/(tabs)/_layout.tsx
-
 import { Tabs, usePathname } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React from "react";
 import Header from "../../../components/header/Header";
+import { View, StyleSheet } from "react-native";
 
 const TabsLayout = () => {
   const pathname = usePathname();
@@ -21,7 +20,7 @@ const TabsLayout = () => {
     : "Map";
 
   return (
-    <>
+    <View style={styles.container}>
       {/* Header for Gallery, Artists, and Map screens */}
       <Header
         subtitle={subtitle}
@@ -32,7 +31,7 @@ const TabsLayout = () => {
       {/* Tab Navigation */}
       <Tabs
         screenOptions={{
-          tabBarStyle: { height: 60 },
+          tabBarStyle: styles.tabBarStyle,
           tabBarLabelStyle: { fontSize: 12, paddingBottom: 5 },
           tabBarActiveTintColor: "red",
           tabBarInactiveTintColor: "black",
@@ -68,8 +67,18 @@ const TabsLayout = () => {
           }}
         />
       </Tabs>
-    </>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1, // Fills the screen
+  },
+  tabBarStyle: {
+    height: 60,
+    position: "relative", // Allows tab bar to align at the bottom properly
+  },
+});
 
 export default TabsLayout;
