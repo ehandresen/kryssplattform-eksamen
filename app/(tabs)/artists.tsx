@@ -1,18 +1,9 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import Header from "../../components/Header";
+import Header from "../../components/header/Header";
 
 export default function ArtistsScreen() {
-  return (
-    <View style={styles.container}>
-      <Header
-        subtitle="Artists"
-        showProfileButton={true}
-        navigateHomeOnBack={true}
-      />
-      {/* Artists content goes here */}
-    </View>
-  );
+  return <View style={styles.container}></View>;
 }
 
 const styles = StyleSheet.create({

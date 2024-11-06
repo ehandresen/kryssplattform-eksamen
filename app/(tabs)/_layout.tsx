@@ -1,10 +1,11 @@
 // app/(app)/(tabs)/_layout.tsx
+
 import { Tabs, usePathname } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React from "react";
-import Header from "../../components/Header";
+import Header from "../../components/header/Header";
 
 const TabsLayout = () => {
   const pathname = usePathname();
@@ -36,6 +37,7 @@ const TabsLayout = () => {
           tabBarActiveTintColor: "red",
           tabBarInactiveTintColor: "black",
           headerShown: false,
+          tabBarHideOnKeyboard: true, // Keep the tab bar hidden when the keyboard is open
         }}
       >
         <Tabs.Screen

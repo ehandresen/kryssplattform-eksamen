@@ -1,18 +1,9 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import Header from "../../components/Header";
+import Header from "../../components/header/Header";
 
 export default function MapScreen() {
-  return (
-    <View style={styles.container}>
-      <Header
-        subtitle="Map"
-        showProfileButton={true}
-        navigateHomeOnBack={true}
-      />
-      {/* Map content goes here */}
-    </View>
-  );
+  return <View style={styles.container}></View>;
 }
 
 const styles = StyleSheet.create({
