@@ -2,20 +2,23 @@
 
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
-import { ArtworkData } from "../../utils/artworkData";
+import { Artwork } from "../../types/artwork";
 
 interface ArtworkCardProps {
-  artwork: ArtworkData;
+  artwork: Artwork;
 }
 
 export default function ArtworkCard({ artwork }: ArtworkCardProps) {
   return (
     <View style={styles.artworkCard}>
-      <Image source={{ uri: artwork.image }} style={styles.artworkImage} />
+      <Image source={{ uri: artwork.imageUrl }} style={styles.artworkImage} />
       <Text style={styles.title}>{artwork.title}</Text>
-      <Text style={styles.artist}>by {artwork.artist}</Text>
+      {/* Assuming you'll resolve artistId to artist name separately */}
+      <Text style={styles.artist}>by {artwork.artistId}</Text>
       <Text style={styles.description}>{artwork.description}</Text>
-      <Text style={styles.hashtags}>{artwork.hashtags.join(" ")}</Text>
+      <Text style={styles.hashtags}>
+        {(artwork.category ?? "").split(" ").join(" ")}
+      </Text>
     </View>
   );
 }

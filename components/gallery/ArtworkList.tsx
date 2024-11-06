@@ -3,10 +3,10 @@
 import React from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import ArtworkCard from "./ArtworkCard";
-import { ArtworkData } from "../../utils/artworkData";
+import { Artwork } from "../../types/artwork";
 
 interface ArtworkListProps {
-  data: ArtworkData[];
+  data: Artwork[];
 }
 
 export default function ArtworkList({ data }: ArtworkListProps) {

@@ -7,74 +7,127 @@ import {
   TouchableOpacity,
   StyleSheet,
   Modal,
+  Button,
+  Image,
+  ScrollView,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import { Artwork } from "@/types/artwork";
+import { addArtworkToFirestore } from "@/api/artworkApi";
 import ProceedBtn from "../../../ProceedBtn";
+import CameraScreen from "@/components/CameraScreen";
+import { formatToEuropeanDate } from "@/utils/helpers";
 
 type UploadFormProps = {
   visible: boolean;
   onClose: () => void;
-  onSubmit: () => void;
 };
 
-const UploadForm = ({ visible, onClose, onSubmit }: UploadFormProps) => {
+const UploadForm = ({ visible, onClose }: UploadFormProps) => {
   const [title, setTitle] = useState("");
-  const [image, setImage] = useState(null); // Placeholder for image upload
-  const [hashtags, setHashtags] = useState("");
   const [description, setDescription] = useState("");
+  const [caption, setCaption] = useState("");
+  const [image, setImage] = useState<string | null>(null);
+  const [category, setCategory] = useState("");
+  const [showCamera, setShowCamera] = useState(false); // Toggle for camera view
 
-  // Dummy artist name from profile, replace this with actual data from the user's profile context if available
-  const artistName = "John Doe";
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync();
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  const handleCameraCapture = (capturedImageUri: string) => {
+    setImage(capturedImageUri);
+    setShowCamera(false); // Hide camera after capturing
+  };
+
+  const handleSubmit = async () => {
+    const artwork: Artwork = {
+      id: Math.random().toFixed(7).toString(),
+      title,
+      artistId: "artist1", // Replace with dynamic artist ID if needed
+      imageUrl: image || "",
+      caption,
+      description,
+      createdDate: formatToEuropeanDate(new Date()),
+      category,
+      viewsCount: 0,
+      likesCount: 0,
+      comments: [],
+    };
+
+    await addArtworkToFirestore(artwork);
+    onClose(); // Close form after submission
+  };
 
   return (
     <Modal animationType="slide" transparent={true} visible={visible}>
       <View style={styles.overlay}>
-        <View style={styles.formContainer}>
-          <Text style={styles.title}>Upload Artwork</Text>
-
-          {/* Artist Name */}
-          <Text style={styles.artistText}>Artist: {artistName}</Text>
-
-          {/* Title Input */}
-          <TextInput
-            placeholder="Title of the artwork"
-            value={title}
-            onChangeText={setTitle}
-            style={styles.input}
+        {showCamera ? (
+          <CameraScreen
+            onCapture={handleCameraCapture}
+            onClose={() => setShowCamera(false)}
           />
+        ) : (
+          <ScrollView contentContainerStyle={styles.formContainer}>
+            <Text style={styles.title}>Upload Artwork</Text>
 
-          {/* Image Upload (Placeholder) */}
-          <TouchableOpacity
-            style={styles.imageUpload}
-            onPress={() => alert("Image upload not implemented")}
-          >
-            <Text>{image ? "Image Selected" : "Select Image"}</Text>
-          </TouchableOpacity>
+            {/* Title Input */}
+            <Text style={styles.label}>Title</Text>
+            <TextInput
+              placeholder="Title of the artwork"
+              value={title}
+              onChangeText={setTitle}
+              style={styles.input}
+            />
 
-          {/* Hashtags Input */}
-          <TextInput
-            placeholder="Hashtags"
-            value={hashtags}
-            onChangeText={setHashtags}
-            style={styles.input}
-          />
+            {/* Caption Input */}
+            <Text style={styles.label}>Caption</Text>
+            <TextInput
+              placeholder="Enter caption"
+              value={caption}
+              onChangeText={setCaption}
+              style={styles.input}
+            />
 
-          {/* Description Input */}
-          <TextInput
-            placeholder="Description"
-            value={description}
-            onChangeText={setDescription}
-            style={[styles.input, { height: 80 }]}
-            multiline
-          />
+            {/* Description Input */}
+            <Text style={styles.label}>Description</Text>
+            <TextInput
+              placeholder="Enter description"
+              value={description}
+              onChangeText={setDescription}
+              style={[styles.input, styles.textArea]}
+              multiline
+              numberOfLines={4}
+            />
 
-          {/* Upload Button */}
-          <ProceedBtn title="Upload" onPress={onSubmit} />
+            {/* Category Input */}
+            <Text style={styles.label}>Category</Text>
+            <TextInput
+              placeholder="Enter category"
+              value={category}
+              onChangeText={setCategory}
+              style={styles.input}
+            />
 
-          {/* Close/Cancel Button */}
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
+            {/* Image Preview */}
+            <View style={styles.imageContainer}>
+              {image && <Image source={{ uri: image }} style={styles.image} />}
+            </View>
+
+            {/* Image Upload and Camera Options */}
+            <Button title="Upload Image from Gallery" onPress={pickImage} />
+            <Button title="Open Camera" onPress={() => setShowCamera(true)} />
+
+            {/* Submit and Cancel Buttons */}
+            <ProceedBtn title="Submit" onPress={handleSubmit} />
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        )}
       </View>
     </Modal>
   );
@@ -90,7 +143,7 @@ const styles = StyleSheet.create({
   formContainer: {
     width: "90%",
     padding: 20,
-    backgroundColor: "#d19898", // Matching color from your example
+    backgroundColor: "#d19898",
     borderRadius: 15,
     alignItems: "center",
   },
@@ -99,19 +152,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 15,
   },
-  artistText: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 10,
-  },
-  imageUpload: {
-    width: "100%",
-    height: 100,
-    backgroundColor: "#f0f0f0",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    marginBottom: 15,
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginVertical: 8,
   },
   input: {
     width: "100%",
@@ -119,8 +163,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
-    marginBottom: 15,
+    marginBottom: 10,
     backgroundColor: "#fff",
+  },
+  textArea: {
+    height: 100,
+    textAlignVertical: "top",
+  },
+  imageContainer: {
+    alignItems: "center",
+    padding: 16,
+  },
+  image: {
+    height: 200,
+    width: 200,
+    borderRadius: 8,
   },
   closeButton: {
     marginTop: 20,

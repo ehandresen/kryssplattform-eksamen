@@ -1,5 +1,3 @@
-// Updated MenuBtn with ClearAllBtn
-
 import React, { useState } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { AntDesign, Entypo } from "@expo/vector-icons";
@@ -13,8 +11,9 @@ type MenuBtnProps = {
   onUploadPress: () => void;
   onSearchPress: () => void;
   onFilterPress: () => void;
-  onSortPress: () => void;
-  onClearAll: () => void; // Add this prop for clearing
+  onSortAZ: () => void;
+  onSortDate: () => void;
+  onClearAll: () => void;
   isVisible: boolean;
 };
 
@@ -22,7 +21,8 @@ export default function MenuBtn({
   onUploadPress,
   onSearchPress,
   onFilterPress,
-  onSortPress,
+  onSortAZ,
+  onSortDate,
   onClearAll,
   isVisible,
 }: MenuBtnProps) {
@@ -40,22 +40,26 @@ export default function MenuBtn({
         <>
           <SearchBtn onPress={onSearchPress} style={{ bottom: 255 }} />
           <FilterBtn onPress={onFilterPress} style={{ bottom: 190 }} />
-          <SortBtn onPress={onSortPress} style={{ bottom: 125 }} />
+          <SortBtn
+            onSortAZ={onSortAZ}
+            onSortDate={onSortDate}
+            style={{ bottom: 65, left: -19 }}
+          />
           <UploadBtn onPress={onUploadPress} style={{ bottom: 60 }} />
-          <ClearAllBtn onPress={onClearAll} style={{ left: -110 }} />
+          <ClearAllBtn onPress={onClearAll} style={{ bottom: 0, left: -110 }} />
         </>
       )}
       <TouchableOpacity onPress={toggleMenu} activeOpacity={0.7}>
         <View
           style={[
             styles.menuButton,
-            { backgroundColor: isMenuOpen ? "#ff4d4d" : "#e0b3b3" }, // Red when open, original color when closed
+            { backgroundColor: isMenuOpen ? "#ff4d4d" : "#e0b3b3" },
           ]}
         >
           {isMenuOpen ? (
-            <AntDesign name="close" size={24} color="white" /> // "X" icon when menu is open
+            <AntDesign name="close" size={24} color="white" />
           ) : (
-            <Entypo name="menu" size={24} color="black" /> // Hamburger icon when menu is closed
+            <Entypo name="menu" size={24} color="black" />
           )}
         </View>
       </TouchableOpacity>

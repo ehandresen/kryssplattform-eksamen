@@ -13,6 +13,7 @@ export const artworkData: ArtworkData[] = [
     description: "A beautiful sunset painting.",
     coordinates: { latitude: 40.73061, longitude: -73.935242 },
     userID: "1",
+    uploadDate: "2024-10-01",
   },
   {
     id: "2",
@@ -23,6 +24,7 @@ export const artworkData: ArtworkData[] = [
     description: "Exploring the depths of the city.",
     coordinates: { latitude: 34.052235, longitude: -118.243683 },
     userID: "1",
+    uploadDate: "2024-10-02",
   },
   {
     id: "3",
@@ -33,6 +35,7 @@ export const artworkData: ArtworkData[] = [
     description: "A serene view of a lake at dawn.",
     coordinates: { latitude: 36.169941, longitude: -115.139832 },
     userID: "1",
+    uploadDate: "2024-10-03",
   },
   {
     id: "4",
@@ -43,6 +46,7 @@ export const artworkData: ArtworkData[] = [
     description: "High above the mountains.",
     coordinates: { latitude: 39.739236, longitude: -104.990251 },
     userID: "1",
+    uploadDate: "2024-10-04",
   },
   {
     id: "5",
@@ -53,6 +57,7 @@ export const artworkData: ArtworkData[] = [
     description: "A path through the forest.",
     coordinates: { latitude: 47.606209, longitude: -122.332069 },
     userID: "1",
+    uploadDate: "2024-10-05",
   },
 
   // Artworks by Jane Smith
@@ -65,6 +70,7 @@ export const artworkData: ArtworkData[] = [
     description: "Capturing the cool mountain breeze.",
     coordinates: { latitude: 40.73061, longitude: -73.935242 },
     userID: "2",
+    uploadDate: "2024-10-06",
   },
   {
     id: "7",
@@ -75,6 +81,7 @@ export const artworkData: ArtworkData[] = [
     description: "The city illuminated at night.",
     coordinates: { latitude: 34.052235, longitude: -118.243683 },
     userID: "2",
+    uploadDate: "2024-10-01",
   },
   {
     id: "8",
@@ -85,6 +92,7 @@ export const artworkData: ArtworkData[] = [
     description: "Waves crashing on the shore.",
     coordinates: { latitude: 36.169941, longitude: -115.139832 },
     userID: "2",
+    uploadDate: "2024-10-22",
   },
   {
     id: "9",
@@ -95,6 +103,7 @@ export const artworkData: ArtworkData[] = [
     description: "Snow-covered mountains.",
     coordinates: { latitude: 39.739236, longitude: -104.990251 },
     userID: "2",
+    uploadDate: "2024-10-20",
   },
   {
     id: "10",
@@ -105,6 +114,7 @@ export const artworkData: ArtworkData[] = [
     description: "A calm river stream.",
     coordinates: { latitude: 47.606209, longitude: -122.332069 },
     userID: "2",
+    uploadDate: "2024-10-12",
   },
 
   // Artworks by Alice Johnson
@@ -117,6 +127,7 @@ export const artworkData: ArtworkData[] = [
     description: "The sun setting over the desert.",
     coordinates: { latitude: 35.46756, longitude: -97.516428 },
     userID: "3",
+    uploadDate: "2024-10-28",
   },
   {
     id: "12",
@@ -127,6 +138,7 @@ export const artworkData: ArtworkData[] = [
     description: "The skyline of a bustling city.",
     coordinates: { latitude: 29.760427, longitude: -95.369804 },
     userID: "3",
+    uploadDate: "2024-10-15",
   },
   {
     id: "13",
@@ -137,6 +149,7 @@ export const artworkData: ArtworkData[] = [
     description: "A lake frozen over in winter.",
     coordinates: { latitude: 41.878114, longitude: -87.629798 },
     userID: "3",
+    uploadDate: "2024-10-11",
   },
   {
     id: "14",
@@ -147,6 +160,7 @@ export const artworkData: ArtworkData[] = [
     description: "Flowers blooming in spring.",
     coordinates: { latitude: 33.448376, longitude: -112.074036 },
     userID: "3",
+    uploadDate: "2024-10-17",
   },
   {
     id: "15",
@@ -157,6 +171,7 @@ export const artworkData: ArtworkData[] = [
     description: "A forest shrouded in mist.",
     coordinates: { latitude: 32.776664, longitude: -96.796988 },
     userID: "3",
+    uploadDate: "2024-10-05",
   },
 
   // Artworks by Michael Brown
@@ -169,6 +184,7 @@ export const artworkData: ArtworkData[] = [
     description: "Steep cliffs by the ocean.",
     coordinates: { latitude: 25.76168, longitude: -80.19179 },
     userID: "4",
+    uploadDate: "2024-10-02",
   },
   {
     id: "17",
@@ -179,6 +195,7 @@ export const artworkData: ArtworkData[] = [
     description: "Golden Gate Bridge on a clear day.",
     coordinates: { latitude: 37.774929, longitude: -122.419416 },
     userID: "4",
+    uploadDate: "2024-10-09",
   },
   {
     id: "18",
@@ -189,6 +206,7 @@ export const artworkData: ArtworkData[] = [
     description: "Lost in the heart of the forest.",
     coordinates: { latitude: 34.052235, longitude: -118.243683 },
     userID: "4",
+    uploadDate: "2024-10-20",
   },
   {
     id: "19",
@@ -199,6 +217,7 @@ export const artworkData: ArtworkData[] = [
     description: "Rolling dunes in the desert.",
     coordinates: { latitude: 36.778259, longitude: -119.417931 },
     userID: "4",
+    uploadDate: "2024-10-07",
   },
   {
     id: "20",
@@ -209,6 +228,7 @@ export const artworkData: ArtworkData[] = [
     description: "A lighthouse on a rocky coast.",
     coordinates: { latitude: 40.712776, longitude: -74.005974 },
     userID: "4",
+    uploadDate: "2024-10-04",
   },
 
   // Artworks by Sarah Lee
@@ -221,6 +241,7 @@ export const artworkData: ArtworkData[] = [
     description: "Golden fields at sunset.",
     coordinates: { latitude: 37.774929, longitude: -122.419416 },
     userID: "5",
+    uploadDate: "2024-10-04",
   },
   {
     id: "22",
@@ -231,6 +252,7 @@ export const artworkData: ArtworkData[] = [
     description: "The rush of a busy city.",
     coordinates: { latitude: 34.052235, longitude: -118.243683 },
     userID: "5",
+    uploadDate: "2024-10-01",
   },
   {
     id: "23",
@@ -241,6 +263,7 @@ export const artworkData: ArtworkData[] = [
     description: "Beautiful autumn leaves.",
     coordinates: { latitude: 40.712776, longitude: -74.005974 },
     userID: "5",
+    uploadDate: "2024-10-21",
   },
   {
     id: "24",
@@ -251,6 +274,7 @@ export const artworkData: ArtworkData[] = [
     description: "Foggy mountain landscape.",
     coordinates: { latitude: 41.878114, longitude: -87.629798 },
     userID: "5",
+    uploadDate: "2024-10-26",
   },
   {
     id: "25",
@@ -261,5 +285,6 @@ export const artworkData: ArtworkData[] = [
     description: "Crystal clear river water.",
     coordinates: { latitude: 47.606209, longitude: -122.332069 },
     userID: "5",
+    uploadDate: "2024-10-14",
   },
 ];
