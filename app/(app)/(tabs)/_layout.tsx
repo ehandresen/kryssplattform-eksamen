@@ -5,7 +5,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React from "react";
-import Header from "../../components/header/Header";
+import Header from "../../../components/header/Header";
 
 const TabsLayout = () => {
   const pathname = usePathname();

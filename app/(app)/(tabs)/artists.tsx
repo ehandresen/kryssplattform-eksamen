@@ -1,6 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import Header from "../../components/header/Header";
+import Header from "../../../components/header/Header";
 
 export default function ArtistsScreen() {
   return <View style={styles.container}></View>;

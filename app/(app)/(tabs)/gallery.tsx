@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, Keyboard, TextInput } from "react-native";
-import UploadForm from "../../components/gallery/menu/upload/UploadForm";
-import ArtworkList from "../../components/gallery/ArtworkList";
-import SearchBar from "../../components/gallery/menu/search/SearchBar";
-import MenuBtn from "../../components/gallery/menu/MenuBtn";
-import FilterList from "../../components/gallery/menu/filter/FilterList";
+import UploadForm from "../../../components/gallery/menu/upload/UploadForm";
+import ArtworkList from "../../../components/gallery/ArtworkList";
+import SearchBar from "../../../components/gallery/menu/search/SearchBar";
+import MenuBtn from "../../../components/gallery/menu/MenuBtn";
+import FilterList from "../../../components/gallery/menu/filter/FilterList";
 import { getAllArtworks } from "@/api/artworkApi"; // Import the Firestore function
 import { Artwork } from "@/types/artwork"; // Import the updated Artwork type
 
