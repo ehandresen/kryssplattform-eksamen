@@ -3,11 +3,11 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
 import { useRouter } from "expo-router";
+import ProceedBtn from "../../components/ProceedBtn";
 
 export default function Authentication() {
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and registration
@@ -43,7 +43,8 @@ export default function Authentication() {
         value={password}
         onChangeText={setPassword}
       />
-      <Button title="Proceed" onPress={handleAuthentication} />
+      {/* Use ProceedBtn instead of default Button */}
+      <ProceedBtn title="Proceed" onPress={handleAuthentication} />
       <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
         <Text style={styles.toggleText}>
           {isLogin
