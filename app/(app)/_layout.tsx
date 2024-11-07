@@ -1,14 +1,14 @@
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Slot, usePathname, Redirect } from "expo-router";
-import React from "react";
-import Header from "../../components/header/Header";
-import { useAuth } from "@/hooks/useAuth";
-import { View, StyleSheet } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Slot, usePathname, Redirect, Stack } from 'expo-router';
+import React from 'react';
+import Header from '../../components/header/Header';
+import { useAuth } from '@/hooks/useAuth';
+import { View, StyleSheet } from 'react-native';
 
 export default function AppLayout() {
   const pathname = usePathname();
   const { session, isLoading } = useAuth();
-  const isProfileScreen = pathname === "/profile";
+  const isProfileScreen = pathname === '/profile';
 
   if (!session) {
     return <Redirect href="/login" />;
@@ -24,7 +24,9 @@ export default function AppLayout() {
             showLogoutButton={true}
           />
         )}
-        <Slot />
+        <Stack>
+          <Stack.Screen name="(tabs)" />
+        </Stack>
       </View>
     </SafeAreaView>
   );
