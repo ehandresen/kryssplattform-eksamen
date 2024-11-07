@@ -1,5 +1,5 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Slot, usePathname, Redirect } from "expo-router";
+import { Slot, usePathname, Redirect, Stack } from "expo-router";
 import React from "react";
 import Header from "../../components/header/Header";
 import { useAuth } from "@/hooks/useAuth";
@@ -24,7 +24,9 @@ export default function AppLayout() {
             showLogoutButton={true}
           />
         )}
-        <Slot />
+        <Stack>
+          <Stack.Screen name="(tabs)" />
+        </Stack>
       </View>
     </SafeAreaView>
   );

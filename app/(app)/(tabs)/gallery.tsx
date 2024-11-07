@@ -138,14 +138,7 @@ export default function GalleryScreen() {
         onSelect={handleFilterSelect}
         hashtags={availableCategories}
       />
-      <UploadForm
-        visible={isFormVisible}
-        onClose={closeForm}
-        onSubmit={() => {
-          console.log("Uploading artwork...");
-          closeForm();
-        }}
-      />
+      <UploadForm visible={isFormVisible} onClose={closeForm} />
     </View>
   );
 }

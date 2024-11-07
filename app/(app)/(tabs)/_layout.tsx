@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     flex: 1, // Fills the screen
   },
   tabBarStyle: {
-    height: 60,
+    height: 80,
     position: "relative", // Allows tab bar to align at the bottom properly
   },
 });
