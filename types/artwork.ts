@@ -1,5 +1,3 @@
-import { Comment } from "./comment";
-
 export type Artwork = {
   id: string;
   title: string;

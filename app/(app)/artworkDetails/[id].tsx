@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator } from 'react-native';
-import { Link, useLocalSearchParams } from 'expo-router';
-import { getArtworkById } from '@/api/artworkApi';
-import { Artwork } from '@/types/artwork';
+import React, { useEffect, useState } from "react";
+import { View, Text, Image, StyleSheet, ActivityIndicator } from "react-native";
+import { Link, useLocalSearchParams } from "expo-router";
+import { getArtworkById } from "@/api/artworkApi";
+import { Artwork } from "@/types/artwork";
 
 export default function ArtDetails() {
   const { id } = useLocalSearchParams();
@@ -12,9 +12,9 @@ export default function ArtDetails() {
   useEffect(() => {
     const getArtwork = async () => {
       if (id) {
-        console.log('Fetching Artwork with ID:', id);
+        console.log("Fetching Artwork with ID:", id);
         const fetchedArtwork = await getArtworkById(id as string);
-        console.log('Fetched Artwork:', fetchedArtwork);
+        console.log("Fetched Artwork:", fetchedArtwork);
 
         if (fetchedArtwork) {
           setArtwork(fetchedArtwork);
@@ -60,17 +60,17 @@ const styles = StyleSheet.create({
   },
   loaderContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   image: {
-    width: '100%',
+    width: "100%",
     height: 300,
     marginBottom: 16,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
   },
   description: {
@@ -79,6 +79,6 @@ const styles = StyleSheet.create({
   },
   artist: {
     fontSize: 14,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
 });

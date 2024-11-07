@@ -1,7 +1,7 @@
 // components/ArtworkCard.tsx
 
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Artwork } from "../../types/artwork";
 
 interface ArtworkCardProps {
@@ -25,6 +25,8 @@ export default function ArtworkCard({ artwork }: ArtworkCardProps) {
 
 const styles = StyleSheet.create({
   artworkCard: {
+    flex: 1,
+    width: "100%",
     padding: 16,
     marginVertical: 8,
     marginHorizontal: 16,
@@ -37,7 +39,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   artworkImage: {
-    width: "100%",
+    width: 150,
     height: 150,
     borderRadius: 8,
     marginBottom: 8,
