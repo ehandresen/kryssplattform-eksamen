@@ -15,20 +15,23 @@ export default function AppLayout() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {isProfileScreen && (
-          <Header
-            subtitle="Profile"
-            showReturnButton={true}
-            showLogoutButton={true}
-          />
-        )}
-        <Stack>
-          <Stack.Screen name="(tabs)" />
-        </Stack>
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      {isProfileScreen && (
+        <Header
+          subtitle="Profile"
+          showReturnButton={true}
+          showLogoutButton={true}
+        />
+      )}
+      <Stack>
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Stack>
+    </View>
   );
 }
 
