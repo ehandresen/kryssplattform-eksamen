@@ -1,18 +1,21 @@
-import { initializeApp } from "firebase/app";
-import { initializeAuth, getReactNativePersistence } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getDownloadURL, getStorage, ref } from "firebase/storage";
-import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+import { initializeApp } from 'firebase/app';
+import { initializeAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { getDownloadURL, getStorage, ref } from 'firebase/storage';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+// needed this import to fix for web
+// https://stackoverflow.com/questions/76961682/typeerror-0-auth-getreactnativepersistence-is-not-a-function
+import { getReactNativePersistence } from '@firebase/auth/dist/rn/index.js';
 
 // Your web app's Firebase configuration
 // we could possibly move this to an 'firebaseEnv.js' file and import it in
 const firebaseConfig = {
-  apiKey: "AIzaSyBRXc4SXaRCHbbJKNGBl_8KtDdQjODmWeA",
-  authDomain: "kryss-exam.firebaseapp.com",
-  projectId: "kryss-exam",
-  storageBucket: "kryss-exam.firebasestorage.app",
-  messagingSenderId: "804001097958",
-  appId: "1:804001097958:web:287cd47a9d6ce3cf5eb327",
+  apiKey: 'AIzaSyBRXc4SXaRCHbbJKNGBl_8KtDdQjODmWeA',
+  authDomain: 'kryss-exam.firebaseapp.com',
+  projectId: 'kryss-exam',
+  storageBucket: 'kryss-exam.firebasestorage.app',
+  messagingSenderId: '804001097958',
+  appId: '1:804001097958:web:287cd47a9d6ce3cf5eb327',
 };
 
 // initialize firebase
