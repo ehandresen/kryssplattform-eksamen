@@ -60,15 +60,6 @@ export default function ArtDetails() {
   return (
     <View style={styles.container}>
       {artwork ? (
-        // <>
-        //   <Image source={{ uri: artwork.imageUrl }} style={styles.image} />
-        //   <Text style={styles.title}>{artwork.title}</Text>
-        //   <Text style={styles.description}>{artwork.description}</Text>
-        //   <Text style={styles.artist}>By: {artwork.artistId}</Text>
-        //   <Link href="/(app)/gallery">
-        //     <Text>go back</Text>
-        //   </Link>
-        // </>
         <ArtworkCard artwork={artwork} />
       ) : (
         <Text>Artwork not found.</Text>
