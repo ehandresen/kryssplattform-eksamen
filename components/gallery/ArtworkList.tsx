@@ -26,7 +26,6 @@ export default function ArtworkList({ data }: ArtworkListProps) {
         </View>
       )}
       contentContainerStyle={{
-        paddingBottom: 160,
         paddingHorizontal: 8,
       }}
     />
