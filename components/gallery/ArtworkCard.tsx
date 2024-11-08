@@ -1,7 +1,5 @@
-// components/ArtworkCard.tsx
-
 import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Image } from "react-native";
 import { Artwork } from "../../types/artwork";
 
 interface ArtworkCardProps {
@@ -10,56 +8,15 @@ interface ArtworkCardProps {
 
 export default function ArtworkCard({ artwork }: ArtworkCardProps) {
   return (
-    <View style={styles.artworkCard}>
-      <Image source={{ uri: artwork.imageUrl }} style={styles.artworkImage} />
-      <Text style={styles.title}>{artwork.title}</Text>
-      {/* Assuming you'll resolve artistId to artist name separately */}
-      <Text style={styles.artist}>by {artwork.artistId}</Text>
-      <Text style={styles.description}>{artwork.description}</Text>
-      <Text style={styles.hashtags}>
-        {(artwork.category ?? "").split(" ").join(" ")}
-      </Text>
+    <View className="p-4 bg-white rounded-lg shadow-md mb-4">
+      <Image
+        source={{ uri: artwork.imageUrl }}
+        style={{ width: "100%", aspectRatio: 1.5 }}
+        className="rounded-lg mb-3"
+      />
+      <Text className="text-lg font-bold mb-1">{artwork.title}</Text>
+      <Text className="text-sm text-gray-600 mb-2">by {artwork.artistId}</Text>
+      <Text className="text-sm text-gray-700">{artwork.description}</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  artworkCard: {
-    flex: 1,
-    width: "100%",
-    padding: 16,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  artworkImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  artist: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 4,
-  },
-  description: {
-    fontSize: 12,
-    color: "#333",
-    marginBottom: 4,
-  },
-  hashtags: {
-    fontSize: 12,
-    color: "#0096C7",
-  },
-});
