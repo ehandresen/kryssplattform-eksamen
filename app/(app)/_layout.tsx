@@ -30,6 +30,12 @@ export default function AppLayout() {
             headerShown: false,
           }}
         />
+        <Stack.Screen
+          name="artworkDetails/[id]"
+          options={{
+            title: "Artwork Details",
+          }}
+        />
       </Stack>
     </View>
   );

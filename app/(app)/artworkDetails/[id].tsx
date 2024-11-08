@@ -1,20 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, StyleSheet, ActivityIndicator } from "react-native";
-import { Link, useLocalSearchParams } from "expo-router";
-import { getArtworkById } from "@/api/artworkApi";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  TextInput,
+  ScrollView,
+  Pressable,
+} from "react-native";
+import { useLocalSearchParams } from "expo-router";
 import { Artwork } from "@/types/artwork";
 import * as artworkApi from "@/api/artworkApi";
 import * as commentApi from "@/api/commentApi";
 import { CommentObject } from "@/types/comment";
 import ArtworkCard from "@/components/gallery/ArtworkCard";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function ArtDetails() {
   const [artwork, setArtwork] = useState<Artwork | null>(null);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentObject[]>([]);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const [isLoadingAddComment, setIsLoadingAddComment] = useState(false);
 
   const { id } = useLocalSearchParams();
+  const { session } = useAuth();
 
   useEffect(() => {
     fetchArtworkFromFirebase();
@@ -49,82 +59,85 @@ export default function ArtDetails() {
     }
   };
 
+  const handleAddComment = async () => {
+    if (artwork && commentText !== "") {
+      setIsLoadingAddComment(true);
+      // todo add context for artist data?
+      await commentApi.addComment(artwork.id, {
+        artistId: "artistId",
+        artistName: session as string,
+        comment: commentText,
+      });
+
+      setCommentText("");
+      setIsLoadingAddComment(false);
+    }
+  };
+
   if (loading) {
     return (
-      <View style={styles.loaderContainer}>
+      <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      {artwork ? (
-        // <>
-        //   <Image source={{ uri: artwork.imageUrl }} style={styles.image} />
-        //   <Text style={styles.title}>{artwork.title}</Text>
-        //   <Text style={styles.description}>{artwork.description}</Text>
-        //   <Text style={styles.artist}>By: {artwork.artistId}</Text>
-        //   <Link href="/(app)/gallery">
-        //     <Text>go back</Text>
-        //   </Link>
-        // </>
-        <ArtworkCard artwork={artwork} />
-      ) : (
-        <Text>Artwork not found.</Text>
-      )}
+    <ScrollView>
+      <View className="flex-1 p-4">
+        {artwork ? (
+          <ArtworkCard artwork={artwork} />
+        ) : (
+          <Text>Artwork not found.</Text>
+        )}
 
-      {/* comments */}
-      <View className="mt-4 w-full">
-        <Text className="text-lg mb-2">Comments</Text>
-        <View>
-          {isLoadingComments ? (
-            <ActivityIndicator />
-          ) : (
-            comments.map((comment) => (
-              <View
-                key={comment.id}
-                className="flex-row py-2 border-b border-gray-300"
-              >
-                <Text className="font-bold mr-2">
-                  {comment.comment.artistName}
-                </Text>
-                <Text className="flex-1">{comment.comment.comment}</Text>
-              </View>
-            ))
-          )}
+        {/* comments */}
+        <View className="mt-4 w-full">
+          <Text className="text-lg mb-2">Comments</Text>
+          <View>
+            {isLoadingComments ? (
+              <ActivityIndicator />
+            ) : (
+              comments.map((comment) => (
+                <View
+                  key={comment.id}
+                  className="flex-row py-2 border-b border-gray-300"
+                >
+                  <Text className="font-bold mr-2">
+                    {comment.comment.artistName}
+                  </Text>
+                  <Text>{comment.comment.comment}</Text>
+                </View>
+              ))
+            )}
+          </View>
+        </View>
+
+        {/* add comment */}
+        <View className="flex-row items-center w-full">
+          <TextInput
+            value={commentText}
+            onChangeText={setCommentText}
+            placeholder="Add a comment..."
+            placeholderTextColor="gray"
+            className="flex-1 border-b border-gray-400 p-2 mr-2"
+          />
+
+          {/* // todo extract button for reusability? */}
+          {/* add button */}
+          <Pressable
+            onPress={handleAddComment}
+            disabled={isLoadingAddComment} // disable button to prevent duplicate adding of comment
+            className="px-4 py-2 bg-blue-500 rounded"
+          >
+            {isLoadingAddComment ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text className="text-white font-bold">Add</Text>
+            )}
+          </Pressable>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  loaderContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  image: {
-    width: "100%",
-    height: 300,
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  description: {
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  artist: {
-    fontSize: 14,
-    fontStyle: "italic",
-  },
-});
