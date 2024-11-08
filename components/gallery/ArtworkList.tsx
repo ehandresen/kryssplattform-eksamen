@@ -14,13 +14,12 @@ export default function ArtworkList({ data }: ArtworkListProps) {
       data={data}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
-        <View className="flex-1 px-4">
+        <View className="px-4 my-2">
           <Link
             href={{
               pathname: "/artworkDetails/[id]",
               params: { id: item.id },
             }}
-            className="flex-1"
           >
             <ArtworkCard artwork={item} />
           </Link>
