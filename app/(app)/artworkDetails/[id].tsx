@@ -23,8 +23,11 @@ export default function ArtDetails() {
   const [commentText, setCommentText] = useState("");
   const [isLoadingAddComment, setIsLoadingAddComment] = useState(false);
 
+  const [isLiked, setIsLiked] = useState(false);
+  const [numLikes, setNumLikes] = useState(0);
+
   const { id } = useLocalSearchParams();
-  const { session } = useAuth();
+  const { session, user } = useAuth();
 
   useEffect(() => {
     fetchArtworkFromFirebase();
@@ -38,6 +41,8 @@ export default function ArtDetails() {
 
       if (fetchedArtwork) {
         setArtwork(fetchedArtwork);
+        setIsLiked(fetchedArtwork.likes.includes(user?.uid ?? ""));
+        setNumLikes(fetchedArtwork.likes.length);
         fetchCommentsFromFirebase(fetchedArtwork.comments);
       }
       setLoading(false);
@@ -46,8 +51,23 @@ export default function ArtDetails() {
     }
   };
 
+  const toggleLike = async () => {
+    if (!artwork) return;
+
+    const updatedLikes = isLiked
+      ? artwork.likes.filter((uid) => uid !== user?.uid)
+      : [...artwork.likes, user?.uid ?? ""];
+
+    setIsLiked(!isLiked);
+    setNumLikes(updatedLikes.length);
+    setArtwork({ ...artwork, likes: updatedLikes });
+
+    await artworkApi.updateArtworkLikes(artwork.id, user?.uid ?? "");
+  };
+
   const fetchCommentsFromFirebase = async (commentsIds: string[]) => {
     try {
+      // fetch comments from firestore
       const comments = await commentApi.getCommentsByIds(commentsIds);
 
       if (comments) {
@@ -62,15 +82,33 @@ export default function ArtDetails() {
   const handleAddComment = async () => {
     if (artwork && commentText !== "") {
       setIsLoadingAddComment(true);
-      // todo add context for artist data?
-      await commentApi.addComment(artwork.id, {
-        artistId: "artistId",
-        artistName: session as string,
-        comment: commentText,
-      });
 
-      setCommentText("");
-      setIsLoadingAddComment(false);
+      try {
+        // add the new comment and get its ID
+        const newCommentId = await commentApi.addComment(artwork.id, {
+          artistId: user?.uid ?? "unknown",
+          artistName: session as string,
+          comment: commentText,
+        });
+
+        if (newCommentId) {
+          setCommentText("");
+
+          // update artwork's comments array in state
+          const updatedCommentsIds = [
+            ...(artwork.comments || []),
+            newCommentId,
+          ];
+          setArtwork({ ...artwork, comments: updatedCommentsIds });
+
+          // fetch updated comments from firestore to include the new one
+          await fetchCommentsFromFirebase(updatedCommentsIds);
+        }
+      } catch (error) {
+        console.log("Error adding comment:", error);
+      } finally {
+        setIsLoadingAddComment(false);
+      }
     }
   };
 
@@ -84,9 +122,14 @@ export default function ArtDetails() {
 
   return (
     <ScrollView>
-      <View className="flex-1 p-4">
+      <View className="flex-1 p-4 mb-6">
         {artwork ? (
-          <ArtworkCard artwork={artwork} />
+          <ArtworkCard
+            artwork={artwork}
+            isLiked={isLiked}
+            numLikes={numLikes}
+            toggleLike={toggleLike}
+          />
         ) : (
           <Text>Artwork not found.</Text>
         )}
@@ -104,9 +147,12 @@ export default function ArtDetails() {
                   className="flex-row py-2 border-b border-gray-300"
                 >
                   <Text className="font-bold mr-2">
-                    {comment.comment.artistName}
+                    {comment.comment?.artistName ?? "Unknown Artist"}
                   </Text>
-                  <Text>{comment.comment.comment}</Text>
+                  <Text className="flex-1">
+                    {" "}
+                    {comment.comment?.comment ?? "No comment text available"}
+                  </Text>
                 </View>
               ))
             )}
@@ -123,11 +169,10 @@ export default function ArtDetails() {
             className="flex-1 border-b border-gray-400 p-2 mr-2"
           />
 
-          {/* // todo extract button for reusability? */}
-          {/* add button */}
+          {/* TODO extract button for reusability */}
           <Pressable
             onPress={handleAddComment}
-            disabled={isLoadingAddComment} // disable button to prevent duplicate adding of comment
+            disabled={isLoadingAddComment}
             className="px-4 py-2 bg-blue-500 rounded"
           >
             {isLoadingAddComment ? (
