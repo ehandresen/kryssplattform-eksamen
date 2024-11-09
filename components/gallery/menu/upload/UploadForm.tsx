@@ -17,6 +17,7 @@ import { addArtworkToFirestore } from "@/api/artworkApi";
 import ProceedBtn from "../../../ProceedBtn";
 import CameraScreen from "@/components/CameraScreen";
 import { formatToEuropeanDate } from "@/utils/helpers";
+import { useAuth } from "@/hooks/useAuth";
 
 type UploadFormProps = {
   visible: boolean;
@@ -30,6 +31,8 @@ const UploadForm = ({ visible, onClose }: UploadFormProps) => {
   const [image, setImage] = useState<string | null>(null);
   const [category, setCategory] = useState("");
   const [showCamera, setShowCamera] = useState(false); // Toggle for camera view
+
+  const { user } = useAuth();
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync();
@@ -47,7 +50,7 @@ const UploadForm = ({ visible, onClose }: UploadFormProps) => {
     const artwork: Artwork = {
       id: Math.random().toFixed(7).toString(),
       title,
-      artistId: "artist1", // Replace with dynamic artist ID if needed
+      artistId: user?.uid,
       imageUrl: image || "",
       caption,
       description,
