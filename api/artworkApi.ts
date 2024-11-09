@@ -29,7 +29,6 @@ export const addArtworkToFirestore = async (artwork: Artwork) => {
     const artworkWithNewImageUrl: Artwork = {
       ...artwork,
       imageUrl: artworkImageDownloadUrl,
-      likes: [], // initialize with empty array
     };
 
     // save to 'artworks' firestore collection

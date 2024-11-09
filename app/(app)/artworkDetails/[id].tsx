@@ -6,6 +6,7 @@ import {
   TextInput,
   ScrollView,
   Pressable,
+  Alert,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Artwork } from "@/types/artwork";
@@ -112,6 +113,41 @@ export default function ArtDetails() {
     }
   };
 
+  const handleDeleteArtwork = async () => {
+    if (artwork?.artistId !== user?.uid) {
+      Alert.alert("Error", "You can only delete artworks that you created.");
+      return;
+    }
+
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this artwork?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              if (artwork) {
+                await artworkApi.deleteArtwork(artwork.id);
+
+                console.log("Artwork deleted successfully");
+              }
+              // optionally navigate back or update the list after deletion
+              setArtwork(null);
+            } catch (error) {
+              console.error("Error deleting artwork:", error);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center">
@@ -124,14 +160,27 @@ export default function ArtDetails() {
     <ScrollView>
       <View className="flex-1 p-4 mb-6">
         {artwork ? (
-          <ArtworkCard
-            artwork={artwork}
-            isLiked={isLiked}
-            numLikes={numLikes}
-            toggleLike={toggleLike}
-          />
+          <>
+            <ArtworkCard
+              artwork={artwork}
+              isLiked={isLiked}
+              numLikes={numLikes}
+              toggleLike={toggleLike}
+            />
+            {/* only show delete button if the user created the artwork (same id) */}
+            {artwork.artistId === user?.uid && (
+              <Pressable
+                onPress={handleDeleteArtwork}
+                className="bg-red-500 p-2 mt-2 rounded"
+              >
+                <Text className="text-white font-bold">Delete Artwork</Text>
+              </Pressable>
+            )}
+          </>
         ) : (
-          <Text>Artwork not found.</Text>
+          <Text className="text-center text-gray-500 mt-8">
+            Artwork not found.
+          </Text>
         )}
 
         {/* comments */}
