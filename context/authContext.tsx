@@ -9,12 +9,13 @@ import {
 } from "react";
 import { auth } from "@/firebaseConfig";
 import * as authApi from "@/api/authApi";
-import { onAuthStateChanged, UserCredential } from "firebase/auth";
+import { onAuthStateChanged, User, UserCredential } from "firebase/auth";
 
 type AuthContextType = {
   signIn: (email: string, password: string) => Promise<UserCredential | void>;
   signOut: () => Promise<void>;
   session?: string | null;
+  user: User | null;
   isLoading: boolean;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
 };
@@ -25,12 +26,14 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log("user:", user?.displayName);
-      setSession(user ? user.email : null); // Use user email for session
+      setSession(user ? user.displayName : null); // Use user email for session
+      setUser(user ? user : null);
       setIsLoading(false);
     });
 
@@ -67,6 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signIn,
         signOut,
         session,
+        user,
         isLoading,
         setIsLoading,
       }}
