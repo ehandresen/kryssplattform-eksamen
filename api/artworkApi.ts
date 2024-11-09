@@ -1,7 +1,15 @@
 import { Artwork } from "@/types/artwork";
 import { uploadImageToFirebase } from "./imageApi";
 import { db, getDownloadUrl } from "@/firebaseConfig";
-import { addDoc, collection, doc, getDoc, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 
 export const ARTWORKS_COLLECTION = "artworks";
 
@@ -64,4 +72,36 @@ export const getArtworkById = async (id: string) => {
   }
 };
 
-// TODO add delete
+export const deleteArtwork = async (id: string) => {
+  try {
+    await deleteDoc(doc(db, ARTWORKS_COLLECTION, id));
+    console.log("Document successfully deleted!");
+  } catch (error) {
+    console.error("error removing document: ", error);
+  }
+};
+
+export const updateArtworkLikes = async (id: string, userId: string) => {
+  try {
+    // reference to the artwork document in Firestore
+    const artworkRef = doc(db, ARTWORKS_COLLECTION, id);
+    const artworkSnapshot = await getDoc(artworkRef);
+    const artworkData = artworkSnapshot.data();
+
+    // set likes to empty array if it does not exist
+    const likes = artworkData?.likes;
+    console.log("likes:", likes);
+
+    // update like based on whether the userId is already in the likes array
+    const updatedLikes = likes.includes(userId)
+      ? likes.filter((like: string) => like !== userId) // remove userId from likes
+      : [...likes, userId]; // add userId to likes
+
+    console.log("updated likes:", updatedLikes);
+
+    // update firestore document with the new likes array
+    await updateDoc(artworkRef, { likes: updatedLikes });
+  } catch (error) {
+    console.error("error updating like:", error);
+  }
+};

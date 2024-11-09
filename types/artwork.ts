@@ -7,7 +7,7 @@ export type Artwork = {
   description: string;
   createdDate?: string;
   category?: string;
-  viewsCount?: number;
-  likesCount?: number;
+  views?: number;
+  likes: string[];
   comments: string[];
 };
