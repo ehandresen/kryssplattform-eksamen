@@ -53,8 +53,8 @@ const UploadForm = ({ visible, onClose }: UploadFormProps) => {
       description,
       createdDate: formatToEuropeanDate(new Date()),
       category,
-      viewsCount: 0,
-      likesCount: 0,
+      views: 0,
+      likes: [],
       comments: [],
     };
 
