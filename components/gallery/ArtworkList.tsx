@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, RefreshControl, View } from "react-native";
 import ArtworkCard from "./ArtworkCard";
 import { Artwork } from "../../types/artwork";
 import { Link } from "expo-router";
@@ -12,15 +12,20 @@ interface ArtworkListProps {
 
 export default function ArtworkList({ data }: ArtworkListProps) {
   const [artworks, setArtworks] = useState<Artwork[]>(data);
+  const [refreshing, setRefreshing] = useState(false);
+
   const { user } = useAuth();
 
   useEffect(() => {
-    const fetchArtworks = async () => {
-      const updatedArtworks = await artworkApi.getAllArtworks();
-      setArtworks(updatedArtworks);
-    };
     fetchArtworks();
   }, []);
+
+  const fetchArtworks = async () => {
+    setRefreshing(true);
+    const updatedArtworks = await artworkApi.getAllArtworks();
+    setArtworks(updatedArtworks);
+    setRefreshing(false);
+  };
 
   const handleToggleLike = async (id: string) => {
     // update local state to immediately reflect like status in UI
@@ -52,6 +57,9 @@ export default function ArtworkList({ data }: ArtworkListProps) {
     <FlatList
       data={artworks}
       keyExtractor={(item) => item.id}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={fetchArtworks} />
+      }
       renderItem={({ item }) => (
         <View className="px-4 my-2">
           <Link
