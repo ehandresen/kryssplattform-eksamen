@@ -2,8 +2,10 @@ import { db } from "@/firebaseConfig";
 import { Comment, CommentObject } from "@/types/comment";
 import {
   addDoc,
+  arrayRemove,
   arrayUnion,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   updateDoc,
@@ -48,5 +50,18 @@ export const getCommentsByIds = async (ids: string[]) => {
     });
   } catch (error) {
     console.log("error fetching comments", error);
+  }
+};
+
+export const deleteComment = async (commentId: string, postId: string) => {
+  try {
+    const artworkRef = doc(db, ARTWORKS_COLLECTION, postId);
+    await updateDoc(artworkRef, {
+      comments: arrayRemove(commentId),
+    });
+    await deleteDoc(doc(db, COMMENTS_COLLECTION, commentId));
+    console.log("successfully deleted comment");
+  } catch (error) {
+    console.log("error deleting document: ", error);
   }
 };
