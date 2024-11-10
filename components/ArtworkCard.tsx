@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Image, Pressable } from "react-native";
-import { Artwork } from "../../types/artwork";
+import { Artwork } from "../types/artwork";
 
 interface ArtworkCardProps {
   artwork: Artwork;

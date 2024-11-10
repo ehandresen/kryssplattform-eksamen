@@ -13,7 +13,7 @@ import { Artwork } from "@/types/artwork";
 import * as artworkApi from "@/api/artworkApi";
 import * as commentApi from "@/api/commentApi";
 import { CommentObject } from "@/types/comment";
-import ArtworkCard from "@/components/gallery/ArtworkCard";
+import ArtworkCard from "@/components/ArtworkCard";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function ArtDetails() {

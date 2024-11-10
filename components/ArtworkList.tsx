@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, RefreshControl, View } from "react-native";
 import ArtworkCard from "./ArtworkCard";
-import { Artwork } from "../../types/artwork";
+import { Artwork } from "../types/artwork";
 import { Link } from "expo-router";
 import { useAuth } from "@/hooks/useAuth";
 import * as artworkApi from "@/api/artworkApi";
