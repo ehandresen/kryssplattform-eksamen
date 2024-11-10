@@ -1,3 +1,4 @@
+// ArtworkList.tsx
 import React, { useEffect, useState } from "react";
 import { FlatList, RefreshControl, View } from "react-native";
 import ArtworkCard from "./ArtworkCard";
@@ -8,9 +9,10 @@ import * as artworkApi from "@/api/artworkApi";
 
 interface ArtworkListProps {
   data: Artwork[];
+  textSize: number; // Add textSize prop
 }
 
-export default function ArtworkList({ data }: ArtworkListProps) {
+export default function ArtworkList({ data, textSize }: ArtworkListProps) {
   const [artworks, setArtworks] = useState<Artwork[]>(data);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -28,28 +30,20 @@ export default function ArtworkList({ data }: ArtworkListProps) {
   };
 
   const handleToggleLike = async (id: string) => {
-    // update local state to immediately reflect like status in UI
     setArtworks((prevArtworks) =>
       prevArtworks.map((artwork) => {
-        // check if the current artwork matches the one being liked/unliked
         if (artwork.id === id) {
-          // check if user has already liked the artwork
           const isLiked = artwork.likes.includes(user?.uid ?? "");
-
-          // update the likes array
           const updatedLikes = isLiked
-            ? artwork.likes.filter((uid) => uid !== user?.uid) // remove like
-            : [...artwork.likes, user?.uid ?? ""]; // add like
+            ? artwork.likes.filter((uid) => uid !== user?.uid)
+            : [...artwork.likes, user?.uid ?? ""];
 
-          // return updated artwork object with the modified likes array
           return { ...artwork, likes: updatedLikes };
         }
-        // return original artwork if it doesn't match the id
         return artwork;
       })
     );
 
-    // save like/unlike action to firestore
     await artworkApi.updateArtworkLikes(id, user?.uid ?? "");
   };
 
@@ -61,7 +55,7 @@ export default function ArtworkList({ data }: ArtworkListProps) {
         <RefreshControl refreshing={refreshing} onRefresh={fetchArtworks} />
       }
       renderItem={({ item }) => (
-        <View className="px-4 my-2">
+        <View style={{ paddingHorizontal: 16, marginVertical: 16 }}>
           <Link
             href={{
               pathname: "/artworkDetails/[id]",
@@ -70,15 +64,18 @@ export default function ArtworkList({ data }: ArtworkListProps) {
           >
             <ArtworkCard
               artwork={item}
-              isLiked={item.likes.includes(user?.uid ?? "")} // if user id in the likes array, this is set to true
-              numLikes={item.likes.length} // length of the likes array equals the number of likes
+              isLiked={item.likes.includes(user?.uid ?? "")}
+              numLikes={item.likes.length}
               toggleLike={() => handleToggleLike(item.id)}
+              textSize={textSize} // Pass textSize to ArtworkCard
             />
           </Link>
         </View>
       )}
       contentContainerStyle={{
         paddingHorizontal: 8,
+        paddingBottom: 16, // Extra padding at the bottom for spacing
+        flexGrow: 1, // Ensures the content takes the full width
       }}
     />
   );

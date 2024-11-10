@@ -1,3 +1,4 @@
+// screens/ArtDetails.tsx
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -15,8 +16,10 @@ import * as commentApi from "@/api/commentApi";
 import { CommentObject } from "@/types/comment";
 import ArtworkCard from "@/components/ArtworkCard";
 import { useAuth } from "@/hooks/useAuth";
+import { useTextSize } from "@/hooks/useTextSize"; // Import the text size hook
 
 export default function ArtDetails() {
+  const { textSize } = useTextSize(); // Access textSize from the context
   const [artwork, setArtwork] = useState<Artwork | null>(null);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentObject[]>([]);
@@ -36,9 +39,7 @@ export default function ArtDetails() {
 
   const fetchArtworkFromFirebase = async () => {
     try {
-      console.log("Fetching Artwork with ID:", id);
       const fetchedArtwork = await artworkApi.getArtworkById(id as string);
-      console.log("Fetched Artwork:", fetchedArtwork);
 
       if (fetchedArtwork) {
         setArtwork(fetchedArtwork);
@@ -68,7 +69,6 @@ export default function ArtDetails() {
 
   const fetchCommentsFromFirebase = async (commentsIds: string[]) => {
     try {
-      // fetch comments from firestore
       const comments = await commentApi.getCommentsByIds(commentsIds);
 
       if (comments) {
@@ -85,7 +85,6 @@ export default function ArtDetails() {
       setIsLoadingAddComment(true);
 
       try {
-        // add the new comment and get its ID
         const newCommentId = await commentApi.addComment(artwork.id, {
           artistId: user?.uid ?? "unknown",
           artistName: session as string,
@@ -95,14 +94,12 @@ export default function ArtDetails() {
         if (newCommentId) {
           setCommentText("");
 
-          // update artwork's comments array in state
           const updatedCommentsIds = [
             ...(artwork.comments || []),
             newCommentId,
           ];
           setArtwork({ ...artwork, comments: updatedCommentsIds });
 
-          // fetch updated comments from firestore to include the new one
           await fetchCommentsFromFirebase(updatedCommentsIds);
         }
       } catch (error) {
@@ -134,11 +131,8 @@ export default function ArtDetails() {
             try {
               if (artwork) {
                 await artworkApi.deleteArtwork(artwork.id);
-
-                console.log("Artwork deleted successfully");
+                setArtwork(null);
               }
-              // optionally navigate back or update the list after deletion
-              setArtwork(null);
             } catch (error) {
               console.error("Error deleting artwork:", error);
             }
@@ -158,7 +152,7 @@ export default function ArtDetails() {
 
   return (
     <ScrollView>
-      <View className="flex-1 p-4 mb-6">
+      <View style={{ flex: 1, padding: 16, marginBottom: 24 }}>
         {artwork ? (
           <>
             <ArtworkCard
@@ -166,26 +160,42 @@ export default function ArtDetails() {
               isLiked={isLiked}
               numLikes={numLikes}
               toggleLike={toggleLike}
+              textSize={textSize} // Pass textSize to ArtworkCard
             />
-            {/* only show delete button if the user created the artwork (same id) */}
             {artwork.artistId === user?.uid && (
               <Pressable
                 onPress={handleDeleteArtwork}
-                className="bg-red-500 p-2 mt-2 rounded"
+                style={{
+                  backgroundColor: "red",
+                  padding: 10,
+                  marginTop: 10,
+                  borderRadius: 5,
+                }}
               >
-                <Text className="text-white font-bold">Delete Artwork</Text>
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: textSize,
+                    fontWeight: "bold",
+                  }}
+                >
+                  Delete Artwork
+                </Text>
               </Pressable>
             )}
           </>
         ) : (
-          <Text className="text-center text-gray-500 mt-8">
+          <Text
+            style={{ textAlign: "center", color: "#555", fontSize: textSize }}
+          >
             Artwork not found.
           </Text>
         )}
 
-        {/* comments */}
-        <View className="mt-4 w-full">
-          <Text className="text-lg mb-2">Comments</Text>
+        <View style={{ marginTop: 20, width: "100%" }}>
+          <Text style={{ fontSize: textSize + 2, marginBottom: 10 }}>
+            Comments
+          </Text>
           <View>
             {isLoadingComments ? (
               <ActivityIndicator />
@@ -193,13 +203,23 @@ export default function ArtDetails() {
               comments.map((comment) => (
                 <View
                   key={comment.id}
-                  className="flex-row py-2 border-b border-gray-300"
+                  style={{
+                    flexDirection: "row",
+                    paddingVertical: 10,
+                    borderBottomWidth: 1,
+                    borderBottomColor: "#ddd",
+                  }}
                 >
-                  <Text className="font-bold mr-2">
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      marginRight: 5,
+                      fontSize: textSize,
+                    }}
+                  >
                     {comment.comment?.artistName ?? "Unknown Artist"}
                   </Text>
-                  <Text className="flex-1">
-                    {" "}
+                  <Text style={{ flex: 1, fontSize: textSize }}>
                     {comment.comment?.comment ?? "No comment text available"}
                   </Text>
                 </View>
@@ -208,26 +228,50 @@ export default function ArtDetails() {
           </View>
         </View>
 
-        {/* add comment */}
-        <View className="flex-row items-center w-full">
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            width: "100%",
+            marginTop: 10,
+          }}
+        >
           <TextInput
             value={commentText}
             onChangeText={setCommentText}
             placeholder="Add a comment..."
             placeholderTextColor="gray"
-            className="flex-1 border-b border-gray-400 p-2 mr-2"
+            style={{
+              flex: 1,
+              borderBottomWidth: 1,
+              borderBottomColor: "#ccc",
+              padding: 8,
+              marginRight: 10,
+              fontSize: textSize,
+            }}
           />
-
-          {/* TODO extract button for reusability */}
           <Pressable
             onPress={handleAddComment}
             disabled={isLoadingAddComment}
-            className="px-4 py-2 bg-blue-500 rounded"
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 10,
+              backgroundColor: "blue",
+              borderRadius: 5,
+            }}
           >
             {isLoadingAddComment ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text className="text-white font-bold">Add</Text>
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: textSize,
+                  fontWeight: "bold",
+                }}
+              >
+                Add
+              </Text>
             )}
           </Pressable>
         </View>

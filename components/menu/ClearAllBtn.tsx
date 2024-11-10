@@ -1,4 +1,3 @@
-// ClearAllBtn.tsx
 import React from "react";
 import { TouchableOpacity, StyleSheet, ViewStyle, Text } from "react-native";
 

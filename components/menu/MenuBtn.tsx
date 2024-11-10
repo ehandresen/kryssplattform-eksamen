@@ -1,3 +1,4 @@
+// components/MenuBtn.tsx
 import React, { useState } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { AntDesign, Entypo } from "@expo/vector-icons";
@@ -6,6 +7,7 @@ import UploadBtn from "./upload/UploadBtn";
 import FilterBtn from "./filter/FilterBtn";
 import SortBtn from "./SortBtn";
 import ClearAllBtn from "./ClearAllBtn";
+import AccessibilityBtn from "./AccessibilityBtn";
 
 type MenuBtnProps = {
   onUploadPress: () => void;
@@ -14,6 +16,8 @@ type MenuBtnProps = {
   onSortAZ: () => void;
   onSortDate: () => void;
   onClearAll: () => void;
+  onIncreaseTextSize: () => void;
+  onEnableColorBlindFilter: () => void;
   isVisible: boolean;
 };
 
@@ -24,6 +28,8 @@ export default function MenuBtn({
   onSortAZ,
   onSortDate,
   onClearAll,
+  onIncreaseTextSize,
+  onEnableColorBlindFilter,
   isVisible,
 }: MenuBtnProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -43,10 +49,15 @@ export default function MenuBtn({
           <SortBtn
             onSortAZ={onSortAZ}
             onSortDate={onSortDate}
-            style={{ bottom: 65, left: -19 }}
+            style={{ bottom: 5, left: -19 }}
           />
           <UploadBtn onPress={onUploadPress} style={{ bottom: 60 }} />
           <ClearAllBtn onPress={onClearAll} style={{ bottom: 0, left: -110 }} />
+          <AccessibilityBtn
+            onIncreaseTextSize={onIncreaseTextSize}
+            onEnableColorBlindFilter={onEnableColorBlindFilter}
+            style={{ bottom: 260, left: -20 }}
+          />
         </>
       )}
       <TouchableOpacity onPress={toggleMenu} activeOpacity={0.7}>
