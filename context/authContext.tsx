@@ -14,6 +14,7 @@ import { onAuthStateChanged, User, UserCredential } from "firebase/auth";
 type AuthContextType = {
   signIn: (email: string, password: string) => Promise<UserCredential | void>;
   signOut: () => Promise<void>;
+  reloadUser: () => Promise<void>; // New function to refresh user data
   session?: string | null;
   user: User | null;
   isLoading: boolean;
@@ -31,8 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log("user:", user?.displayName);
-      setSession(user ? user.displayName : null); // Use user email for session
+      setSession(user ? user.email : null); // Use user email for session
       setUser(user ? user : null);
       setIsLoading(false);
     });
@@ -48,6 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const userCredential = await authApi.signIn(email, password);
       if (userCredential) {
         setSession(userCredential.user.email); // Update session with user email after sign-in
+        setUser(userCredential.user); // Update user state after sign-in
         return userCredential;
       }
     } catch (error) {
@@ -59,8 +60,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await authApi.signOut();
       setSession(null); // Clear session on sign-out
+      setUser(null); // Clear user on sign-out
     } catch (error) {
       console.error("Error during sign-out:", error);
+    }
+  };
+
+  const reloadUser = async () => {
+    if (auth.currentUser) {
+      await auth.currentUser.reload();
+      setUser(auth.currentUser);
+      setSession(auth.currentUser.email);
     }
   };
 
@@ -69,6 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         signIn,
         signOut,
+        reloadUser, // Pass reloadUser to context
         session,
         user,
         isLoading,
