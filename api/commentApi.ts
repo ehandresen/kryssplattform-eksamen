@@ -53,9 +53,9 @@ export const getCommentsByIds = async (ids: string[]) => {
   }
 };
 
-export const deleteComment = async (commentId: string, postId: string) => {
+export const deleteComment = async (commentId: string, artworkId: string) => {
   try {
-    const artworkRef = doc(db, ARTWORKS_COLLECTION, postId);
+    const artworkRef = doc(db, ARTWORKS_COLLECTION, artworkId);
     await updateDoc(artworkRef, {
       comments: arrayRemove(commentId),
     });

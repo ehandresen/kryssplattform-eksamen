@@ -8,6 +8,7 @@ import {
   ScrollView,
   Pressable,
   Alert,
+  TouchableOpacity,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Artwork } from "@/types/artwork";
@@ -17,6 +18,7 @@ import { CommentObject } from "@/types/comment";
 import ArtworkCard from "@/components/ArtworkCard";
 import { useAuth } from "@/hooks/useAuth";
 import { useTextSize } from "@/hooks/useTextSize"; // Import the text size hook
+import { FontAwesome } from "@expo/vector-icons";
 
 export default function ArtDetails() {
   const { textSize } = useTextSize(); // Access textSize from the context
@@ -26,6 +28,9 @@ export default function ArtDetails() {
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [isLoadingAddComment, setIsLoadingAddComment] = useState(false);
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(
+    null
+  );
 
   const [isLiked, setIsLiked] = useState(false);
   const [numLikes, setNumLikes] = useState(0);
@@ -69,6 +74,8 @@ export default function ArtDetails() {
 
   const fetchCommentsFromFirebase = async (commentsIds: string[]) => {
     try {
+      setIsLoadingComments(true);
+      // fetch comments from firestore
       const comments = await commentApi.getCommentsByIds(commentsIds);
 
       if (comments) {
@@ -100,7 +107,11 @@ export default function ArtDetails() {
           ];
           setArtwork({ ...artwork, comments: updatedCommentsIds });
 
-          await fetchCommentsFromFirebase(updatedCommentsIds);
+          // fetch the newly added comment only and append it to the comments list
+          const newComment = await commentApi.getCommentsByIds([newCommentId]);
+          if (newComment) {
+            setComments((prevComments) => [...prevComments, ...newComment]);
+          }
         }
       } catch (error) {
         console.log("Error adding comment:", error);
@@ -140,6 +151,27 @@ export default function ArtDetails() {
         },
       ]
     );
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      if (artwork) {
+        setDeletingCommentId(commentId);
+
+        // delete the comment
+        await commentApi.deleteComment(commentId, artwork?.id);
+        console.log("Comment deleted");
+
+        // update state to remove deleted comment
+        setComments((prevComments) =>
+          prevComments.filter((comment) => comment.id !== commentId)
+        );
+      }
+    } catch (error) {
+      console.log("Error deleting comment", error);
+    } finally {
+      setDeletingCommentId(null); // reset after deletion
+    }
   };
 
   if (loading) {
@@ -201,6 +233,7 @@ export default function ArtDetails() {
               <ActivityIndicator />
             ) : (
               comments.map((comment) => (
+                // each individual comment
                 <View
                   key={comment.id}
                   style={{
@@ -210,71 +243,59 @@ export default function ArtDetails() {
                     borderBottomColor: "#ddd",
                   }}
                 >
-                  <Text
-                    style={{
-                      fontWeight: "bold",
-                      marginRight: 5,
-                      fontSize: textSize,
-                    }}
-                  >
-                    {comment.comment?.artistName ?? "Unknown Artist"}
-                  </Text>
-                  <Text style={{ flex: 1, fontSize: textSize }}>
-                    {comment.comment?.comment ?? "No comment text available"}
-                  </Text>
+                  {deletingCommentId === comment.id ? (
+                    // show loading indicator when deleting a comment
+                    <ActivityIndicator size="small" color="#ff0000" />
+                  ) : (
+                    <>
+                      <Text className="font-bold mr-2">
+                        {comment.comment?.artistName ?? "Unknown Artist"}
+                      </Text>
+                      <Text className="flex-1">
+                        {comment.comment?.comment ??
+                          "No comment text available"}
+                      </Text>
+
+                      {comment.comment.artistId === user?.uid && (
+                        <TouchableOpacity
+                          onPress={() => handleDeleteComment(comment.id)}
+                        >
+                          <FontAwesome name="trash" size={20} color="red" />
+                        </TouchableOpacity>
+                      )}
+                    </>
+                  )}
                 </View>
               ))
             )}
           </View>
         </View>
 
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            width: "100%",
-            marginTop: 10,
-          }}
-        >
-          <TextInput
-            value={commentText}
-            onChangeText={setCommentText}
-            placeholder="Add a comment..."
-            placeholderTextColor="gray"
-            style={{
-              flex: 1,
-              borderBottomWidth: 1,
-              borderBottomColor: "#ccc",
-              padding: 8,
-              marginRight: 10,
-              fontSize: textSize,
-            }}
-          />
-          <Pressable
-            onPress={handleAddComment}
-            disabled={isLoadingAddComment}
-            style={{
-              paddingHorizontal: 16,
-              paddingVertical: 10,
-              backgroundColor: "blue",
-              borderRadius: 5,
-            }}
-          >
-            {isLoadingAddComment ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: textSize,
-                  fontWeight: "bold",
-                }}
-              >
-                Add
-              </Text>
-            )}
-          </Pressable>
-        </View>
+        {/* add comment section */}
+        {/* only show if comments is not loading */}
+        {!isLoadingComments && (
+          <View className="flex-row items-center w-full">
+            <TextInput
+              value={commentText}
+              onChangeText={setCommentText}
+              placeholder="Add a comment..."
+              placeholderTextColor="gray"
+              className="flex-1 border-b border-gray-400 p-2 mr-2"
+            />
+
+            <Pressable
+              onPress={handleAddComment}
+              disabled={isLoadingAddComment}
+              className="px-4 py-2 bg-blue-500 rounded"
+            >
+              {isLoadingAddComment ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text className="text-white font-bold">Add</Text>
+              )}
+            </Pressable>
+          </View>
+        )}
       </View>
     </ScrollView>
   );
