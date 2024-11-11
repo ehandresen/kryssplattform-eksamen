@@ -1,15 +1,14 @@
-// UploadForm.tsx
 import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   Modal,
   Button,
   Image,
   ScrollView,
+  StyleSheet,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Artwork } from "@/types/artwork";
@@ -30,7 +29,7 @@ const UploadForm = ({ visible, onClose }: UploadFormProps) => {
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [category, setCategory] = useState("");
-  const [showCamera, setShowCamera] = useState(false); // Toggle for camera view
+  const [showCamera, setShowCamera] = useState(false);
 
   const { user } = useAuth();
 
@@ -43,7 +42,7 @@ const UploadForm = ({ visible, onClose }: UploadFormProps) => {
 
   const handleCameraCapture = (capturedImageUri: string) => {
     setImage(capturedImageUri);
-    setShowCamera(false); // Hide camera after capturing
+    setShowCamera(false);
   };
 
   const handleSubmit = async () => {
@@ -62,73 +61,132 @@ const UploadForm = ({ visible, onClose }: UploadFormProps) => {
     };
 
     await addArtworkToFirestore(artwork);
-    onClose(); // Close form after submission
+    onClose();
   };
 
   return (
-    <Modal animationType="slide" transparent={true} visible={visible}>
-      <View style={styles.overlay}>
+    <Modal
+      presentationStyle="formSheet"
+      animationType="slide"
+      visible={visible}
+      onRequestClose={onClose}
+    >
+      <View className="flex-1 p-4 justify-center items-center">
         {showCamera ? (
           <CameraScreen
             onCapture={handleCameraCapture}
             onClose={() => setShowCamera(false)}
           />
         ) : (
-          <ScrollView contentContainerStyle={styles.formContainer}>
-            <Text style={styles.title}>Upload Artwork</Text>
-
-            {/* Title Input */}
-            <Text style={styles.label}>Title</Text>
-            <TextInput
-              placeholder="Title of the artwork"
-              value={title}
-              onChangeText={setTitle}
-              style={styles.input}
-            />
-
-            {/* Caption Input */}
-            <Text style={styles.label}>Caption</Text>
-            <TextInput
-              placeholder="Enter caption"
-              value={caption}
-              onChangeText={setCaption}
-              style={styles.input}
-            />
-
-            {/* Description Input */}
-            <Text style={styles.label}>Description</Text>
-            <TextInput
-              placeholder="Enter description"
-              value={description}
-              onChangeText={setDescription}
-              style={[styles.input, styles.textArea]}
-              multiline
-              numberOfLines={4}
-            />
-
-            {/* Category Input */}
-            <Text style={styles.label}>Category</Text>
-            <TextInput
-              placeholder="Enter category"
-              value={category}
-              onChangeText={setCategory}
-              style={styles.input}
-            />
+          <ScrollView
+            contentContainerStyle={{ alignItems: "center" }}
+            className="w-full max-w-lg p-6 bg-white rounded-xl shadow-lg"
+          >
+            <Text
+              style={{
+                fontSize: 22,
+                fontWeight: "bold",
+                marginBottom: 12,
+              }}
+            >
+              Upload Artwork
+            </Text>
 
             {/* Image Preview */}
-            <View style={styles.imageContainer}>
-              {image && <Image source={{ uri: image }} style={styles.image} />}
+            <View className="flex items-center mb-5">
+              {image ? (
+                <Image
+                  source={{ uri: image }}
+                  // problems showing image using nativewind
+                  style={{ height: 200, width: 200, borderRadius: 8 }}
+                />
+              ) : (
+                <View className="h-56 w-56 bg-gray-200 rounded-lg flex items-center justify-center">
+                  <Text className="text-gray-500">No Image Selected</Text>
+                </View>
+              )}
+              <Button title="Upload Image from Gallery" onPress={pickImage} />
+              <Button title="Open Camera" onPress={() => setShowCamera(true)} />
             </View>
 
-            {/* Image Upload and Camera Options */}
-            <Button title="Upload Image from Gallery" onPress={pickImage} />
-            <Button title="Open Camera" onPress={() => setShowCamera(true)} />
+            {/* Form Fields */}
+            <View className="w-full space-y-4">
+              <View>
+                <Text className="text-lg font-semibold text-gray-700">
+                  Title
+                </Text>
+                <TextInput
+                  placeholder="Title of the artwork"
+                  value={title}
+                  onChangeText={setTitle}
+                  placeholderTextColor="gray"
+                  style={styles.input}
+                />
+              </View>
+
+              <View>
+                <Text className="text-lg font-semibold text-gray-700">
+                  Caption
+                </Text>
+                <TextInput
+                  placeholder="Enter caption"
+                  value={caption}
+                  onChangeText={setCaption}
+                  style={styles.input}
+                  placeholderTextColor="gray"
+                />
+              </View>
+
+              <View>
+                <Text className="text-lg font-semibold text-gray-700">
+                  Description
+                </Text>
+                <TextInput
+                  placeholder="Enter description"
+                  value={description}
+                  onChangeText={setDescription}
+                  placeholderTextColor="gray"
+                  multiline
+                  style={styles.input}
+                  numberOfLines={4}
+                />
+              </View>
+
+              <View>
+                <Text className="text-lg font-semibold text-gray-700">
+                  Category
+                </Text>
+                <TextInput
+                  placeholder="Enter category"
+                  value={category}
+                  onChangeText={setCategory}
+                  style={styles.input}
+                  placeholderTextColor="gray"
+                />
+              </View>
+            </View>
 
             {/* Submit and Cancel Buttons */}
-            <ProceedBtn title="Submit" onPress={handleSubmit} />
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Cancel</Text>
-            </TouchableOpacity>
+            <View className="w-full mt-6 space-y-4">
+              {/* <ProceedBtn
+                title="Submit"
+                onPress={handleSubmit}
+                //className="w-full bg-blue-600 rounded-lg p-4 shadow-lg"
+              /> */}
+              <TouchableOpacity
+                onPress={handleSubmit}
+                className="w-full p-4 bg-blue-500 rounded shadow-lg mt-2"
+              >
+                <Text className="text-center text-white font-bold">Save</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={onClose}
+                className="w-full p-4 rounded shadow-lg mt-2"
+                style={{ backgroundColor: "gray" }}
+              >
+                <Text className="text-center text-white font-bold">Cancel</Text>
+              </TouchableOpacity>
+            </View>
           </ScrollView>
         )}
       </View>
@@ -137,60 +195,18 @@ const UploadForm = ({ visible, onClose }: UploadFormProps) => {
 };
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  formContainer: {
-    width: "90%",
-    padding: 20,
-    backgroundColor: "#d19898",
-    borderRadius: 15,
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 15,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginVertical: 8,
-  },
   input: {
     width: "100%",
-    padding: 10,
+    padding: 12,
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    marginBottom: 10,
-    backgroundColor: "#fff",
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: "top",
-  },
-  imageContainer: {
-    alignItems: "center",
-    padding: 16,
-  },
-  image: {
-    height: 200,
-    width: 200,
+    borderColor: "#d1d5db",
     borderRadius: 8,
-  },
-  closeButton: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: "red",
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    color: "white",
-    fontWeight: "bold",
+    backgroundColor: "#f3f4f6",
+    shadowColor: "#000", // Tailwind shadow-sm
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    marginBottom: 12,
   },
 });
 

@@ -19,6 +19,7 @@ export default function AppLayout() {
           name="(tabs)"
           options={{
             headerShown: false,
+            title: "Gallery",
           }}
         />
         <Stack.Screen
