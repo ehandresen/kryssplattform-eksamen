@@ -6,7 +6,7 @@ import SearchBar from "../../../components/menu/search/SearchBar";
 import MenuBtn from "../../../components/menu/MenuBtn";
 import FilterList from "../../../components/menu/filter/FilterList";
 import ClearAllBtn from "../../../components/menu/ClearAllBtn";
-import SearchBtn from "../../../components/menu/SearchBtn"; // Import SearchBtn
+import SearchBtn from "../../../components/menu/search/SearchBtn"; // Import SearchBtn
 import { getAllArtworks } from "@/api/artworkApi";
 import { Artwork } from "@/types/artwork";
 import { useTextSize } from "@/hooks/useTextSize";

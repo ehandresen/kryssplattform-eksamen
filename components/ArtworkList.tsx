@@ -17,7 +17,6 @@ export default function ArtworkList({ data, textSize }: ArtworkListProps) {
 
   const { user } = useAuth();
 
-  // Update artworks state whenever the data prop changes
   useEffect(() => {
     setArtworks(data);
   }, [data]);
@@ -63,11 +62,11 @@ export default function ArtworkList({ data, textSize }: ArtworkListProps) {
             }}
           >
             <ArtworkCard
-              artwork={item} // Remove encodeURI to prevent double encoding
+              artwork={item}
               isLiked={item.likes.includes(user?.uid ?? "")}
               numLikes={item.likes.length}
               toggleLike={() => handleToggleLike(item.id)}
-              textSize={textSize} // Pass textSize to ArtworkCard
+              textSize={textSize}
             />
           </Link>
         </View>

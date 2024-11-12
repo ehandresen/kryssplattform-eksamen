@@ -12,7 +12,7 @@ type FilterListProps = {
   visible: boolean;
   onClose: () => void;
   onSelect: (filter: string) => void;
-  hashtags: string[]; // Dette representerer de ulike kategoriene
+  hashtags: string[];
 };
 
 const FilterList = ({

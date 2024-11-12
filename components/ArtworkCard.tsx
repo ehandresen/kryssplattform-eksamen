@@ -1,6 +1,5 @@
-// ArtworkCard.tsx
 import React from "react";
-import { View, Text, Image, Pressable } from "react-native";
+import { View, Text, Image, Pressable, StyleSheet } from "react-native";
 import { Artwork } from "../types/artwork";
 
 interface ArtworkCardProps {
@@ -8,7 +7,7 @@ interface ArtworkCardProps {
   isLiked: boolean;
   numLikes: number;
   toggleLike: () => void;
-  textSize: number; // Add textSize prop
+  textSize: number;
 }
 
 export default function ArtworkCard({
@@ -19,45 +18,34 @@ export default function ArtworkCard({
   textSize,
 }: ArtworkCardProps) {
   return (
-    <View
-      style={{
-        padding: 16,
-        backgroundColor: "#fff",
-        borderRadius: 8,
-        shadowOpacity: 0.2,
-        marginBottom: 16,
-      }}
-    >
+    <View style={styles.cardContainer}>
       <Image
         source={{ uri: artwork.imageUrl }}
-        style={{
-          width: "100%",
-          aspectRatio: 1.5,
-          borderRadius: 8,
-          marginBottom: 12,
-        }}
-        onError={(error) =>
-          console.log("Image load error:", error.nativeEvent.error)
-        }
+        style={styles.image}
+        onError={() => console.log("Image failed to load.")}
+        defaultSource={require("../assets/placeholder.png")} // Placeholder
       />
 
-      <Text style={{ fontSize: textSize, fontWeight: "bold", marginBottom: 8 }}>
+      <Text style={[styles.title, { fontSize: textSize }]}>
         {artwork.title}
       </Text>
-      <Text style={{ fontSize: textSize - 2, color: "#555", marginBottom: 8 }}>
+      <Text style={[styles.artist, { fontSize: textSize - 2 }]}>
         by {artwork.artistId}
       </Text>
-      <Text style={{ fontSize: textSize - 4, color: "#333" }}>
+      <Text style={[styles.description, { fontSize: textSize - 4 }]}>
         {artwork.description}
       </Text>
 
-      <Text style={{ fontSize: textSize - 4, color: "#333", marginTop: 8 }}>
+      <Text style={[styles.likes, { fontSize: textSize - 4 }]}>
         {numLikes} {numLikes === 1 ? "like" : "likes"}
       </Text>
 
-      <Pressable onPress={toggleLike} style={{ marginTop: 10 }}>
+      <Pressable onPress={toggleLike} style={styles.likeButton}>
         <Text
-          style={{ fontSize: textSize - 2, color: isLiked ? "blue" : "gray" }}
+          style={{
+            fontSize: textSize - 2,
+            color: isLiked ? "blue" : "gray",
+          }}
         >
           {isLiked ? "Unlike" : "Like"}
         </Text>
@@ -65,3 +53,37 @@ export default function ArtworkCard({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  cardContainer: {
+    padding: 16,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowOpacity: 0.2,
+    marginBottom: 16,
+  },
+  image: {
+    width: "100%",
+    height: 200, // Explicit height for consistent sizing
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  title: {
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  artist: {
+    color: "#555",
+    marginBottom: 8,
+  },
+  description: {
+    color: "#333",
+  },
+  likes: {
+    color: "#333",
+    marginTop: 8,
+  },
+  likeButton: {
+    marginTop: 10,
+  },
+});
