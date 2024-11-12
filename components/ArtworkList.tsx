@@ -54,7 +54,12 @@ export default function ArtworkList({ data, textSize }: ArtworkListProps) {
         <RefreshControl refreshing={refreshing} onRefresh={fetchArtworks} />
       }
       renderItem={({ item }) => (
-        <View style={{ paddingHorizontal: 16, marginVertical: 16 }}>
+        <View
+          style={{
+            backgroundColor: "white",
+            marginVertical: 16,
+          }}
+        >
           <Link
             href={{
               pathname: "/artworkDetails/[id]",
@@ -74,7 +79,7 @@ export default function ArtworkList({ data, textSize }: ArtworkListProps) {
       contentContainerStyle={{
         paddingHorizontal: 8,
         paddingBottom: 16,
-        flexGrow: 1,
+        backgroundColor: "red",
       }}
     />
   );

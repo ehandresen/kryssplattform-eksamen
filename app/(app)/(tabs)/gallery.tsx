@@ -6,7 +6,7 @@ import SearchBar from "../../../components/menu/search/SearchBar";
 import MenuBtn from "../../../components/menu/MenuBtn";
 import FilterList from "../../../components/menu/filter/FilterList";
 import ClearAllBtn from "../../../components/menu/ClearAllBtn";
-import SearchBtn from "../../../components/menu/search/SearchBtn"; // Import SearchBtn
+import SearchBtn from "../../../components/menu/search/SearchBtn";
 import { getAllArtworks } from "@/api/artworkApi";
 import { Artwork } from "@/types/artwork";
 import { useTextSize } from "@/hooks/useTextSize";
@@ -30,7 +30,7 @@ export default function GalleryScreen() {
     const fetchArtworks = async () => {
       const artworks = await getAllArtworks();
       setAllArtworks(artworks);
-      setFilteredData(artworks); // Set initial filtered data to all artworks
+      setFilteredData(artworks);
     };
 
     fetchArtworks();
@@ -155,7 +155,6 @@ export default function GalleryScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "#fff",
   },
   colorBlindMode: {

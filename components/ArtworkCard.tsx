@@ -57,14 +57,14 @@ export default function ArtworkCard({
 const styles = StyleSheet.create({
   cardContainer: {
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: "green",
     borderRadius: 8,
     shadowOpacity: 0.2,
     marginBottom: 16,
   },
   image: {
     width: "100%",
-    height: 200, // Explicit height for consistent sizing
+    height: 200,
     borderRadius: 8,
     marginBottom: 12,
   },

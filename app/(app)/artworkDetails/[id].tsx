@@ -160,7 +160,7 @@ export default function ArtDetails() {
               isLiked={isLiked}
               numLikes={numLikes}
               toggleLike={toggleLike}
-              textSize={textSize} // Pass textSize to ArtworkCard
+              textSize={textSize}
             />
             {artwork.artistId === user?.uid && (
               <Pressable
