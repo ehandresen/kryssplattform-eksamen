@@ -1,5 +1,7 @@
+// RootLayout.tsx
 import { AuthProvider } from "@/context/authContext";
-import { TextSizeProvider } from "@/context/textSizeContext"; // Import TextSizeProvider
+import { TextSizeProvider } from "@/context/textSizeContext";
+import { ColorBlindProvider } from "@/context/colorBlindContext";
 import { Slot } from "expo-router";
 import "../global.css";
 
@@ -7,8 +9,9 @@ const RootLayout = () => {
   return (
     <AuthProvider>
       <TextSizeProvider>
-        {/* Wrap with TextSizeProvider */}
-        <Slot />
+        <ColorBlindProvider>
+          <Slot />
+        </ColorBlindProvider>
       </TextSizeProvider>
     </AuthProvider>
   );

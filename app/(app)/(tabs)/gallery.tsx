@@ -6,13 +6,16 @@ import ArtworkList from "../../../components/ArtworkList";
 import SearchBar from "../../../components/menu/search/SearchBar";
 import MenuBtn from "../../../components/menu/MenuBtn";
 import FilterList from "../../../components/menu/filter/FilterList";
-import ClearAllBtn from "../../../components/menu/ClearAllBtn"; // Import ClearAllBtn
+import ClearAllBtn from "../../../components/menu/ClearAllBtn";
 import { getAllArtworks } from "@/api/artworkApi";
 import { Artwork } from "@/types/artwork";
 import { useTextSize } from "@/hooks/useTextSize";
+import { useColorBlindFilter } from "@/context/colorBlindContext"; // Updated import path and hook name
 
 export default function GalleryScreen() {
-  const { textSize, increaseTextSize, resetTextSize } = useTextSize(); // Include resetTextSize from context
+  const { textSize, increaseTextSize, resetTextSize } = useTextSize();
+  const { isColorBlindFilterEnabled, toggleColorBlindFilter } =
+    useColorBlindFilter(); // Updated hook name
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
@@ -55,7 +58,7 @@ export default function GalleryScreen() {
 
   const onClearAll = () => {
     setFilteredData(allArtworks);
-    resetTextSize(); // Reset text size to default
+    resetTextSize();
   };
 
   const sortData = (criteria: "A-Z" | "Date") => {
@@ -75,7 +78,12 @@ export default function GalleryScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        isColorBlindFilterEnabled && styles.colorBlindMode, // Apply colorblind mode style conditionally
+      ]}
+    >
       <ArtworkList data={filteredData} textSize={textSize} />
       <MenuBtn
         isVisible={!isKeyboardVisible}
@@ -85,13 +93,10 @@ export default function GalleryScreen() {
         onSortAZ={() => sortData("A-Z")}
         onSortDate={() => sortData("Date")}
         onClearAll={onClearAll}
-        onIncreaseTextSize={increaseTextSize} // Pass increaseTextSize to MenuBtn
-        onEnableColorBlindFilter={() => {}} // Placeholder for color blind filter function
+        onIncreaseTextSize={increaseTextSize}
+        onEnableColorBlindFilter={toggleColorBlindFilter} // Toggle colorblind filter
       />
-      <ClearAllBtn
-        onPress={onClearAll}
-        style={{ bottom: 0, left: -110 }} // Adjust positioning as needed
-      />
+      <ClearAllBtn onPress={onClearAll} style={{ bottom: 0, left: -110 }} />
       {isSearchVisible && (
         <SearchBar
           searchQuery={searchQuery}
@@ -100,7 +105,7 @@ export default function GalleryScreen() {
             filterData(query, selectedFilter);
           }}
           searchInputRef={searchInputRef}
-          textSize={textSize} // Pass textSize to SearchBar if it has text that should increase
+          textSize={textSize}
         />
       )}
       <FilterList
@@ -126,5 +131,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  colorBlindMode: {
+    backgroundColor: "#EFEFEF", // Adjust this color for colorblind accessibility
   },
 });
