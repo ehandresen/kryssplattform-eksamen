@@ -15,29 +15,20 @@ export default function AppLayout() {
   }
 
   return (
-    <View style={styles.container}>
-      {isProfileScreen && (
-        <Header
-          subtitle="Profile"
-          showReturnButton={true}
-          showLogoutButton={true}
-        />
-      )}
-      <Stack>
-        <Stack.Screen
-          name="(tabs)"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="artworkDetails/[id]"
-          options={{
-            title: "Artwork Details",
-          }}
-        />
-      </Stack>
-    </View>
+    <Stack>
+      <Stack.Screen
+        name="(tabs)"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="artworkDetails/[id]"
+        options={{
+          title: "Artwork Details",
+        }}
+      />
+    </Stack>
   );
 }
 

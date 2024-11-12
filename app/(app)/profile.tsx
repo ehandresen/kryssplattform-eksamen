@@ -140,14 +140,6 @@ export default function ProfileScreen() {
           </View>
         </View>
       </Modal>
-
-      {/* Other Buttons */}
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Feedback</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Accessibility</Text>
-      </TouchableOpacity>
     </View>
   );
 }
