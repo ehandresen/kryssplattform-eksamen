@@ -1,4 +1,3 @@
-// screens/GalleryScreen.tsx
 import React, { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, Keyboard, TextInput } from "react-native";
 import UploadForm from "../../../components/menu/upload/UploadForm";
@@ -7,15 +6,16 @@ import SearchBar from "../../../components/menu/search/SearchBar";
 import MenuBtn from "../../../components/menu/MenuBtn";
 import FilterList from "../../../components/menu/filter/FilterList";
 import ClearAllBtn from "../../../components/menu/ClearAllBtn";
+import SearchBtn from "../../../components/menu/SearchBtn"; // Import SearchBtn
 import { getAllArtworks } from "@/api/artworkApi";
 import { Artwork } from "@/types/artwork";
 import { useTextSize } from "@/hooks/useTextSize";
-import { useColorBlindFilter } from "@/context/colorBlindContext"; // Updated import path and hook name
+import { useColorBlindFilter } from "@/context/colorBlindContext";
 
 export default function GalleryScreen() {
   const { textSize, increaseTextSize, resetTextSize } = useTextSize();
   const { isColorBlindFilterEnabled, toggleColorBlindFilter } =
-    useColorBlindFilter(); // Updated hook name
+    useColorBlindFilter();
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
@@ -30,7 +30,7 @@ export default function GalleryScreen() {
     const fetchArtworks = async () => {
       const artworks = await getAllArtworks();
       setAllArtworks(artworks);
-      setFilteredData(artworks);
+      setFilteredData(artworks); // Set initial filtered data to all artworks
     };
 
     fetchArtworks();
@@ -57,9 +57,28 @@ export default function GalleryScreen() {
   const closeForm = () => setIsFormVisible(false);
 
   const onClearAll = () => {
-    setFilteredData(allArtworks);
+    setFilteredData(allArtworks); // Reset filtered data to show all artworks
     resetTextSize();
+    setSelectedFilter(null); // Clear selected filter
+    console.log("Cleared filter, showing all artworks"); // Debug log
   };
+
+  const filterData = (query: string, filter: string | null) => {
+    const filtered = allArtworks.filter((artwork) => {
+      const matchesQuery = query
+        ? artwork.title?.toLowerCase().includes(query.toLowerCase())
+        : true;
+      const matchesFilter = filter ? artwork.category === filter : true;
+      return matchesQuery && matchesFilter;
+    });
+    setFilteredData(filtered);
+    console.log("Filtered data updated:", filtered); // Debug log
+  };
+
+  // Run filterData every time selectedFilter or searchQuery changes
+  useEffect(() => {
+    filterData(searchQuery, selectedFilter);
+  }, [selectedFilter, searchQuery]);
 
   const sortData = (criteria: "A-Z" | "Date") => {
     const sorted = [...filteredData].sort((a, b) => {
@@ -75,26 +94,32 @@ export default function GalleryScreen() {
       return 0;
     });
     setFilteredData(sorted);
+    console.log("Sorted data:", sorted); // Debug log
+  };
+
+  const onSearchPress = () => {
+    setIsSearchVisible(true);
+    searchInputRef.current?.focus(); // Automatically focus the TextInput when search is pressed
   };
 
   return (
     <View
       style={[
         styles.container,
-        isColorBlindFilterEnabled && styles.colorBlindMode, // Apply colorblind mode style conditionally
+        isColorBlindFilterEnabled && styles.colorBlindMode,
       ]}
     >
       <ArtworkList data={filteredData} textSize={textSize} />
       <MenuBtn
         isVisible={!isKeyboardVisible}
         onUploadPress={openForm}
-        onSearchPress={() => setIsSearchVisible(!isSearchVisible)}
+        onSearchPress={onSearchPress} // Call onSearchPress to open search bar and focus input
         onFilterPress={() => setIsFilterVisible(!isFilterVisible)}
         onSortAZ={() => sortData("A-Z")}
         onSortDate={() => sortData("Date")}
         onClearAll={onClearAll}
         onIncreaseTextSize={increaseTextSize}
-        onEnableColorBlindFilter={toggleColorBlindFilter} // Toggle colorblind filter
+        onEnableColorBlindFilter={toggleColorBlindFilter}
       />
       <ClearAllBtn onPress={onClearAll} style={{ bottom: 0, left: -110 }} />
       {isSearchVisible && (
@@ -102,9 +127,9 @@ export default function GalleryScreen() {
           searchQuery={searchQuery}
           onSearch={(query) => {
             setSearchQuery(query);
-            filterData(query, selectedFilter);
+            console.log("Search query updated:", query); // Debug log
           }}
-          searchInputRef={searchInputRef}
+          searchInputRef={searchInputRef} // Pass the input ref to SearchBar
           textSize={textSize}
         />
       )}
@@ -112,9 +137,10 @@ export default function GalleryScreen() {
         visible={isFilterVisible}
         onClose={() => setIsFilterVisible(false)}
         onSelect={(filter) => {
-          setSelectedFilter(filter);
+          setSelectedFilter(filter); // Update selected filter
           setIsFilterVisible(false);
-          filterData(searchQuery, filter);
+          console.log("Selected filter:", filter); // Debug log
+          filterData(searchQuery, filter); // Ensure immediate update
         }}
         hashtags={Array.from(
           new Set(
@@ -133,6 +159,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   colorBlindMode: {
-    backgroundColor: "#EFEFEF", // Adjust this color for colorblind accessibility
+    backgroundColor: "#EFEFEF",
   },
 });

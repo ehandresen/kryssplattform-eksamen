@@ -1,4 +1,3 @@
-// ArtworkList.tsx
 import React, { useEffect, useState } from "react";
 import { FlatList, RefreshControl, View } from "react-native";
 import ArtworkCard from "./ArtworkCard";
@@ -9,7 +8,7 @@ import * as artworkApi from "@/api/artworkApi";
 
 interface ArtworkListProps {
   data: Artwork[];
-  textSize: number; // Add textSize prop
+  textSize: number;
 }
 
 export default function ArtworkList({ data, textSize }: ArtworkListProps) {
@@ -18,9 +17,10 @@ export default function ArtworkList({ data, textSize }: ArtworkListProps) {
 
   const { user } = useAuth();
 
+  // Update artworks state whenever the data prop changes
   useEffect(() => {
-    fetchArtworks();
-  }, []);
+    setArtworks(data);
+  }, [data]);
 
   const fetchArtworks = async () => {
     setRefreshing(true);
@@ -63,7 +63,7 @@ export default function ArtworkList({ data, textSize }: ArtworkListProps) {
             }}
           >
             <ArtworkCard
-              artwork={item}
+              artwork={item} // Remove encodeURI to prevent double encoding
               isLiked={item.likes.includes(user?.uid ?? "")}
               numLikes={item.likes.length}
               toggleLike={() => handleToggleLike(item.id)}
@@ -74,8 +74,8 @@ export default function ArtworkList({ data, textSize }: ArtworkListProps) {
       )}
       contentContainerStyle={{
         paddingHorizontal: 8,
-        paddingBottom: 16, // Extra padding at the bottom for spacing
-        flexGrow: 1, // Ensures the content takes the full width
+        paddingBottom: 16,
+        flexGrow: 1,
       }}
     />
   );

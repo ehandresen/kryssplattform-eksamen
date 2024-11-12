@@ -1,4 +1,3 @@
-// FilterList.tsx
 import React from "react";
 import {
   View,
@@ -13,7 +12,7 @@ type FilterListProps = {
   visible: boolean;
   onClose: () => void;
   onSelect: (filter: string) => void;
-  hashtags: string[];
+  hashtags: string[]; // Dette representerer de ulike kategoriene
 };
 
 const FilterList = ({
@@ -26,9 +25,9 @@ const FilterList = ({
     <Modal animationType="slide" transparent={true} visible={visible}>
       <View style={styles.overlay}>
         <View style={styles.listContainer}>
-          <Text style={styles.title}>Select a Hashtag</Text>
+          <Text style={styles.title}>Velg en kategori</Text>
 
-          {/* Hashtags List */}
+          {/* Liste over kategorier */}
           <ScrollView style={styles.scrollView}>
             {hashtags.map((hashtag) => (
               <TouchableOpacity
@@ -36,14 +35,14 @@ const FilterList = ({
                 onPress={() => onSelect(hashtag)}
                 style={styles.hashtagButton}
               >
-                <Text style={styles.hashtagText}>#{hashtag}</Text>
+                <Text style={styles.hashtagText}>{hashtag}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
 
-          {/* Close/Cancel Button */}
+          {/* Lukk-knapp */}
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Cancel</Text>
+            <Text style={styles.closeButtonText}>Avbryt</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
   listContainer: {
     width: "90%",
     padding: 20,
-    backgroundColor: "#d19898", // Same color as UploadForm background
+    backgroundColor: "#d19898",
     borderRadius: 15,
     alignItems: "center",
   },
@@ -72,7 +71,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     width: "100%",
-    maxHeight: 200, // Limit height for scrolling
+    maxHeight: 200,
     marginBottom: 15,
   },
   hashtagButton: {

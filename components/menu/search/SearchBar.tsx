@@ -1,7 +1,5 @@
-// components/SearchBar.tsx
-
 import React, { RefObject } from "react";
-import { TextInput, StyleSheet } from "react-native";
+import { TextInput, StyleSheet, View } from "react-native";
 
 interface SearchBarProps {
   searchQuery: string;
@@ -15,23 +13,27 @@ export default function SearchBar({
   searchInputRef,
 }: SearchBarProps) {
   return (
-    <TextInput
-      ref={searchInputRef}
-      style={styles.searchInput}
-      placeholder="Search artworks..."
-      value={searchQuery}
-      onChangeText={onSearch}
-    />
+    <View style={styles.container}>
+      <TextInput
+        ref={searchInputRef}
+        style={styles.searchInput}
+        placeholder="Search artworks..."
+        value={searchQuery}
+        onChangeText={onSearch}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginHorizontal: 16,
+  },
   searchInput: {
     height: 40,
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
-    margin: 16,
     paddingHorizontal: 10,
   },
 });
