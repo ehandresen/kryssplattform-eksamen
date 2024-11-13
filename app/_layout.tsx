@@ -1,19 +1,18 @@
-// RootLayout.tsx
-import { AuthProvider } from "@/context/authContext";
-import { TextSizeProvider } from "@/context/textSizeContext";
-import { ColorBlindProvider } from "@/context/colorBlindContext";
 import { Slot } from "expo-router";
+import AppProviders from "@/context/AppProviders";
 import "../global.css";
+import { ColorBlindProvider } from "@/context/colorBlindContext";
+import { TextSizeProvider } from "@/context/textSizeContext";
 
 const RootLayout = () => {
   return (
-    <AuthProvider>
+    <AppProviders>
       <TextSizeProvider>
         <ColorBlindProvider>
           <Slot />
         </ColorBlindProvider>
       </TextSizeProvider>
-    </AuthProvider>
+    </AppProviders>
   );
 };
 

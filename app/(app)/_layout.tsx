@@ -28,6 +28,13 @@ export default function AppLayout() {
             title: "Artwork Details",
           }}
         />
+        <Stack.Screen
+          name="map"
+          options={{
+            title: "Map",
+          }}
+        />
+        <Stack.Screen name="exhibitionDetails/[id]" />
       </Stack>
     </SafeAreaView>
   );
