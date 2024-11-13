@@ -9,16 +9,20 @@ import {
   Pressable,
   Alert,
   TouchableOpacity,
+  Button,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Artwork } from "@/types/artwork";
 import * as artworkApi from "@/api/artworkApi";
 import * as commentApi from "@/api/commentApi";
+import * as exhibitionApi from "@/api/exhibitionApi";
 import { CommentObject } from "@/types/comment";
 import ArtworkCard from "@/components/ArtworkCard";
 import { useAuth } from "@/hooks/useAuth";
 import { useTextSize } from "@/hooks/useTextSize"; // Import the text size hook
 import { FontAwesome } from "@expo/vector-icons";
+import { Exhibition } from "@/types/exhibition";
+import MapScreen from "../map";
 
 export default function ArtDetails() {
   const { textSize } = useTextSize(); // Access textSize from the context
@@ -31,12 +35,13 @@ export default function ArtDetails() {
   const [deletingCommentId, setDeletingCommentId] = useState<string | null>(
     null
   );
-
   const [isLiked, setIsLiked] = useState(false);
   const [numLikes, setNumLikes] = useState(0);
+  const [exhibition, setExhibition] = useState<Exhibition | null>(null);
 
   const { id } = useLocalSearchParams();
   const { session, user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     fetchArtworkFromFirebase();
@@ -51,10 +56,42 @@ export default function ArtDetails() {
         setIsLiked(fetchedArtwork.likes.includes(user?.uid ?? ""));
         setNumLikes(fetchedArtwork.likes.length);
         fetchCommentsFromFirebase(fetchedArtwork.comments);
+
+        // fetch exhibition details if exhibitionId is present
+        if (fetchedArtwork.exhibitionId) {
+          fetchExhibitionFromFirebase(fetchedArtwork.exhibitionId);
+        }
       }
       setLoading(false);
     } catch (error) {
       console.log("error fetching artwork", error);
+    }
+  };
+
+  const fetchExhibitionFromFirebase = async (exhibitionId: string) => {
+    try {
+      const fetchedExhibition = await exhibitionApi.getExhibitionById(
+        exhibitionId
+      );
+
+      console.log("fetched exhibition:", fetchedExhibition);
+
+      if (fetchedExhibition) {
+        setExhibition(fetchedExhibition);
+      }
+    } catch (error) {
+      console.log("error fetching exhibition", error);
+    }
+  };
+
+  const goToExhibitionOnMap = () => {
+    if (exhibition) {
+      router.push({
+        pathname: "/map",
+        params: {
+          exhibition: JSON.stringify(exhibition),
+        },
+      });
     }
   };
 
@@ -184,7 +221,7 @@ export default function ArtDetails() {
 
   return (
     <ScrollView>
-      <View style={{ flex: 1, padding: 16, marginBottom: 24 }}>
+      <View className="flex-1 px-4 mb-6">
         {artwork ? (
           <>
             <ArtworkCard
@@ -197,12 +234,7 @@ export default function ArtDetails() {
             {artwork.artistId === user?.uid && (
               <Pressable
                 onPress={handleDeleteArtwork}
-                style={{
-                  backgroundColor: "red",
-                  padding: 10,
-                  marginTop: 10,
-                  borderRadius: 5,
-                }}
+                className="bg-red-500 p-2 my-2 rounded self-start"
               >
                 <Text
                   style={{
@@ -215,6 +247,29 @@ export default function ArtDetails() {
                 </Text>
               </Pressable>
             )}
+
+            {/* show button to navigate to mapScreen if there is an exhibition related to the artwork */}
+            {exhibition && (
+              <View className="mt-4 p-4 bg-gray-300 rounded-lg">
+                <Text className="text-xl font-semibold text-gray-800 mb-2">
+                  Exhibition: {exhibition.title}
+                </Text>
+                <Text className="text-md text-gray-600">
+                  Location: {exhibition.location}
+                </Text>
+                <Text className="text-md text-gray-600">
+                  Dates: {exhibition.startDate} - {exhibition.endDate}
+                </Text>
+                <TouchableOpacity
+                  className="px-4 py-2 mt-4 bg-gray-700 rounded self-start"
+                  onPress={goToExhibitionOnMap}
+                >
+                  <Text className="text-white font-bold">
+                    View exhibition on map
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </>
         ) : (
           <Text
@@ -224,78 +279,73 @@ export default function ArtDetails() {
           </Text>
         )}
 
-        <View style={{ marginTop: 20, width: "100%" }}>
-          <Text style={{ fontSize: textSize + 2, marginBottom: 10 }}>
-            Comments
-          </Text>
+        {/* comments */}
+        <View className="mt-4 p-4 bg-gray-300 rounded-lg">
           <View>
-            {isLoadingComments ? (
-              <ActivityIndicator />
-            ) : (
-              comments.map((comment) => (
-                // each individual comment
-                <View
-                  key={comment.id}
-                  style={{
-                    flexDirection: "row",
-                    paddingVertical: 10,
-                    borderBottomWidth: 1,
-                    borderBottomColor: "#ddd",
-                  }}
-                >
-                  {deletingCommentId === comment.id ? (
-                    // show loading indicator when deleting a comment
-                    <ActivityIndicator size="small" color="#ff0000" />
-                  ) : (
-                    <>
-                      <Text className="font-bold mr-2">
-                        {comment.comment?.artistName ?? "Unknown Artist"}
-                      </Text>
-                      <Text className="flex-1">
-                        {comment.comment?.comment ??
-                          "No comment text available"}
-                      </Text>
-
-                      {comment.comment.artistId === user?.uid && (
-                        <TouchableOpacity
-                          onPress={() => handleDeleteComment(comment.id)}
-                        >
-                          <FontAwesome name="trash" size={20} color="red" />
-                        </TouchableOpacity>
-                      )}
-                    </>
-                  )}
-                </View>
-              ))
-            )}
-          </View>
-        </View>
-
-        {/* add comment section */}
-        {/* only show if comments is not loading */}
-        {!isLoadingComments && (
-          <View className="flex-row items-center w-full">
-            <TextInput
-              value={commentText}
-              onChangeText={setCommentText}
-              placeholder="Add a comment..."
-              placeholderTextColor="gray"
-              className="flex-1 border-b border-gray-400 p-2 mr-2"
-            />
-
-            <Pressable
-              onPress={handleAddComment}
-              disabled={isLoadingAddComment}
-              className="px-4 py-2 bg-blue-500 rounded"
-            >
-              {isLoadingAddComment ? (
-                <ActivityIndicator color="#fff" />
+            <Text className="text-lg mb-2 font-bold">Comments</Text>
+            <View>
+              {isLoadingComments ? (
+                <ActivityIndicator />
               ) : (
-                <Text className="text-white font-bold">Add</Text>
+                comments.map((comment) => (
+                  // each individual comment
+                  <View
+                    key={comment.id}
+                    className="flex-row py-2 border-b border-gray-300"
+                  >
+                    {deletingCommentId === comment.id ? (
+                      // show loading indicator when deleting a comment
+                      <ActivityIndicator size="small" color="#ff0000" />
+                    ) : (
+                      <>
+                        <Text className="font-bold mr-2">
+                          {comment.comment?.artistName ?? ""}
+                        </Text>
+                        <Text className="flex-1">
+                          {comment.comment?.comment ?? ""}
+                        </Text>
+
+                        {comment.comment.artistId === user?.uid && (
+                          <TouchableOpacity
+                            onPress={() => handleDeleteComment(comment.id)}
+                          >
+                            <FontAwesome name="trash" size={20} color="red" />
+                          </TouchableOpacity>
+                        )}
+                      </>
+                    )}
+                  </View>
+                ))
               )}
-            </Pressable>
+            </View>
           </View>
-        )}
+
+          {/* add comment section */}
+          {/* only show if comments is not loading */}
+          {!isLoadingComments && (
+            <View className="flex-row items-center w-full mt-4">
+              <TextInput
+                value={commentText}
+                onChangeText={setCommentText}
+                placeholder="Add a comment..."
+                placeholderTextColor="gray"
+                className="flex-1 border-b border-gray-400 p-2 mr-2"
+              />
+
+              <TouchableOpacity
+                onPress={handleAddComment}
+                disabled={isLoadingAddComment}
+                className="px-4 py-2 bg-blue-500 rounded"
+              >
+                {isLoadingAddComment ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text className="text-white font-bold">Add</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
       </View>
     </ScrollView>
   );
