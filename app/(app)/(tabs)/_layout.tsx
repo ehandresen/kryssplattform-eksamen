@@ -1,7 +1,5 @@
 import { Tabs, usePathname } from "expo-router";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React from "react";
 import Header from "../../../components/header/Header";
 import { View, StyleSheet } from "react-native";
@@ -11,13 +9,12 @@ const TabsLayout = () => {
 
   const isGalleryScreen = pathname === "/gallery";
   const isArtistsScreen = pathname === "/artists";
-  const isMapScreen = pathname === "/map";
 
   const subtitle = isGalleryScreen
     ? "Gallery"
     : isArtistsScreen
     ? "Artists"
-    : "Map";
+    : "Exhibitions";
 
   return (
     <View style={styles.container}>
@@ -32,7 +29,7 @@ const TabsLayout = () => {
       <Tabs
         screenOptions={{
           tabBarStyle: styles.tabBarStyle,
-          tabBarLabelStyle: { fontSize: 12, paddingBottom: 5 },
+          tabBarLabelStyle: { fontSize: 14 },
           tabBarActiveTintColor: "red",
           tabBarInactiveTintColor: "black",
           headerShown: false,
@@ -44,7 +41,7 @@ const TabsLayout = () => {
           options={{
             title: "Gallery",
             tabBarIcon: ({ color }) => (
-              <FontAwesome5 name="images" size={24} color={color} />
+              <FontAwesome5 name="images" size={22} color={color} />
             ),
           }}
         />
@@ -53,16 +50,16 @@ const TabsLayout = () => {
           options={{
             title: "Artists",
             tabBarIcon: ({ color }) => (
-              <AntDesign name="team" size={24} color={color} />
+              <FontAwesome5 name="users" size={22} color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name="map"
+          name="exhibitions"
           options={{
-            title: "Map",
+            title: "Exhibitions",
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name="map" size={24} color={color} />
+              <FontAwesome5 name="landmark" size={22} color={color} />
             ),
           }}
         />
@@ -78,6 +75,7 @@ const styles = StyleSheet.create({
   tabBarStyle: {
     height: 80,
     position: "relative", // Allows tab bar to align at the bottom properly
+    paddingTop: 5,
   },
 });
 
