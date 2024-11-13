@@ -10,4 +10,5 @@ export type Artwork = {
   views?: number;
   likes: string[];
   comments: string[];
+  exhibitionId: string; // links to the exhibition object
 };
