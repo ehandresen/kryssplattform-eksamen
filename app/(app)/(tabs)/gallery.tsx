@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
-import UploadForm from "../../../components/menu/upload/UploadForm";
 import ArtworkList from "../../../components/ArtworkList";
 import Menu from "../../../components/menu/Menu";
 import Search from "../../../components/menu/Search"; // Import Search here
@@ -9,12 +8,12 @@ import { Artwork } from "@/types/artwork";
 import { useTextSize } from "@/hooks/useTextSize";
 import { useColorBlindFilter } from "@/context/colorBlindContext";
 import { sortAZ, sortDate } from "@/utils/functions/sort";
+import Upload from "../../../components/menu/Upload"; // Import the new Upload component
 
 export default function GalleryScreen() {
   const { textSize, increaseTextSize } = useTextSize();
   const { isColorBlindFilterEnabled, toggleColorBlindFilter } =
     useColorBlindFilter();
-  const [isFormVisible, setIsFormVisible] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false); // Manage search visibility here
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [filteredData, setFilteredData] = useState<Artwork[]>([]);
@@ -35,7 +34,7 @@ export default function GalleryScreen() {
 
   const handleClearAll = () => {
     setSelectedFilter(null);
-    setFilteredData(allArtworks);
+    setFilteredData(allArtworks); // Reset to original artwork data
   };
 
   return (
@@ -50,8 +49,8 @@ export default function GalleryScreen() {
       </View>
       <Menu
         isVisible
-        onUploadPress={() => setIsFormVisible(true)}
-        onClearAll={handleClearAll}
+        onUploadPress={() => setIsSearchVisible(true)} // Trigger upload visibility
+        onClearAll={handleClearAll} // Pass the function for clearing all data
         onIncreaseTextSize={increaseTextSize}
         onEnableColorBlindFilter={toggleColorBlindFilter}
         allArtworks={allArtworks}
@@ -67,9 +66,11 @@ export default function GalleryScreen() {
         onSortDate={handleSortDate}
         onSearchPress={() => setIsSearchVisible(true)} // Toggle search visibility
       />
-      <UploadForm
-        visible={isFormVisible}
-        onClose={() => setIsFormVisible(false)}
+
+      {/* Render the Upload component */}
+      <Upload
+        visible={isSearchVisible}
+        onClose={() => setIsSearchVisible(false)}
       />
 
       {/* Render the Search component separately */}

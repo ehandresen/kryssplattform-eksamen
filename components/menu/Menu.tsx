@@ -1,20 +1,19 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { AntDesign, Entypo } from "@expo/vector-icons";
-import UploadBtn from "./upload/UploadBtn";
-import ClearAllBtn from "./ClearAllBtn";
+import Clear from "./Clear";
 import AccessibilityBtn from "./AccessibilityBtn";
 import Filter from "./Filter";
 import Sort from "./Sort";
+import Upload from "./Upload"; // Import the new Upload component
 
 type MenuProps = {
-  onUploadPress: () => void;
   onClearAll: () => void;
   onIncreaseTextSize: () => void;
   onEnableColorBlindFilter: () => void;
-  onSearchPress: () => void; // Add search press prop here
+  onSearchPress: () => void;
   isVisible: boolean;
-  allArtworks: any[]; // Replace with actual type if possible
+  allArtworks: any[];
   setFilteredData: React.Dispatch<React.SetStateAction<any[]>>;
   selectedFilter: string | null;
   setSelectedFilter: React.Dispatch<React.SetStateAction<string | null>>;
@@ -22,11 +21,10 @@ type MenuProps = {
 };
 
 export default function Menu({
-  onUploadPress,
   onClearAll,
   onIncreaseTextSize,
   onEnableColorBlindFilter,
-  onSearchPress, // Use search press prop
+  onSearchPress,
   isVisible,
   allArtworks,
   setFilteredData,
@@ -36,6 +34,7 @@ export default function Menu({
 }: MenuProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [isUploadVisible, setIsUploadVisible] = useState(false); // State for upload visibility
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const onFilterPress = () => setIsFilterVisible(true);
@@ -45,7 +44,6 @@ export default function Menu({
 
   return (
     <View style={styles.container}>
-      {/* Menu button to toggle open/close */}
       <TouchableOpacity
         onPress={toggleMenu}
         activeOpacity={0.7}
@@ -65,14 +63,10 @@ export default function Menu({
         </View>
       </TouchableOpacity>
 
-      {/* Menu options */}
       {isMenuOpen && (
         <>
-          <ClearAllBtn onPress={onClearAll} style={styles.clearAllButton} />
-          <TouchableOpacity
-            onPress={onSearchPress} // Trigger search visibility from GalleryScreen
-            style={styles.searchButton}
-          >
+          <Clear onClearAll={onClearAll} style={styles.clearAllButton} />
+          <TouchableOpacity onPress={onSearchPress} style={styles.searchButton}>
             <AntDesign name="search1" size={24} color="black" />
           </TouchableOpacity>
           <TouchableOpacity onPress={onFilterPress} style={styles.filterButton}>
@@ -88,11 +82,16 @@ export default function Menu({
             onEnableColorBlindFilter={onEnableColorBlindFilter}
             style={styles.accessibilityButton}
           />
-          <UploadBtn onPress={onUploadPress} style={styles.uploadButton} />
+          {/* Instead of UploadBtn, we now directly trigger the Upload component */}
+          <TouchableOpacity
+            onPress={() => setIsUploadVisible(true)}
+            style={styles.uploadButton}
+          >
+            <AntDesign name="plus" size={24} color="black" />
+          </TouchableOpacity>
         </>
       )}
 
-      {/* Render Filter component modal */}
       <Filter
         visible={isFilterVisible}
         onClose={closeFilter}
@@ -101,6 +100,12 @@ export default function Menu({
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
         hashtags={hashtags}
+      />
+
+      {/* Render the Upload component */}
+      <Upload
+        visible={isUploadVisible}
+        onClose={() => setIsUploadVisible(false)}
       />
     </View>
   );
