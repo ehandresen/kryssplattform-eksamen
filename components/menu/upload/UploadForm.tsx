@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -17,6 +17,8 @@ import ProceedBtn from "../../ProceedBtn";
 import CameraScreen from "@/components/CameraScreen";
 import { formatToEuropeanDate } from "@/utils/helpers";
 import { useAuth } from "@/hooks/useAuth";
+import { useExhibition } from "@/hooks/useExhibition";
+import { Picker } from "@react-native-picker/picker";
 
 type UploadFormProps = {
   visible: boolean;
@@ -30,8 +32,10 @@ const UploadForm = ({ visible, onClose }: UploadFormProps) => {
   const [image, setImage] = useState<string | null>(null);
   const [category, setCategory] = useState("");
   const [showCamera, setShowCamera] = useState(false);
+  const [selectedExhibition, setSelectedExhibition] = useState("");
 
   const { user } = useAuth();
+  const { exhibitions, isLoading } = useExhibition();
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync();
@@ -58,6 +62,7 @@ const UploadForm = ({ visible, onClose }: UploadFormProps) => {
       views: 0,
       likes: [],
       comments: [],
+      exhibitionId: selectedExhibition, // link artwork to chosen exhibition
     };
 
     await addArtworkToFirestore(artwork);
@@ -111,6 +116,7 @@ const UploadForm = ({ visible, onClose }: UploadFormProps) => {
 
             {/* Form Fields */}
             <View className="w-full space-y-4">
+              {/* title */}
               <View>
                 <Text className="text-lg font-semibold text-gray-700">
                   Title
@@ -124,6 +130,7 @@ const UploadForm = ({ visible, onClose }: UploadFormProps) => {
                 />
               </View>
 
+              {/* caption */}
               <View>
                 <Text className="text-lg font-semibold text-gray-700">
                   Caption
@@ -137,6 +144,7 @@ const UploadForm = ({ visible, onClose }: UploadFormProps) => {
                 />
               </View>
 
+              {/* description */}
               <View>
                 <Text className="text-lg font-semibold text-gray-700">
                   Description
@@ -152,6 +160,7 @@ const UploadForm = ({ visible, onClose }: UploadFormProps) => {
                 />
               </View>
 
+              {/* category */}
               <View>
                 <Text className="text-lg font-semibold text-gray-700">
                   Category
@@ -164,25 +173,47 @@ const UploadForm = ({ visible, onClose }: UploadFormProps) => {
                   placeholderTextColor="gray"
                 />
               </View>
+
+              {/* exhibition picker */}
+              <View className="w-full mb-4">
+                <Text className="text-lg font-semibold text-gray-700 mb-2">
+                  Select Exhibition
+                </Text>
+                <View className="border border-gray-300 rounded-lg overflow-hidden">
+                  <Picker
+                    selectedValue={selectedExhibition}
+                    onValueChange={(item) => setSelectedExhibition(item)}
+                    className="bg-white text-gray-700"
+                  >
+                    <Picker.Item label="Select an exhibition" value={null} />
+                    {exhibitions.map((exhibition) => (
+                      <Picker.Item
+                        key={exhibition.id}
+                        label={exhibition.title}
+                        value={exhibition.id}
+                      />
+                    ))}
+                  </Picker>
+                </View>
+              </View>
             </View>
 
             {/* Submit and Cancel Buttons */}
-            <View className="w-full mt-6 space-y-4">
-              {/* <ProceedBtn
-                title="Submit"
-                onPress={handleSubmit}
-                //className="w-full bg-blue-600 rounded-lg p-4 shadow-lg"
-              /> */}
+            <View className="w-full mt-6 space-y-4 flex-row justify-center space-x-4">
+              {/* Save Button */}
               <TouchableOpacity
                 onPress={handleSubmit}
-                className="w-full p-4 bg-blue-500 rounded shadow-lg mt-2"
+                className="p-4 bg-blue-500 rounded shadow-lg mt-2 mr-2 items-center wid"
+                style={{ width: 100 }}
               >
                 <Text className="text-center text-white font-bold">Save</Text>
               </TouchableOpacity>
+
+              {/* Cancel Button */}
               <TouchableOpacity
                 onPress={onClose}
-                className="w-full p-4 rounded shadow-lg mt-2"
-                style={{ backgroundColor: "gray" }}
+                className="p-4 rounded shadow-lg mt-2 items-center"
+                style={{ width: 100, backgroundColor: "gray" }}
               >
                 <Text className="text-center text-white font-bold">Cancel</Text>
               </TouchableOpacity>

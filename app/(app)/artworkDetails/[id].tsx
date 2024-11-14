@@ -14,7 +14,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Artwork } from "@/types/artwork";
 import * as artworkApi from "@/api/artworkApi";
 import * as commentApi from "@/api/commentApi";
-import * as exhibitionApi from "@/api/exhibitionApi";
+
 import { CommentObject } from "@/types/comment";
 import ArtworkCard from "@/components/ArtworkCard";
 import { useAuth } from "@/hooks/useAuth";
