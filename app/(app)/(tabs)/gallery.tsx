@@ -1,10 +1,9 @@
-// app/(app)/(tabs)/GalleryScreen.tsx
-import React, { useState, useEffect, useRef } from "react";
-import { View, StyleSheet, Keyboard, TextInput } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, Keyboard } from "react-native";
 import UploadForm from "../../../components/menu/upload/UploadForm";
 import ArtworkList from "../../../components/ArtworkList";
-import SearchBar from "../../../components/menu/search/SearchBar";
 import Menu from "../../../components/menu/Menu";
+import Search from "../../../components/menu/Search";
 import { getAllArtworks } from "@/api/artworkApi";
 import { Artwork } from "@/types/artwork";
 import { useTextSize } from "@/hooks/useTextSize";
@@ -12,16 +11,14 @@ import { useColorBlindFilter } from "@/context/colorBlindContext";
 import { sortAZ, sortDate } from "@/utils/functions/sort";
 
 export default function GalleryScreen() {
-  const { textSize, increaseTextSize, resetTextSize } = useTextSize();
+  const { textSize, increaseTextSize } = useTextSize();
   const { isColorBlindFilterEnabled, toggleColorBlindFilter } =
     useColorBlindFilter();
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [filteredData, setFilteredData] = useState<Artwork[]>([]);
   const [allArtworks, setAllArtworks] = useState<Artwork[]>([]);
-  const searchInputRef = useRef<TextInput>(null);
 
   useEffect(() => {
     const fetchArtworks = async () => {
@@ -31,25 +28,10 @@ export default function GalleryScreen() {
     };
 
     fetchArtworks();
-
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => setIsSearchVisible(false)
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => setIsSearchVisible(false)
-    );
-
-    return () => {
-      keyboardDidHideListener.remove();
-      keyboardDidShowListener.remove();
-    };
   }, []);
 
   const onSearchPress = () => {
     setIsSearchVisible(true);
-    searchInputRef.current?.focus();
   };
 
   const handleSortAZ = () => setFilteredData(sortAZ(filteredData));
@@ -90,11 +72,11 @@ export default function GalleryScreen() {
         onSortDate={handleSortDate}
       />
       {isSearchVisible && (
-        <SearchBar
-          searchQuery={searchQuery}
-          onSearch={setSearchQuery}
-          searchInputRef={searchInputRef}
-          textSize={textSize}
+        <Search
+          allArtworks={allArtworks}
+          setFilteredData={setFilteredData}
+          isSearchVisible={isSearchVisible}
+          setIsSearchVisible={setIsSearchVisible}
         />
       )}
       <UploadForm
@@ -111,7 +93,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   listContainer: {
-    flex: 1, // Allows ArtworkList to take up remaining space
+    flex: 1,
   },
   colorBlindMode: {
     backgroundColor: "#EFEFEF",
