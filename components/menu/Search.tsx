@@ -1,6 +1,12 @@
-// components/menu/Search.tsx
 import React, { useState, useRef, useEffect } from "react";
-import { View, TextInput, StyleSheet, Keyboard } from "react-native";
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import { Artwork } from "@/types/artwork";
 import { filterArtworksByQuery } from "@/utils/functions/search";
 
@@ -42,23 +48,36 @@ export default function Search({
   if (!isSearchVisible) return null;
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        ref={searchInputRef}
-        style={styles.searchInput}
-        placeholder="Search artworks..."
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        autoFocus
-      />
-    </View>
+    <KeyboardAvoidingView behavior="padding" style={styles.container}>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={styles.overlay}>
+          <TextInput
+            ref={searchInputRef}
+            style={styles.searchInput}
+            placeholder="Search artworks..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            autoFocus
+          />
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 16,
-    marginTop: 10, // Adjust margin as necessary to position above the keyboard
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderColor: "#ccc",
+    zIndex: 10,
+  },
+  overlay: {
+    width: "100%",
+    padding: 10,
   },
   searchInput: {
     height: 40,
@@ -67,5 +86,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     backgroundColor: "#fff",
+    width: "100%",
   },
 });

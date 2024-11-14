@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Keyboard } from "react-native";
+import { View, StyleSheet } from "react-native";
 import UploadForm from "../../../components/menu/upload/UploadForm";
 import ArtworkList from "../../../components/ArtworkList";
 import Menu from "../../../components/menu/Menu";
-import Search from "../../../components/menu/Search";
+import Search from "../../../components/menu/Search"; // Import Search here
 import { getAllArtworks } from "@/api/artworkApi";
 import { Artwork } from "@/types/artwork";
 import { useTextSize } from "@/hooks/useTextSize";
@@ -15,7 +15,7 @@ export default function GalleryScreen() {
   const { isColorBlindFilterEnabled, toggleColorBlindFilter } =
     useColorBlindFilter();
   const [isFormVisible, setIsFormVisible] = useState(false);
-  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [isSearchVisible, setIsSearchVisible] = useState(false); // Manage search visibility here
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [filteredData, setFilteredData] = useState<Artwork[]>([]);
   const [allArtworks, setAllArtworks] = useState<Artwork[]>([]);
@@ -29,10 +29,6 @@ export default function GalleryScreen() {
 
     fetchArtworks();
   }, []);
-
-  const onSearchPress = () => {
-    setIsSearchVisible(true);
-  };
 
   const handleSortAZ = () => setFilteredData(sortAZ(filteredData));
   const handleSortDate = () => setFilteredData(sortDate(filteredData));
@@ -53,9 +49,8 @@ export default function GalleryScreen() {
         <ArtworkList data={filteredData} textSize={textSize} />
       </View>
       <Menu
-        isVisible={!isSearchVisible}
+        isVisible
         onUploadPress={() => setIsFormVisible(true)}
-        onSearchPress={onSearchPress}
         onClearAll={handleClearAll}
         onIncreaseTextSize={increaseTextSize}
         onEnableColorBlindFilter={toggleColorBlindFilter}
@@ -70,7 +65,14 @@ export default function GalleryScreen() {
         )}
         onSortAZ={handleSortAZ}
         onSortDate={handleSortDate}
+        onSearchPress={() => setIsSearchVisible(true)} // Toggle search visibility
       />
+      <UploadForm
+        visible={isFormVisible}
+        onClose={() => setIsFormVisible(false)}
+      />
+
+      {/* Render the Search component separately */}
       {isSearchVisible && (
         <Search
           allArtworks={allArtworks}
@@ -79,10 +81,6 @@ export default function GalleryScreen() {
           setIsSearchVisible={setIsSearchVisible}
         />
       )}
-      <UploadForm
-        visible={isFormVisible}
-        onClose={() => setIsFormVisible(false)}
-      />
     </View>
   );
 }

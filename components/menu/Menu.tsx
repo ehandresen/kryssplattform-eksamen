@@ -1,20 +1,18 @@
-// components/menu/Menu.tsx
 import React, { useState } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { AntDesign, Entypo } from "@expo/vector-icons";
-import SearchBtn from "./search/SearchBtn";
 import UploadBtn from "./upload/UploadBtn";
 import ClearAllBtn from "./ClearAllBtn";
 import AccessibilityBtn from "./AccessibilityBtn";
 import Filter from "./Filter";
-import Sort from "./Sort"; // Updated to use Sort instead of SortBtn
+import Sort from "./Sort";
 
 type MenuProps = {
   onUploadPress: () => void;
-  onSearchPress: () => void;
   onClearAll: () => void;
   onIncreaseTextSize: () => void;
   onEnableColorBlindFilter: () => void;
+  onSearchPress: () => void; // Add search press prop here
   isVisible: boolean;
   allArtworks: any[]; // Replace with actual type if possible
   setFilteredData: React.Dispatch<React.SetStateAction<any[]>>;
@@ -25,10 +23,10 @@ type MenuProps = {
 
 export default function Menu({
   onUploadPress,
-  onSearchPress,
   onClearAll,
   onIncreaseTextSize,
   onEnableColorBlindFilter,
+  onSearchPress, // Use search press prop
   isVisible,
   allArtworks,
   setFilteredData,
@@ -40,7 +38,6 @@ export default function Menu({
   const [isFilterVisible, setIsFilterVisible] = useState(false);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
   const onFilterPress = () => setIsFilterVisible(true);
   const closeFilter = () => setIsFilterVisible(false);
 
@@ -68,11 +65,16 @@ export default function Menu({
         </View>
       </TouchableOpacity>
 
-      {/* Menu options with fixed positions and updated order */}
+      {/* Menu options */}
       {isMenuOpen && (
         <>
           <ClearAllBtn onPress={onClearAll} style={styles.clearAllButton} />
-          <SearchBtn onPress={onSearchPress} style={styles.searchButton} />
+          <TouchableOpacity
+            onPress={onSearchPress} // Trigger search visibility from GalleryScreen
+            style={styles.searchButton}
+          >
+            <AntDesign name="search1" size={24} color="black" />
+          </TouchableOpacity>
           <TouchableOpacity onPress={onFilterPress} style={styles.filterButton}>
             <AntDesign name="filter" size={24} color="black" />
           </TouchableOpacity>
@@ -132,7 +134,7 @@ const styles = StyleSheet.create({
   clearAllButton: {
     position: "absolute",
     bottom: 40,
-    right: 80, // Positioned to the left to avoid overlap
+    right: 80,
     backgroundColor: "#e0b3b3",
     paddingHorizontal: 15,
     paddingVertical: 10,
