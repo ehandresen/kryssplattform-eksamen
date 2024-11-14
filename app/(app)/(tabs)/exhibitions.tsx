@@ -1,4 +1,4 @@
-import { useExhibitions } from "@/hooks/useExhibitions";
+import { useExhibition } from "@/hooks/useExhibition";
 import { Exhibition } from "@/types/exhibition";
 import { Link, useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -11,7 +11,7 @@ import {
 } from "react-native";
 
 const ExhibitionScreen = () => {
-  const { exhibitions, isLoading } = useExhibitions();
+  const { exhibitions, isLoading } = useExhibition();
 
   if (isLoading) {
     return (

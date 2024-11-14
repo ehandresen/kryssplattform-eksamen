@@ -1,7 +1,7 @@
 import { ExhibitionContext } from "@/context/exhibitionContext";
 import { useContext } from "react";
 
-export const useExhibitions = () => {
+export const useExhibition = () => {
   const context = useContext(ExhibitionContext);
 
   if (!context) {

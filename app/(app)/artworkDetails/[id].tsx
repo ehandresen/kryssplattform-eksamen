@@ -9,7 +9,6 @@ import {
   Pressable,
   Alert,
   TouchableOpacity,
-  Button,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Artwork } from "@/types/artwork";
@@ -23,6 +22,7 @@ import { useTextSize } from "@/hooks/useTextSize"; // Import the text size hook
 import { FontAwesome } from "@expo/vector-icons";
 import { Exhibition } from "@/types/exhibition";
 import MapScreen from "../map";
+import { useExhibition } from "@/hooks/useExhibition";
 
 export default function ArtDetails() {
   const { textSize } = useTextSize(); // Access textSize from the context
@@ -37,11 +37,14 @@ export default function ArtDetails() {
   );
   const [isLiked, setIsLiked] = useState(false);
   const [numLikes, setNumLikes] = useState(0);
-  const [exhibition, setExhibition] = useState<Exhibition | null>(null);
+  const [exhibition, setExhibition] = useState<Exhibition | undefined>(
+    undefined
+  );
 
   const { id } = useLocalSearchParams();
-  const { session, user } = useAuth();
   const router = useRouter();
+  const { session, user } = useAuth();
+  const { getExhibitionById } = useExhibition();
 
   useEffect(() => {
     fetchArtworkFromFirebase();
@@ -59,28 +62,15 @@ export default function ArtDetails() {
 
         // fetch exhibition details if exhibitionId is present
         if (fetchedArtwork.exhibitionId) {
-          fetchExhibitionFromFirebase(fetchedArtwork.exhibitionId);
+          const fetchedExhibition = await getExhibitionById(
+            fetchedArtwork.exhibitionId
+          );
+          setExhibition(fetchedExhibition);
         }
       }
       setLoading(false);
     } catch (error) {
       console.log("error fetching artwork", error);
-    }
-  };
-
-  const fetchExhibitionFromFirebase = async (exhibitionId: string) => {
-    try {
-      const fetchedExhibition = await exhibitionApi.getExhibitionById(
-        exhibitionId
-      );
-
-      console.log("fetched exhibition:", fetchedExhibition);
-
-      if (fetchedExhibition) {
-        setExhibition(fetchedExhibition);
-      }
-    } catch (error) {
-      console.log("error fetching exhibition", error);
     }
   };
 

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
-import { getExhibitionById } from "@/api/exhibitionApi";
 import { Exhibition } from "@/types/exhibition";
 import { useLocalSearchParams } from "expo-router";
+import { useExhibition } from "@/hooks/useExhibition";
 
 const ExhibitionDetails = () => {
   const { id } = useLocalSearchParams();
@@ -11,20 +11,22 @@ const ExhibitionDetails = () => {
   );
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchExhibition = async () => {
-      try {
-        const data = await getExhibitionById(id as string);
-        setExhibition(data);
-      } catch (error) {
-        console.log("Error fetching exhibition:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { getExhibitionById } = useExhibition();
 
+  useEffect(() => {
     fetchExhibition();
   }, [id]);
+
+  const fetchExhibition = async () => {
+    try {
+      const fetchedExhibition = await getExhibitionById(id as string);
+      setExhibition(fetchedExhibition);
+    } catch (error) {
+      console.log("Error fetching exhibition:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
