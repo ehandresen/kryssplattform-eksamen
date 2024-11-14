@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { AntDesign, Entypo } from "@expo/vector-icons";
 import Clear from "./Clear";
-import AccessibilityBtn from "./AccessibilityBtn";
+import Accessibility from "./Accessibility";
 import Filter from "./Filter";
 import Sort from "./Sort";
 import Upload from "./Upload"; // Import the new Upload component
@@ -77,12 +77,11 @@ export default function Menu({
             setFilteredData={setFilteredData}
             style={styles.sortButton}
           />
-          <AccessibilityBtn
+          <Accessibility
             onIncreaseTextSize={onIncreaseTextSize}
             onEnableColorBlindFilter={onEnableColorBlindFilter}
             style={styles.accessibilityButton}
           />
-          {/* Instead of UploadBtn, we now directly trigger the Upload component */}
           <TouchableOpacity
             onPress={() => setIsUploadVisible(true)}
             style={styles.uploadButton}

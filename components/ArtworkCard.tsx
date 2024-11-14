@@ -1,6 +1,8 @@
 import React from "react";
 import { View, Text, Image, Pressable, StyleSheet } from "react-native";
 import { Artwork } from "../types/artwork";
+import { Colors } from "../constants/colors"; // Import the colors from constants/colors.ts
+import { useColorBlindFilter } from "@/hooks/useColorBlindFilter"; // Import the context
 
 interface ArtworkCardProps {
   artwork: Artwork;
@@ -17,8 +19,15 @@ export default function ArtworkCard({
   toggleLike,
   textSize,
 }: ArtworkCardProps) {
+  const { currentColors } = useColorBlindFilter(); // Access the color-blind friendly colors
+
   return (
-    <View style={styles.cardContainer}>
+    <View
+      style={[
+        styles.cardContainer,
+        { backgroundColor: currentColors.primary || Colors.primary }, // Use color-blind mode or fallback to default color
+      ]}
+    >
       <Image
         source={{ uri: artwork.imageUrl }}
         style={styles.image}
@@ -26,17 +35,49 @@ export default function ArtworkCard({
         defaultSource={require("../assets/placeholder.png")} // Placeholder
       />
 
-      <Text style={[styles.title, { fontSize: textSize }]}>
+      <Text
+        style={[
+          styles.title,
+          {
+            fontSize: textSize,
+            color: currentColors.secondary || Colors.secondary,
+          }, // Apply dynamic text color
+        ]}
+      >
         {artwork.title}
       </Text>
-      <Text style={[styles.artist, { fontSize: textSize - 2 }]}>
+      <Text
+        style={[
+          styles.artist,
+          {
+            fontSize: textSize - 2,
+            color: currentColors.secondary || Colors.secondary,
+          }, // Apply dynamic text color
+        ]}
+      >
         by {artwork.artistId}
       </Text>
-      <Text style={[styles.description, { fontSize: textSize - 4 }]}>
+      <Text
+        style={[
+          styles.description,
+          {
+            fontSize: textSize - 4,
+            color: currentColors.secondary || Colors.secondary,
+          }, // Apply dynamic text color
+        ]}
+      >
         {artwork.description}
       </Text>
 
-      <Text style={[styles.likes, { fontSize: textSize - 4 }]}>
+      <Text
+        style={[
+          styles.likes,
+          {
+            fontSize: textSize - 4,
+            color: currentColors.secondary || Colors.secondary,
+          }, // Apply dynamic text color
+        ]}
+      >
         {numLikes} {numLikes === 1 ? "like" : "likes"}
       </Text>
 
@@ -44,7 +85,9 @@ export default function ArtworkCard({
         <Text
           style={{
             fontSize: textSize - 2,
-            color: isLiked ? "blue" : "gray",
+            color: isLiked
+              ? currentColors.primary || Colors.primary
+              : currentColors.secondary || Colors.secondary, // Adjust like button color
           }}
         >
           {isLiked ? "Unlike" : "Like"}
@@ -57,7 +100,6 @@ export default function ArtworkCard({
 const styles = StyleSheet.create({
   cardContainer: {
     padding: 16,
-    backgroundColor: "green",
     borderRadius: 8,
     shadowOpacity: 0.2,
     marginBottom: 16,
@@ -71,17 +113,22 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "bold",
     marginBottom: 8,
+    flexWrap: "wrap", // Ensures text wraps
+    width: "100%", // Ensures text fits within container width
   },
   artist: {
-    color: "#555",
     marginBottom: 8,
+    flexWrap: "wrap", // Ensures text wraps
+    width: "100%", // Ensures text fits within container width
   },
   description: {
-    color: "#333",
+    flexWrap: "wrap", // Ensures text wraps
+    width: "100%", // Ensures text fits within container width
   },
   likes: {
-    color: "#333",
     marginTop: 8,
+    flexWrap: "wrap", // Ensures text wraps
+    width: "100%", // Ensures text fits within container width
   },
   likeButton: {
     marginTop: 10,

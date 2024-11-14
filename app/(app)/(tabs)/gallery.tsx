@@ -6,14 +6,13 @@ import Search from "../../../components/menu/Search"; // Import Search here
 import { getAllArtworks } from "@/api/artworkApi";
 import { Artwork } from "@/types/artwork";
 import { useTextSize } from "@/hooks/useTextSize";
-import { useColorBlindFilter } from "@/context/colorBlindContext";
+import { useColorBlindFilter } from "@/hooks/useColorBlindFilter";
 import { sortAZ, sortDate } from "@/utils/functions/sort";
 import Upload from "../../../components/menu/Upload"; // Import the new Upload component
 
 export default function GalleryScreen() {
   const { textSize, increaseTextSize } = useTextSize();
-  const { isColorBlindFilterEnabled, toggleColorBlindFilter } =
-    useColorBlindFilter();
+  const { currentColors, toggleColorBlindFilter } = useColorBlindFilter(); // Use currentColors here
   const [isSearchVisible, setIsSearchVisible] = useState(false); // Manage search visibility here
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [filteredData, setFilteredData] = useState<Artwork[]>([]);
@@ -41,7 +40,7 @@ export default function GalleryScreen() {
     <View
       style={[
         styles.container,
-        isColorBlindFilterEnabled && styles.colorBlindMode,
+        { backgroundColor: currentColors.background }, // Use dynamic background color
       ]}
     >
       <View style={styles.listContainer}>
@@ -52,7 +51,7 @@ export default function GalleryScreen() {
         onUploadPress={() => setIsSearchVisible(true)} // Trigger upload visibility
         onClearAll={handleClearAll} // Pass the function for clearing all data
         onIncreaseTextSize={increaseTextSize}
-        onEnableColorBlindFilter={toggleColorBlindFilter}
+        onEnableColorBlindFilter={toggleColorBlindFilter} // Toggle color-blind filter
         allArtworks={allArtworks}
         setFilteredData={setFilteredData}
         selectedFilter={selectedFilter}
@@ -89,12 +88,8 @@ export default function GalleryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   listContainer: {
     flex: 1,
-  },
-  colorBlindMode: {
-    backgroundColor: "#EFEFEF",
   },
 });

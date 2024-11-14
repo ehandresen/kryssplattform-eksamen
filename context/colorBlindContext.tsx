@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
+import { Colors } from "../constants/colors"; // Import Colors from constants/colors.ts
 
 type ColorBlindContextType = {
   isColorBlindFilterEnabled: boolean;
   toggleColorBlindFilter: () => void;
+  currentColors: typeof Colors.normal | typeof Colors.colorBlind; // The colors based on the mode
 };
 
 export const ColorBlindContext = createContext<
@@ -17,21 +19,22 @@ export const ColorBlindProvider = ({ children }: { children: ReactNode }) => {
     setIsColorBlindFilterEnabled((prev) => !prev);
   };
 
+  // Determine current color set based on the filter state
+  const currentColors = isColorBlindFilterEnabled
+    ? Colors.colorBlind
+    : Colors.normal;
+
   return (
     <ColorBlindContext.Provider
-      value={{ isColorBlindFilterEnabled, toggleColorBlindFilter }}
+      value={{
+        isColorBlindFilterEnabled,
+        toggleColorBlindFilter,
+        currentColors,
+      }}
     >
       {children}
     </ColorBlindContext.Provider>
   );
 };
 
-export const useColorBlindFilter = () => {
-  const context = useContext(ColorBlindContext);
-  if (!context) {
-    throw new Error(
-      "useColorBlindFilter must be used within a ColorBlindProvider"
-    );
-  }
-  return context;
-};
+export default ColorBlindContext;
