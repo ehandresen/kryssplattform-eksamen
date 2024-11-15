@@ -79,7 +79,6 @@ export default function ArtworkList({ data, textSize }: ArtworkListProps) {
       contentContainerStyle={{
         paddingHorizontal: 8,
         paddingBottom: 16,
-        backgroundColor: "red",
       }}
     />
   );

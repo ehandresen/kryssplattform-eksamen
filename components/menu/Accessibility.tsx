@@ -1,4 +1,4 @@
-// components/AccessibilityBtn.tsx
+// components/Accessibility.tsx
 import React, { useState } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import {
@@ -9,17 +9,19 @@ import {
   ViewStyle,
 } from "react-native";
 
-type AccessibilityBtnProps = {
+type AccessibilitnProps = {
   onIncreaseTextSize: () => void;
   onEnableColorBlindFilter: () => void;
+  isTextSizeIncreased: boolean; // Track if the text size has been increased
   style?: ViewStyle;
 };
 
-const AccessibilityBtn = ({
+const Accessibility = ({
   onIncreaseTextSize,
   onEnableColorBlindFilter,
+  isTextSizeIncreased,
   style,
-}: AccessibilityBtnProps) => {
+}: AccessibilitnProps) => {
   const [isAccessibilityOptionsVisible, setIsAccessibilityOptionsVisible] =
     useState(false);
 
@@ -45,7 +47,9 @@ const AccessibilityBtn = ({
             }}
             style={styles.optionButton}
           >
-            <Text style={styles.optionText}>Increase Text Size</Text>
+            <Text style={styles.optionText}>
+              {isTextSizeIncreased ? "Reset Text Size" : "Increase Text Size"}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={onEnableColorBlindFilter}
@@ -96,4 +100,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AccessibilityBtn;
+export default Accessibility;

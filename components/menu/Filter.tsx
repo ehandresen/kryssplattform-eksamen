@@ -1,3 +1,4 @@
+// components/menu/Filter.tsx
 import React from "react";
 import {
   View,
@@ -7,42 +8,64 @@ import {
   Modal,
   ScrollView,
 } from "react-native";
+import { applyFilter, clearFilter } from "@/utils/functions/filter";
+import { Artwork } from "@/types/artwork";
 
-type FilterListProps = {
+type FilterProps = {
   visible: boolean;
   onClose: () => void;
-  onSelect: (filter: string) => void;
+  allArtworks: Artwork[];
+  setFilteredData: React.Dispatch<React.SetStateAction<Artwork[]>>;
+  selectedFilter: string | null;
+  setSelectedFilter: React.Dispatch<React.SetStateAction<string | null>>;
   hashtags: string[];
 };
 
-const FilterList = ({
+const Filter = ({
   visible,
   onClose,
-  onSelect,
+  allArtworks,
+  setFilteredData,
+  selectedFilter,
+  setSelectedFilter,
   hashtags,
-}: FilterListProps) => {
+}: FilterProps) => {
+  const handleApplyFilter = (filter: string | null) => {
+    setFilteredData(applyFilter(allArtworks, filter));
+    setSelectedFilter(filter);
+    onClose();
+  };
+
+  const handleClearFilter = () => {
+    setFilteredData(clearFilter(allArtworks));
+    setSelectedFilter(null);
+    onClose();
+  };
+
   return (
     <Modal animationType="slide" transparent={true} visible={visible}>
       <View style={styles.overlay}>
         <View style={styles.listContainer}>
-          <Text style={styles.title}>Velg en kategori</Text>
-
-          {/* Liste over kategorier */}
+          <Text style={styles.title}>Select a Category</Text>
           <ScrollView style={styles.scrollView}>
             {hashtags.map((hashtag) => (
               <TouchableOpacity
                 key={hashtag}
-                onPress={() => onSelect(hashtag)}
+                onPress={() => handleApplyFilter(hashtag)}
                 style={styles.hashtagButton}
               >
                 <Text style={styles.hashtagText}>{hashtag}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
-
-          {/* Lukk-knapp */}
+          <TouchableOpacity
+            onPress={handleClearFilter}
+            style={styles.clearButton}
+          >
+            <Text style={styles.clearButtonText}>Clear Filter</Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Avbryt</Text>
+            <Text style={styles.closeButtonText}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -85,10 +108,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
   },
-  closeButton: {
+  clearButton: {
     marginTop: 10,
     padding: 10,
     backgroundColor: "red",
+    borderRadius: 5,
+  },
+  clearButtonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  closeButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: "grey",
     borderRadius: 5,
   },
   closeButtonText: {
@@ -97,4 +130,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FilterList;
+export default Filter;

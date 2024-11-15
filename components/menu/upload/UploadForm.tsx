@@ -13,7 +13,6 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { Artwork } from "@/types/artwork";
 import { addArtworkToFirestore } from "@/api/artworkApi";
-import ProceedBtn from "../../ProceedBtn";
 import CameraScreen from "@/components/CameraScreen";
 import { formatToEuropeanDate } from "@/utils/helpers";
 import { useAuth } from "@/hooks/useAuth";

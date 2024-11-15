@@ -1,27 +1,31 @@
-// components/SortBtn.tsx
+// components/menu/Sort.tsx
 import React, { useState } from "react";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-
 import {
-  TouchableOpacity,
   View,
+  TouchableOpacity,
   Text,
   StyleSheet,
   ViewStyle,
 } from "react-native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { sortAZ, sortDate } from "@/utils/functions/sort";
+import { Artwork } from "@/types/artwork";
 
-type SortBtnProps = {
-  onSortAZ: () => void;
-  onSortDate: () => void;
+type SortProps = {
+  filteredData: Artwork[];
+  setFilteredData: React.Dispatch<React.SetStateAction<Artwork[]>>;
   style?: ViewStyle;
 };
 
-const SortBtn = ({ onSortAZ, onSortDate, style }: SortBtnProps) => {
+const Sort = ({ filteredData, setFilteredData, style }: SortProps) => {
   const [isSortOptionsVisible, setIsSortOptionsVisible] = useState(false);
 
   const toggleSortOptions = () => {
     setIsSortOptionsVisible(!isSortOptionsVisible);
   };
+
+  const handleSortAZ = () => setFilteredData(sortAZ(filteredData));
+  const handleSortDate = () => setFilteredData(sortDate(filteredData));
 
   return (
     <View style={[styles.container, style]}>
@@ -31,10 +35,13 @@ const SortBtn = ({ onSortAZ, onSortDate, style }: SortBtnProps) => {
 
       {isSortOptionsVisible && (
         <View style={styles.optionsContainer}>
-          <TouchableOpacity onPress={onSortAZ} style={styles.optionButton}>
+          <TouchableOpacity onPress={handleSortAZ} style={styles.optionButton}>
             <Text style={styles.optionText}>A-Z</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={onSortDate} style={styles.optionButton}>
+          <TouchableOpacity
+            onPress={handleSortDate}
+            style={styles.optionButton}
+          >
             <Text style={styles.optionText}>Date</Text>
           </TouchableOpacity>
         </View>
@@ -60,14 +67,9 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 5,
   },
-  text: {
-    color: "black",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
   optionsContainer: {
     position: "absolute",
-    left: -100, // Adjust this to control positioning of the options
+    right: 70,
     alignItems: "center",
   },
   optionButton: {
@@ -85,4 +87,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SortBtn;
+export default Sort;

@@ -1,10 +1,11 @@
-// contexts/textSizeContext.tsx
 import React, { createContext, useContext, useState, ReactNode } from "react";
+import { TextSize } from "../constants/textSize"; // Import the text sizes from constants/textSize.ts
 
 type TextSizeContextType = {
   textSize: number;
   increaseTextSize: () => void;
   resetTextSize: () => void;
+  isTextSizeIncreased: boolean;
 };
 
 const TextSizeContext = createContext<TextSizeContextType | undefined>(
@@ -12,19 +13,27 @@ const TextSizeContext = createContext<TextSizeContextType | undefined>(
 );
 
 export const TextSizeProvider = ({ children }: { children: ReactNode }) => {
-  const [textSize, setTextSize] = useState(16); // Default text size
+  const [textSize, setTextSize] = useState(TextSize.normal); // Default to normal text size
+  const [isTextSizeIncreased, setIsTextSizeIncreased] = useState(false); // Boolean to track increased state
 
   const increaseTextSize = () => {
-    setTextSize((prevSize) => Math.min(prevSize + 2, 24)); // Increase by 2 up to a max of 24
+    if (!isTextSizeIncreased) {
+      setTextSize(TextSize.increased); // Increase to the increased text size
+      setIsTextSizeIncreased(true); // Set the state to indicate text size is increased
+    } else {
+      setTextSize(TextSize.normal); // Reset to the normal size
+      setIsTextSizeIncreased(false); // Set the state to indicate text size is normal
+    }
   };
 
   const resetTextSize = () => {
-    setTextSize(16); // Reset to default size
+    setTextSize(TextSize.normal); // Reset to normal size
+    setIsTextSizeIncreased(false); // Reset the increase state
   };
 
   return (
     <TextSizeContext.Provider
-      value={{ textSize, increaseTextSize, resetTextSize }}
+      value={{ textSize, increaseTextSize, resetTextSize, isTextSizeIncreased }}
     >
       {children}
     </TextSizeContext.Provider>

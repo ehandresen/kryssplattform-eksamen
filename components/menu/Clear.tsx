@@ -1,18 +1,15 @@
-// components/FilterBtn.tsx
-
 import React from "react";
-import { TouchableOpacity, StyleSheet, ViewStyle } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
+import { TouchableOpacity, StyleSheet, Text, ViewStyle } from "react-native";
 
-type FilterBtnProps = {
-  onPress: () => void;
+type ClearProps = {
+  onClearAll: () => void;
   style?: ViewStyle;
 };
 
-const FilterBtn = ({ onPress, style }: FilterBtnProps) => {
+const Clear = ({ onClearAll, style }: ClearProps) => {
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.button, style]}>
-      <AntDesign name="filter" size={24} color="black" />
+    <TouchableOpacity onPress={onClearAll} style={[styles.button, style]}>
+      <Text style={styles.buttonText}>Clear All</Text>
     </TouchableOpacity>
   );
 };
@@ -22,7 +19,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 20,
     backgroundColor: "#e0b3b3",
-    width: 60,
+    width: 100,
     height: 60,
     borderRadius: 30,
     alignItems: "center",
@@ -33,6 +30,11 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 5,
   },
+  buttonText: {
+    color: "black",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });
 
-export default FilterBtn;
+export default Clear;
