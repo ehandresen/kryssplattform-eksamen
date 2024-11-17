@@ -5,7 +5,6 @@ import Clear from "./Clear";
 import Accessibility from "./Accessibility";
 import Filter from "./Filter";
 import Sort from "./Sort";
-import Upload from "./Upload";
 
 type MenuProps = {
   onClearAll: () => void;

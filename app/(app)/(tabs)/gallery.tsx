@@ -5,14 +5,13 @@ import Menu from "../../../components/menu/Menu";
 import Search from "../../../components/menu/Search";
 import { getAllArtworks } from "@/api/artworkApi";
 import { Artwork } from "@/types/artwork";
-import { useTextSize } from "@/hooks/useTextSize";
-import { useColorBlindFilter } from "@/hooks/useColorBlindFilter";
+import { useAccessibility } from "@/hooks/useAccessibility"; // Unified accessibility hook
 import { sortAZ, sortDate } from "@/utils/functions/sort";
 import Upload from "../../../components/menu/Upload";
 
 export default function GalleryScreen() {
-  const { textSize, increaseTextSize } = useTextSize();
-  const { currentColors, toggleColorBlindFilter } = useColorBlindFilter();
+  const { textSize, currentColors, toggleColorBlindFilter, increaseTextSize } =
+    useAccessibility();
   const [isSearchVisible, setIsSearchVisible] = useState(false); // Separate state for Search
   const [isUploadVisible, setIsUploadVisible] = useState(false); // Separate state for Upload
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
