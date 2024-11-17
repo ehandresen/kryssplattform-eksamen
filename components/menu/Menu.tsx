@@ -5,13 +5,14 @@ import Clear from "./Clear";
 import Accessibility from "./Accessibility";
 import Filter from "./Filter";
 import Sort from "./Sort";
-import Upload from "./Upload"; // Import the new Upload component
+import Upload from "./Upload";
 
 type MenuProps = {
   onClearAll: () => void;
   onIncreaseTextSize: () => void;
   onEnableColorBlindFilter: () => void;
   onSearchPress: () => void;
+  onUploadPress: () => void; // New prop for upload press
   isVisible: boolean;
   allArtworks: any[];
   setFilteredData: React.Dispatch<React.SetStateAction<any[]>>;
@@ -25,6 +26,7 @@ export default function Menu({
   onIncreaseTextSize,
   onEnableColorBlindFilter,
   onSearchPress,
+  onUploadPress, // Destructure the new prop
   isVisible,
   allArtworks,
   setFilteredData,
@@ -34,7 +36,6 @@ export default function Menu({
 }: MenuProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
-  const [isUploadVisible, setIsUploadVisible] = useState(false); // State for upload visibility
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const onFilterPress = () => setIsFilterVisible(true);
@@ -83,7 +84,7 @@ export default function Menu({
             style={styles.accessibilityButton}
           />
           <TouchableOpacity
-            onPress={() => setIsUploadVisible(true)}
+            onPress={onUploadPress} // Use the new prop for Upload
             style={styles.uploadButton}
           >
             <AntDesign name="plus" size={24} color="black" />
@@ -99,12 +100,6 @@ export default function Menu({
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
         hashtags={hashtags}
-      />
-
-      {/* Render the Upload component */}
-      <Upload
-        visible={isUploadVisible}
-        onClose={() => setIsUploadVisible(false)}
       />
     </View>
   );
