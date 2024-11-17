@@ -15,7 +15,7 @@ import { Artwork } from "@/types/artwork";
 import { addArtworkToFirestore } from "@/api/artworkApi"; // Assuming this function handles Firestore interaction
 import { useAuth } from "@/hooks/useAuth"; // Assuming this gives user authentication data
 import { formatToEuropeanDate } from "@/utils/helpers"; // Assuming this formats date
-import { useExhibitions } from "@/hooks/useExhibitions"; // Use the custom hook for fetching exhibitions
+import { useExhibition } from "@/hooks/useExhibition"; // Use the custom hook for fetching exhibitions
 import { Picker } from "@react-native-picker/picker"; // Correct import for Picker
 
 type UploadProps = {
@@ -33,7 +33,7 @@ const Upload = ({ visible, onClose }: UploadProps) => {
   const [exhibitionId, setExhibitionId] = useState<string | null>(null); // State for exhibition ID selection
 
   const { user } = useAuth();
-  const { exhibitions, isLoading } = useExhibitions(); // Use the hook to get exhibitions
+  const { exhibitions, isLoading } = useExhibition(); // Use the hook to get exhibitions
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync();

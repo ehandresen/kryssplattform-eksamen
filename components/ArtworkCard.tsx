@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Image, Pressable, StyleSheet } from "react-native";
 import { Artwork } from "../types/artwork";
 import { Colors } from "../constants/colors"; // Import the colors from constants/colors.ts
 import { useColorBlindFilter } from "@/hooks/useColorBlindFilter"; // Import the context
+import { getArtistById } from "@/api/artistApi"; // Import API to fetch artist details
 
 interface ArtworkCardProps {
   artwork: Artwork;
@@ -20,6 +21,25 @@ export default function ArtworkCard({
   textSize,
 }: ArtworkCardProps) {
   const { currentColors } = useColorBlindFilter(); // Access the color-blind friendly colors
+  const [artistName, setArtistName] = useState<string>("");
+
+  useEffect(() => {
+    const fetchArtistName = async () => {
+      if (artwork.artistId) {
+        try {
+          const artist = await getArtistById(artwork.artistId);
+          setArtistName(artist?.displayName || "Unknown Artist");
+        } catch (error) {
+          console.error("Error fetching artist name:", error);
+          setArtistName("Unknown Artist");
+        }
+      } else {
+        setArtistName("Unknown Artist");
+      }
+    };
+
+    fetchArtistName();
+  }, [artwork.artistId]);
 
   return (
     <View
@@ -55,7 +75,7 @@ export default function ArtworkCard({
           }, // Apply dynamic text color
         ]}
       >
-        by {artwork.artistId}
+        by {artistName}
       </Text>
       <Text
         style={[

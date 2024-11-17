@@ -17,6 +17,8 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
 } from "firebase/auth";
+import { updateDoc, doc } from "firebase/firestore";
+import { db } from "@/firebaseConfig";
 
 export default function ProfileScreen() {
   const { user, reloadUser } = useAuth();
@@ -25,6 +27,21 @@ export default function ProfileScreen() {
   const [isEditing, setIsEditing] = useState(false);
   const [password, setPassword] = useState(""); // Password for re-authentication
   const [isPasswordModalVisible, setPasswordModalVisible] = useState(false); // Modal visibility
+
+  const updateArtistInFirestore = async () => {
+    try {
+      if (user?.uid) {
+        const artistRef = doc(db, "artists", user.uid);
+        await updateDoc(artistRef, {
+          displayName,
+          email,
+        });
+        console.log("Artist document updated successfully.");
+      }
+    } catch (error) {
+      console.error("Error updating artist document:", error);
+    }
+  };
 
   const handleSaveChanges = async () => {
     try {
@@ -38,6 +55,10 @@ export default function ProfileScreen() {
           if (displayName !== user.displayName) {
             await updateProfile(user, { displayName });
           }
+
+          // Update Firestore artist document
+          await updateArtistInFirestore();
+
           Alert.alert("Success", "Profile updated successfully!");
           await reloadUser();
           setIsEditing(false);
@@ -58,6 +79,10 @@ export default function ProfileScreen() {
 
         // Proceed with email update after re-authentication
         await updateEmail(user, email);
+
+        // Update Firestore artist document
+        await updateArtistInFirestore();
+
         Alert.alert("Success", "Your email has been updated successfully!");
 
         // Reload user data to reflect changes in context

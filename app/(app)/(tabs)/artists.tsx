@@ -1,14 +1,32 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
-import Header from "../../../components/header/Header";
+import ArtistList from "../../../components/ArtistList";
+import { getAllArtists } from "@/api/artistApi";
+import { Artist } from "@/types/artist";
 
 export default function ArtistsScreen() {
-  return <View style={styles.container}></View>;
+  const [artists, setArtists] = useState<Artist[]>([]);
+
+  useEffect(() => {
+    const fetchArtists = async () => {
+      const artistData = await getAllArtists();
+      setArtists(artistData);
+    };
+
+    fetchArtists();
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <ArtistList artists={artists} />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    padding: 16,
   },
 });
