@@ -81,6 +81,7 @@ export default function Menu({
             onIncreaseTextSize={onIncreaseTextSize}
             onEnableColorBlindFilter={onEnableColorBlindFilter}
             style={styles.accessibilityButton}
+            isTextSizeIncreased={false}
           />
           <TouchableOpacity
             onPress={onUploadPress} // Use the new prop for Upload

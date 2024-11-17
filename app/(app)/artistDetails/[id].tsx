@@ -5,9 +5,12 @@ import { getArtistById } from "@/api/artistApi"; // API to fetch artist details
 import { getAllArtworks } from "@/api/artworkApi"; // API to fetch artworks
 import ArtistCard from "@/components/ArtistCard"; // Reuse ArtistCard for the artist details
 import ArtworkList from "@/components/ArtworkList"; // Reuse ArtworkList for the artworks
+import { useAccessibility } from "@/hooks/useAccessibility"; // Unified accessibility hook
 
 export default function ArtistDetails() {
   const { id } = useLocalSearchParams(); // Get artist ID from route params
+  const { textSize, currentColors, toggleColorBlindFilter, increaseTextSize } =
+    useAccessibility();
   const [artist, setArtist] = useState<{
     id: string;
     displayName: string;

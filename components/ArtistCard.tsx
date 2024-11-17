@@ -10,9 +10,14 @@ interface ArtistCardProps {
     bio?: string;
   };
   onPress: () => void;
+  textSize: number; // Add textSize prop
 }
 
-export default function ArtistCard({ artist, onPress }: ArtistCardProps) {
+export default function ArtistCard({
+  artist,
+  onPress,
+  textSize,
+}: ArtistCardProps) {
   return (
     <Pressable onPress={onPress} style={styles.cardContainer}>
       <Image
@@ -21,9 +26,38 @@ export default function ArtistCard({ artist, onPress }: ArtistCardProps) {
         }}
         style={styles.image}
       />
-      <Text style={styles.name}>{artist.displayName}</Text>
-      <Text style={styles.email}>{artist.email}</Text>
-      {artist.bio && <Text style={styles.bio}>{artist.bio}</Text>}
+      <Text
+        style={[
+          styles.name,
+          {
+            fontSize: textSize, // Apply textSize
+          },
+        ]}
+      >
+        {artist.displayName}
+      </Text>
+      <Text
+        style={[
+          styles.email,
+          {
+            fontSize: textSize - 2, // Slightly smaller than display name
+          },
+        ]}
+      >
+        {artist.email}
+      </Text>
+      {artist.bio && (
+        <Text
+          style={[
+            styles.bio,
+            {
+              fontSize: textSize - 4, // Slightly smaller for bio
+            },
+          ]}
+        >
+          {artist.bio}
+        </Text>
+      )}
     </Pressable>
   );
 }
@@ -47,17 +81,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   name: {
-    fontSize: 18,
     fontWeight: "bold",
     marginBottom: 4,
   },
   email: {
-    fontSize: 14,
     color: "gray",
     marginBottom: 4,
   },
   bio: {
-    fontSize: 12,
     color: "#666",
     textAlign: "center",
   },
