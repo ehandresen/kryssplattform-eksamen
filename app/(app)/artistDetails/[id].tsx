@@ -9,8 +9,7 @@ import { useAccessibility } from "@/hooks/useAccessibility"; // Unified accessib
 
 export default function ArtistDetails() {
   const { id } = useLocalSearchParams(); // Get artist ID from route params
-  const { textSize, currentColors, toggleColorBlindFilter, increaseTextSize } =
-    useAccessibility();
+  const { textSize, currentColors } = useAccessibility(); // Accessibility hook
   const [artist, setArtist] = useState<{
     id: string;
     displayName: string;
@@ -21,12 +20,20 @@ export default function ArtistDetails() {
 
   const [artworks, setArtworks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchArtistAndArtworks = async () => {
       try {
         // Fetch artist details
         const artistData = await getArtistById(id as string);
+
+        if (!artistData) {
+          setError("Artist not found.");
+          setLoading(false);
+          return;
+        }
+
         setArtist(artistData);
 
         // Fetch all artworks and filter by the artist's ID
@@ -34,11 +41,12 @@ export default function ArtistDetails() {
         const filteredArtworks = allArtworks.filter(
           (artwork) => artwork.artistId === id
         );
-        setArtworks(filteredArtworks);
 
+        setArtworks(filteredArtworks);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching artist or artworks:", error);
+        setError("An error occurred while fetching data.");
         setLoading(false);
       }
     };
@@ -49,7 +57,17 @@ export default function ArtistDetails() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color={currentColors.secondary} />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text style={[styles.errorText, { color: currentColors.error }]}>
+          {error}
+        </Text>
       </View>
     );
   }
@@ -74,14 +92,20 @@ export default function ArtistDetails() {
           bio: artist.bio, // Include bio here
         }}
         onPress={() => {}} // No action needed for pressing in details view
+        textSize={16}
       />
 
       {/* Display Artwork List */}
       <View style={styles.artworksContainer}>
-        <Text style={styles.sectionTitle}>
+        <Text
+          style={[
+            styles.sectionTitle,
+            { color: currentColors.primary, fontSize: textSize },
+          ]}
+        >
           Artworks by {artist.displayName}
         </Text>
-        <ArtworkList data={artworks} textSize={16} />
+        <ArtworkList data={artworks} textSize={textSize} />
       </View>
     </View>
   );
@@ -100,7 +124,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 18,
-    color: "red",
     textAlign: "center",
   },
   artworksContainer: {

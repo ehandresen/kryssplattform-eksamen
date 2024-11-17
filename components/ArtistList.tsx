@@ -11,6 +11,9 @@ interface ArtistListProps {
 export default function ArtistList({ artists }: ArtistListProps) {
   const router = useRouter();
 
+  // Debugging: Log the artists array to ensure correct data is passed
+  console.log("ArtistList received artists:", artists);
+
   return (
     <FlatList
       data={artists}
@@ -19,6 +22,7 @@ export default function ArtistList({ artists }: ArtistListProps) {
         <ArtistCard
           artist={item}
           onPress={() => router.push(`/artistDetails/${item.id}`)}
+          textSize={16} // Set a reasonable default text size
         />
       )}
       contentContainerStyle={styles.listContainer}

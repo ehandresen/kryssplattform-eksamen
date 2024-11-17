@@ -16,9 +16,22 @@ export default function ArtistsScreen() {
 
   useEffect(() => {
     const fetchArtists = async () => {
-      const artistData = await getAllArtists();
-      setAllArtists(artistData);
-      setFilteredArtists(artistData);
+      try {
+        const artistData = await getAllArtists();
+
+        // Debugging: Log fetched artist data
+        console.log("Fetched artists:", artistData);
+
+        // Validate data structure
+        if (Array.isArray(artistData)) {
+          setAllArtists(artistData);
+          setFilteredArtists(artistData);
+        } else {
+          console.error("Unexpected data format:", artistData);
+        }
+      } catch (error) {
+        console.error("Error fetching artists:", error);
+      }
     };
 
     fetchArtists();
@@ -35,7 +48,7 @@ export default function ArtistsScreen() {
     const results = allArtists.filter(
       (artist) =>
         artist.displayName.toLowerCase().includes(query.toLowerCase()) ||
-        artist.bio?.toLowerCase().includes(query.toLowerCase()) // Include bio in search
+        artist.bio?.toLowerCase().includes(query.toLowerCase())
     );
     setFilteredArtists(results);
   };
@@ -49,24 +62,27 @@ export default function ArtistsScreen() {
     <View
       style={[styles.container, { backgroundColor: currentColors.background }]}
     >
+      {/* Artist List */}
       <View style={styles.listContainer}>
         <ArtistList artists={filteredArtists} textSize={textSize} />
       </View>
+
+      {/* Menu */}
       <Menu
-        isVisible
-        onSearchPress={() => setIsSearchVisible(true)} // Trigger Search visibility
+        isVisible={isSearchVisible}
+        onSearchPress={() => setIsSearchVisible(true)}
         onClearAll={handleClearAll}
         onIncreaseTextSize={increaseTextSize}
         onEnableColorBlindFilter={toggleColorBlindFilter}
-        allArtworks={allArtists} // Pass artists as "allArtworks"
+        allArtworks={allArtists} // Reuse for consistency
         setFilteredData={setFilteredArtists}
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
         hashtags={Array.from(
-          new Set(allArtists.map((artist) => artist.bio).filter(Boolean)) // Extract unique bio terms for filtering
+          new Set(allArtists.map((artist) => artist.bio).filter(Boolean)) // Unique bios as hashtags
         )}
         onSortAZ={handleSortAZ}
-        onSortDate={() => {}} // Optional: Implement date sorting for artists if applicable
+        onSortDate={() => {}} // Placeholder for date sorting if needed
       />
     </View>
   );

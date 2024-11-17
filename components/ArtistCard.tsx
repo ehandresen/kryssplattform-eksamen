@@ -4,8 +4,8 @@ import { View, Text, Image, Pressable, StyleSheet } from "react-native";
 interface ArtistCardProps {
   artist: {
     id: string;
-    displayName: string;
-    email: string;
+    displayName?: string; // Optional to avoid crashing if missing
+    email?: string;
     profileImageUrl?: string;
     bio?: string;
   };
@@ -18,46 +18,28 @@ export default function ArtistCard({
   onPress,
   textSize,
 }: ArtistCardProps) {
+  // Debugging: Log the artist data
+  console.log("ArtistCard received data:", artist);
+
   return (
     <Pressable onPress={onPress} style={styles.cardContainer}>
+      {/* Profile Image */}
       <Image
         source={{
           uri: artist.profileImageUrl || "https://via.placeholder.com/150",
         }}
         style={styles.image}
       />
-      <Text
-        style={[
-          styles.name,
-          {
-            fontSize: textSize, // Apply textSize
-          },
-        ]}
-      >
-        {artist.displayName}
+
+      {/* Display Name */}
+      <Text style={[styles.name, { fontSize: textSize }]}>
+        {artist.displayName || "Unknown Artist"}
       </Text>
-      <Text
-        style={[
-          styles.email,
-          {
-            fontSize: textSize - 2, // Slightly smaller than display name
-          },
-        ]}
-      >
-        {artist.email}
+
+      {/* Bio */}
+      <Text style={[styles.bio, { fontSize: textSize - 2 }]}>
+        {artist.bio || "No bio available."}
       </Text>
-      {artist.bio && (
-        <Text
-          style={[
-            styles.bio,
-            {
-              fontSize: textSize - 4, // Slightly smaller for bio
-            },
-          ]}
-        >
-          {artist.bio}
-        </Text>
-      )}
     </Pressable>
   );
 }
@@ -82,11 +64,9 @@ const styles = StyleSheet.create({
   },
   name: {
     fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 4,
-  },
-  email: {
-    color: "gray",
-    marginBottom: 4,
+    color: "#333",
   },
   bio: {
     color: "#666",
