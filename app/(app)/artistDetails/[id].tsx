@@ -68,6 +68,7 @@ export default function ArtistDetails() {
           displayName: artist.displayName,
           email: artist.email,
           profileImageUrl: artist.profileImageUrl,
+          bio: artist.bio, // Include bio here
         }}
         onPress={() => {}} // No action needed for pressing in details view
       />

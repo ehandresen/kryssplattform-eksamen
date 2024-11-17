@@ -1,32 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
   Button,
-  Alert,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
   Modal,
 } from "react-native";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  updateProfile,
-  updateEmail,
-  EmailAuthProvider,
-  reauthenticateWithCredential,
-} from "firebase/auth";
-import { updateDoc, doc } from "firebase/firestore";
+import { updateDoc, doc, getDoc } from "firebase/firestore";
+import * as ImagePicker from "expo-image-picker";
 import { db } from "@/firebaseConfig";
+import CameraScreen from "@/components/CameraScreen";
+import { uploadImageToFirebase } from "@/api/imageApi";
 
 export default function ProfileScreen() {
   const { user, reloadUser } = useAuth();
-  const [displayName, setDisplayName] = useState(user?.displayName || "");
-  const [email, setEmail] = useState(user?.email || "");
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [bio, setBio] = useState("");
+  const [profileImageUrl, setProfileImageUrl] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [password, setPassword] = useState(""); // Password for re-authentication
-  const [isPasswordModalVisible, setPasswordModalVisible] = useState(false); // Modal visibility
+  const [showCamera, setShowCamera] = useState(false);
+
+  useEffect(() => {
+    const fetchArtistData = async () => {
+      if (user?.uid) {
+        try {
+          const artistRef = doc(db, "artists", user.uid);
+          const artistDoc = await getDoc(artistRef);
+
+          if (artistDoc.exists()) {
+            const data = artistDoc.data();
+            setDisplayName(data.displayName || "");
+            setEmail(data.email || "");
+            setBio(data.bio || "");
+            setProfileImageUrl(
+              data.profileImageUrl || "https://via.placeholder.com/150"
+            );
+          }
+        } catch (error) {
+          console.error("Error fetching artist data:", error);
+        }
+      }
+    };
+
+    fetchArtistData();
+  }, [user]);
 
   const updateArtistInFirestore = async () => {
     try {
@@ -35,6 +57,8 @@ export default function ProfileScreen() {
         await updateDoc(artistRef, {
           displayName,
           email,
+          bio,
+          profileImageUrl,
         });
         console.log("Artist document updated successfully.");
       }
@@ -43,74 +67,72 @@ export default function ProfileScreen() {
     }
   };
 
-  const handleSaveChanges = async () => {
+  const handleCameraCapture = async (imageUri: string) => {
     try {
-      if (user) {
-        // Check if the email has been changed
-        if (email !== user.email) {
-          // Show modal to prompt for password
-          setPasswordModalVisible(true);
-        } else {
-          // Update display name if only that has changed
-          if (displayName !== user.displayName) {
-            await updateProfile(user, { displayName });
-          }
+      const downloadUrl = await uploadImageToFirebase(imageUri);
+      setProfileImageUrl(downloadUrl);
 
-          // Update Firestore artist document
-          await updateArtistInFirestore();
-
-          Alert.alert("Success", "Profile updated successfully!");
-          await reloadUser();
-          setIsEditing(false);
-        }
+      if (user?.uid) {
+        const artistRef = doc(db, "artists", user.uid);
+        await updateDoc(artistRef, { profileImageUrl: downloadUrl });
       }
+
+      setShowCamera(false);
     } catch (error) {
-      Alert.alert("Error", "Failed to update profile information");
-      console.error("Profile update error:", error);
+      console.error("Error capturing or uploading image:", error);
     }
   };
 
-  const handlePasswordSubmit = async () => {
+  const pickImageFromGallery = async () => {
     try {
-      if (user && user.email && password) {
-        // Re-authenticate the user
-        const credential = EmailAuthProvider.credential(user.email, password);
-        await reauthenticateWithCredential(user, credential);
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1,
+      });
 
-        // Proceed with email update after re-authentication
-        await updateEmail(user, email);
+      if (!result.canceled) {
+        const uri = result.assets[0].uri;
+        const downloadUrl = await uploadImageToFirebase(uri);
+        setProfileImageUrl(downloadUrl);
 
-        // Update Firestore artist document
-        await updateArtistInFirestore();
-
-        Alert.alert("Success", "Your email has been updated successfully!");
-
-        // Reload user data to reflect changes in context
-        await reloadUser();
-        setIsEditing(false);
-      } else {
-        Alert.alert("Error", "Password is required to update the email.");
+        if (user?.uid) {
+          const artistRef = doc(db, "artists", user.uid);
+          await updateDoc(artistRef, { profileImageUrl: downloadUrl });
+        }
       }
     } catch (error) {
-      Alert.alert("Error", "Re-authentication failed. Please try again.");
-      console.error("Re-authentication error:", error);
-    } finally {
-      setPassword(""); // Clear password after submitting
-      setPasswordModalVisible(false); // Hide modal
+      console.error("Error picking or uploading image:", error);
     }
   };
 
   return (
     <View style={styles.container}>
-      {/* Profile Picture */}
-      <Image
-        source={{ uri: "https://via.placeholder.com/150" }}
-        style={styles.profileImage}
-      />
+      <View style={{ position: "relative" }}>
+        <Image
+          source={{ uri: profileImageUrl || "https://via.placeholder.com/150" }}
+          style={styles.profileImage}
+        />
+        {isEditing && (
+          <>
+            <TouchableOpacity
+              style={[styles.editIcon, { right: 10 }]}
+              onPress={() => setShowCamera(true)}
+            >
+              <Text style={{ color: "#fff", fontSize: 12 }}>Camera</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.editIcon, { left: 10 }]}
+              onPress={pickImageFromGallery}
+            >
+              <Text style={{ color: "#fff", fontSize: 12 }}>Upload</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
 
-      {/* Editable User Info */}
       {isEditing ? (
-        <>
+        <View>
           <TextInput
             style={styles.input}
             placeholder="Display Name"
@@ -124,47 +146,34 @@ export default function ProfileScreen() {
             onChangeText={setEmail}
             keyboardType="email-address"
           />
-          <Button title="Save Changes" onPress={handleSaveChanges} />
+          <TextInput
+            style={styles.input}
+            placeholder="Bio"
+            value={bio}
+            onChangeText={setBio}
+          />
+          <Button title="Save Changes" onPress={updateArtistInFirestore} />
           <Button title="Cancel" onPress={() => setIsEditing(false)} />
-        </>
+        </View>
       ) : (
-        <>
+        <View>
           <Text style={styles.name}>{displayName}</Text>
           <Text style={styles.email}>{email}</Text>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setIsEditing(true)}
-          >
-            <Text style={styles.buttonText}>Edit Profile</Text>
+          <Text style={styles.bio}>{bio}</Text>
+          <TouchableOpacity onPress={() => setIsEditing(true)}>
+            <Text>Edit Profile</Text>
           </TouchableOpacity>
-        </>
+        </View>
       )}
 
-      {/* Password Modal */}
-      <Modal
-        visible={isPasswordModalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setPasswordModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Enter Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-            <Button title="Submit" onPress={handlePasswordSubmit} />
-            <Button
-              title="Cancel"
-              onPress={() => setPasswordModalVisible(false)}
-            />
-          </View>
-        </View>
-      </Modal>
+      {showCamera && (
+        <Modal visible={showCamera} animationType="slide">
+          <CameraScreen
+            onCapture={handleCameraCapture}
+            onClose={() => setShowCamera(false)}
+          />
+        </Modal>
+      )}
     </View>
   );
 }
@@ -174,23 +183,19 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     backgroundColor: "#fff",
-    paddingHorizontal: 20,
+    padding: 20,
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 20,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
   },
-  name: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  email: {
-    fontSize: 16,
-    color: "#888",
-    marginBottom: 20,
+  editIcon: {
+    position: "absolute",
+    bottom: 5,
+    backgroundColor: "#000",
+    padding: 5,
+    borderRadius: 5,
   },
   input: {
     width: "80%",
@@ -200,36 +205,5 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
     fontSize: 16,
-  },
-  button: {
-    width: "80%",
-    padding: 15,
-    borderRadius: 8,
-    backgroundColor: "#0096C7",
-    alignItems: "center",
-    marginVertical: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    width: "80%",
-    padding: 20,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 15,
   },
 });

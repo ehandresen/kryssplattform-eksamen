@@ -7,8 +7,9 @@ interface ArtistCardProps {
     displayName: string;
     email: string;
     profileImageUrl?: string;
+    bio?: string;
   };
-  onPress: () => void; // Callback for when the card is pressed
+  onPress: () => void;
 }
 
 export default function ArtistCard({ artist, onPress }: ArtistCardProps) {
@@ -22,6 +23,7 @@ export default function ArtistCard({ artist, onPress }: ArtistCardProps) {
       />
       <Text style={styles.name}>{artist.displayName}</Text>
       <Text style={styles.email}>{artist.email}</Text>
+      {artist.bio && <Text style={styles.bio}>{artist.bio}</Text>}
     </Pressable>
   );
 }
@@ -52,5 +54,11 @@ const styles = StyleSheet.create({
   email: {
     fontSize: 14,
     color: "gray",
+    marginBottom: 4,
+  },
+  bio: {
+    fontSize: 12,
+    color: "#666",
+    textAlign: "center",
   },
 });
