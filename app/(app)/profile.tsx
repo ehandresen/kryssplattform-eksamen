@@ -17,15 +17,16 @@ import CameraScreen from "@/components/CameraScreen";
 import { uploadImageToFirebase } from "@/api/imageApi";
 
 export default function ProfileScreen() {
-  const { user, reloadUser } = useAuth();
-  const [displayName, setDisplayName] = useState("");
-  const [email, setEmail] = useState("");
-  const [bio, setBio] = useState("");
-  const [profileImageUrl, setProfileImageUrl] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
-  const [showCamera, setShowCamera] = useState(false);
+  const { user, reloadUser } = useAuth(); // Henter innlogget brukerdata og funksjon for å oppdatere bruker
+  const [displayName, setDisplayName] = useState(""); // Navn på brukeren
+  const [email, setEmail] = useState(""); // E-post for brukeren
+  const [bio, setBio] = useState(""); // Bio for brukeren
+  const [profileImageUrl, setProfileImageUrl] = useState(""); // URL for profilbilde
+  const [isEditing, setIsEditing] = useState(false); // Indikerer om brukeren redigerer profilen
+  const [showCamera, setShowCamera] = useState(false); // Indikerer om kameraet vises
 
   useEffect(() => {
+    // Henter data for innlogget bruker fra Firestore
     const fetchArtistData = async () => {
       if (user?.uid) {
         try {
@@ -42,7 +43,7 @@ export default function ProfileScreen() {
             );
           }
         } catch (error) {
-          console.error("Error fetching artist data:", error);
+          console.error("Feil ved henting av artistdata:", error); // Feilhåndtering
         }
       }
     };
@@ -50,6 +51,7 @@ export default function ProfileScreen() {
     fetchArtistData();
   }, [user]);
 
+  // Oppdaterer artistdata i Firestore
   const updateArtistInFirestore = async () => {
     try {
       if (user?.uid) {
@@ -60,13 +62,15 @@ export default function ProfileScreen() {
           bio,
           profileImageUrl,
         });
-        console.log("Artist document updated successfully.");
+        console.log("Artistdata oppdatert i Firestore."); // Debugging
+        setIsEditing(false); // Avslutt redigeringsmodus
       }
     } catch (error) {
-      console.error("Error updating artist document:", error);
+      console.error("Feil ved oppdatering av artistdata:", error); // Feilhåndtering
     }
   };
 
+  // Håndterer bilde fra kamera
   const handleCameraCapture = async (imageUri: string) => {
     try {
       const downloadUrl = await uploadImageToFirebase(imageUri);
@@ -79,10 +83,11 @@ export default function ProfileScreen() {
 
       setShowCamera(false);
     } catch (error) {
-      console.error("Error capturing or uploading image:", error);
+      console.error("Feil ved lagring av bilde:", error); // Feilhåndtering
     }
   };
 
+  // Håndterer bildevalg fra galleriet
   const pickImageFromGallery = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -102,12 +107,13 @@ export default function ProfileScreen() {
         }
       }
     } catch (error) {
-      console.error("Error picking or uploading image:", error);
+      console.error("Feil ved bildeopplasting:", error); // Feilhåndtering
     }
   };
 
   return (
     <View style={styles.container}>
+      {/* Profilbilde med redigeringsalternativer */}
       <View style={{ position: "relative" }}>
         <Image
           source={{ uri: profileImageUrl || "https://via.placeholder.com/150" }}
@@ -119,29 +125,30 @@ export default function ProfileScreen() {
               style={[styles.editIcon, { right: 10 }]}
               onPress={() => setShowCamera(true)}
             >
-              <Text style={{ color: "#fff", fontSize: 12 }}>Camera</Text>
+              <Text style={{ color: "#fff", fontSize: 12 }}>Kamera</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.editIcon, { left: 10 }]}
               onPress={pickImageFromGallery}
             >
-              <Text style={{ color: "#fff", fontSize: 12 }}>Upload</Text>
+              <Text style={{ color: "#fff", fontSize: 12 }}>Last opp</Text>
             </TouchableOpacity>
           </>
         )}
       </View>
 
+      {/* Profilredigering eller visning */}
       {isEditing ? (
         <View>
           <TextInput
             style={styles.input}
-            placeholder="Display Name"
+            placeholder="Navn"
             value={displayName}
             onChangeText={setDisplayName}
           />
           <TextInput
             style={styles.input}
-            placeholder="Email"
+            placeholder="E-post"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -152,8 +159,8 @@ export default function ProfileScreen() {
             value={bio}
             onChangeText={setBio}
           />
-          <Button title="Save Changes" onPress={updateArtistInFirestore} />
-          <Button title="Cancel" onPress={() => setIsEditing(false)} />
+          <Button title="Lagre endringer" onPress={updateArtistInFirestore} />
+          <Button title="Avbryt" onPress={() => setIsEditing(false)} />
         </View>
       ) : (
         <View>
@@ -161,11 +168,12 @@ export default function ProfileScreen() {
           <Text style={styles.email}>{email}</Text>
           <Text style={styles.bio}>{bio}</Text>
           <TouchableOpacity onPress={() => setIsEditing(true)}>
-            <Text>Edit Profile</Text>
+            <Text>Rediger profil</Text>
           </TouchableOpacity>
         </View>
       )}
 
+      {/* Kamera-modus */}
       {showCamera && (
         <Modal visible={showCamera} animationType="slide">
           <CameraScreen
@@ -205,5 +213,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
     fontSize: 16,
+  },
+  name: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  email: {
+    fontSize: 16,
+    color: "#666",
+  },
+  bio: {
+    fontSize: 14,
+    color: "#999",
   },
 });

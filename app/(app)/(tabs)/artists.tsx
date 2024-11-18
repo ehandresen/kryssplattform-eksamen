@@ -6,83 +6,138 @@ import { getAllArtists } from "@/api/artistApi";
 import { Artist } from "@/types/artist";
 import { useAccessibility } from "@/hooks/useAccessibility";
 
+/**
+ * ArtistsScreen håndterer visning av en liste over artister med muligheter for
+ * søk, sortering og tilgjengelighetsinnstillinger (tekststørrelse og fargefilter).
+ */
 export default function ArtistsScreen() {
+  // Tilgjengelighetsinnstillinger hentes fra en tilpasset hook
   const { textSize, currentColors, toggleColorBlindFilter, increaseTextSize } =
     useAccessibility();
-  const [isSearchVisible, setIsSearchVisible] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
-  const [filteredArtists, setFilteredArtists] = useState<Artist[]>([]);
-  const [allArtists, setAllArtists] = useState<Artist[]>([]);
 
+  // State-variabler for å håndtere visning av artister, filtrering og søk
+  const [isSearchVisible, setIsSearchVisible] = useState(false); // Styrer søkemenyens synlighet
+  const [selectedFilter, setSelectedFilter] = useState<string | null>(null); // Holder valgt filter
+  const [filteredArtists, setFilteredArtists] = useState<Artist[]>([]); // Filtrert liste over artister
+  const [allArtists, setAllArtists] = useState<Artist[]>([]); // Full liste over alle artister
+
+  /**
+   * useEffect henter artistdata fra Firestore ved hjelp av `getAllArtists` når
+   * komponenten laster inn for første gang.
+   */
   useEffect(() => {
     const fetchArtists = async () => {
       try {
+        // Henter artistdata fra API
         const artistData = await getAllArtists();
 
-        // Debugging: Log fetched artist data
+        // Debugging: Logger hentede data
         console.log("Fetched artists:", artistData);
 
-        // Validate data structure
+        // Validerer at dataene er en liste og oppdaterer state
         if (Array.isArray(artistData)) {
-          setAllArtists(artistData);
-          setFilteredArtists(artistData);
+          const validatedArtists = artistData.map((artist) => ({
+            ...artist,
+            id: artist.id || "unknown-id", // Sikrer at alle artister har en ID
+          }));
+          setAllArtists(validatedArtists);
+          setFilteredArtists(validatedArtists); // Setter standardvisning
         } else {
-          console.error("Unexpected data format:", artistData);
+          console.error("Uventet datastruktur:", artistData); // Logger feilen hvis formatet er feil
         }
       } catch (error) {
-        console.error("Error fetching artists:", error);
+        // Feilhåndtering for API-kall
+        if (error instanceof Error) {
+          console.error("Feil ved henting av artister:", error.message);
+        } else {
+          console.error("Ukjent feil ved henting av artister:", error);
+        }
       }
     };
 
-    fetchArtists();
+    fetchArtists(); // Utfører datainnhentingen
   }, []);
 
+  /**
+   * Sorterer artistene alfabetisk basert på `displayName` (A-Å).
+   */
   const handleSortAZ = () => {
-    const sorted = [...filteredArtists].sort((a, b) =>
-      a.displayName.localeCompare(b.displayName)
-    );
-    setFilteredArtists(sorted);
+    try {
+      const sorted = [...filteredArtists].sort((a, b) =>
+        a.displayName.localeCompare(b.displayName)
+      );
+      setFilteredArtists(sorted);
+      console.log("Artists sorted A-Z:", sorted); // Debugging
+    } catch (error) {
+      console.error("Feil ved sortering:", error);
+    }
   };
 
+  /**
+   * Søker etter artister basert på søkestrengen i `displayName` eller `bio`.
+   * @param query Søketeksten som brukeren har skrevet inn.
+   */
   const handleSearch = (query: string) => {
-    const results = allArtists.filter(
-      (artist) =>
-        artist.displayName.toLowerCase().includes(query.toLowerCase()) ||
-        artist.bio?.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredArtists(results);
+    try {
+      const results = allArtists.filter(
+        (artist) =>
+          artist.displayName.toLowerCase().includes(query.toLowerCase()) ||
+          artist.bio?.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredArtists(results);
+      console.log("Search results:", results); // Debugging
+    } catch (error) {
+      console.error("Feil ved søk:", error);
+    }
   };
 
+  /**
+   * Tilbakestiller filtreringen og viser hele listen over artister.
+   */
   const handleClearAll = () => {
-    setSelectedFilter(null);
-    setFilteredArtists(allArtists);
+    try {
+      setSelectedFilter(null);
+      setFilteredArtists(allArtists);
+      console.log("Filtrering tilbakestilt."); // Debugging
+    } catch (error) {
+      console.error("Feil ved tilbakestilling av filtrering:", error);
+    }
   };
 
   return (
     <View
       style={[styles.container, { backgroundColor: currentColors.background }]}
     >
-      {/* Artist List */}
+      {/* Viser den filtrerte listen over artister */}
       <View style={styles.listContainer}>
         <ArtistList artists={filteredArtists} textSize={textSize} />
       </View>
 
-      {/* Menu */}
+      {/* Meny for søk, sortering og tilgjengelighetsinnstillinger */}
       <Menu
         isVisible={isSearchVisible}
         onSearchPress={() => setIsSearchVisible(true)}
         onClearAll={handleClearAll}
         onIncreaseTextSize={increaseTextSize}
         onEnableColorBlindFilter={toggleColorBlindFilter}
-        allArtworks={allArtists} // Reuse for consistency
+        allArtworks={allArtists}
         setFilteredData={setFilteredArtists}
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
         hashtags={Array.from(
-          new Set(allArtists.map((artist) => artist.bio).filter(Boolean)) // Unique bios as hashtags
+          new Set(
+            allArtists
+              .map((artist) => artist.bio)
+              .filter((bio): bio is string => !!bio)
+          )
         )}
-        onSortAZ={handleSortAZ}
-        onSortDate={() => {}} // Placeholder for date sorting if needed
+        onSortAZ={handleSortAZ} // Passer onSortAZ her
+        onUploadPress={function (): void {
+          throw new Error("Function not implemented.");
+        }}
+        onSortDate={function (): void {
+          throw new Error("Function not implemented.");
+        }}
       />
     </View>
   );
@@ -90,10 +145,10 @@ export default function ArtistsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 16,
+    flex: 1, // Fyller hele skjermen
+    padding: 16, // Innvendig marg
   },
   listContainer: {
-    flex: 1,
+    flex: 1, // Fyller tilgjengelig plass
   },
 });

@@ -9,44 +9,94 @@ import { useAccessibility } from "@/hooks/useAccessibility"; // Unified accessib
 import { sortAZ, sortDate } from "@/utils/functions/sort";
 import Upload from "../../../components/menu/Upload";
 
+/**
+ * GalleryScreen viser en liste med kunstverk og gir brukeren funksjoner som
+ * søk, sortering og opplasting. Skjermen er optimalisert med tilgjengelighetsfunksjoner.
+ */
 export default function GalleryScreen() {
+  // Tilgjengelighetsinnstillinger fra en tilpasset hook
   const { textSize, currentColors, toggleColorBlindFilter, increaseTextSize } =
     useAccessibility();
-  const [isSearchVisible, setIsSearchVisible] = useState(false); // Separate state for Search
-  const [isUploadVisible, setIsUploadVisible] = useState(false); // Separate state for Upload
-  const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
-  const [filteredData, setFilteredData] = useState<Artwork[]>([]);
-  const [allArtworks, setAllArtworks] = useState<Artwork[]>([]);
 
+  // State for å håndtere visning og filtrering
+  const [isSearchVisible, setIsSearchVisible] = useState(false); // Søkemodus
+  const [isUploadVisible, setIsUploadVisible] = useState(false); // Opplastingsmodus
+  const [selectedFilter, setSelectedFilter] = useState<string | null>(null); // Valgt filter
+  const [filteredData, setFilteredData] = useState<Artwork[]>([]); // Filtrert kunstverkliste
+  const [allArtworks, setAllArtworks] = useState<Artwork[]>([]); // Full kunstverkliste
+
+  /**
+   * Henter alle kunstverk fra Firestore ved hjelp av `getAllArtworks` når
+   * komponenten laster inn første gang.
+   */
   useEffect(() => {
     const fetchArtworks = async () => {
-      const artworks = await getAllArtworks();
-      setAllArtworks(artworks);
-      setFilteredData(artworks);
+      try {
+        const artworks = await getAllArtworks();
+        console.log("Fetched artworks:", artworks); // Debugging
+        setAllArtworks(artworks);
+        setFilteredData(artworks); // Standardvisning
+      } catch (error) {
+        console.error("Feil ved henting av kunstverk:", error); // Feilhåndtering
+      }
     };
 
     fetchArtworks();
   }, []);
 
-  const handleSortAZ = () => setFilteredData(sortAZ(filteredData));
-  const handleSortDate = () => setFilteredData(sortDate(filteredData));
+  /**
+   * Sorterer kunstverk alfabetisk basert på tittel (A-Å).
+   */
+  const handleSortAZ = () => {
+    try {
+      const sorted = sortAZ(filteredData);
+      setFilteredData(sorted);
+      console.log("Sorted artworks A-Z:", sorted); // Debugging
+    } catch (error) {
+      console.error("Feil ved alfabetisk sortering:", error);
+    }
+  };
 
+  /**
+   * Sorterer kunstverk basert på dato.
+   */
+  const handleSortDate = () => {
+    try {
+      const sorted = sortDate(filteredData);
+      setFilteredData(sorted);
+      console.log("Sorted artworks by date:", sorted); // Debugging
+    } catch (error) {
+      console.error("Feil ved dato-sortering:", error);
+    }
+  };
+
+  /**
+   * Tilbakestiller filtreringen og viser hele listen med kunstverk.
+   */
   const handleClearAll = () => {
-    setSelectedFilter(null);
-    setFilteredData(allArtworks);
+    try {
+      setSelectedFilter(null);
+      setFilteredData(allArtworks);
+      console.log("Filtrering tilbakestilt."); // Debugging
+    } catch (error) {
+      console.error("Feil ved tilbakestilling av filtrering:", error);
+    }
   };
 
   return (
     <View
       style={[styles.container, { backgroundColor: currentColors.background }]}
     >
+      {/* Viser listen over filtrerte kunstverk */}
       <View style={styles.listContainer}>
         <ArtworkList data={filteredData} textSize={textSize} />
       </View>
+
+      {/* Meny for søk, sortering, opplasting og tilgjengelighetsfunksjoner */}
       <Menu
         isVisible
-        onSearchPress={() => setIsSearchVisible(true)} // Trigger Search visibility
-        onUploadPress={() => setIsUploadVisible(true)} // Trigger Upload visibility
+        onSearchPress={() => setIsSearchVisible(true)}
+        onUploadPress={() => setIsUploadVisible(true)}
         onClearAll={handleClearAll}
         onIncreaseTextSize={increaseTextSize}
         onEnableColorBlindFilter={toggleColorBlindFilter}
@@ -56,14 +106,16 @@ export default function GalleryScreen() {
         setSelectedFilter={setSelectedFilter}
         hashtags={Array.from(
           new Set(
-            allArtworks.map((artwork) => artwork.category).filter(Boolean)
+            allArtworks
+              .map((artwork) => artwork.category || "") // Bytter undefined med en tom streng
+              .filter((category) => category !== "") // Fjerner tomme strenger
           )
         )}
         onSortAZ={handleSortAZ}
         onSortDate={handleSortDate}
       />
 
-      {/* Render the Upload component */}
+      {/* Komponent for opplasting av kunstverk */}
       {isUploadVisible && (
         <Upload
           visible={isUploadVisible}
@@ -71,7 +123,7 @@ export default function GalleryScreen() {
         />
       )}
 
-      {/* Render the Search component */}
+      {/* Komponent for søk etter kunstverk */}
       {isSearchVisible && (
         <Search
           allArtworks={allArtworks}

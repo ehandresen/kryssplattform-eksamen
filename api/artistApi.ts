@@ -14,7 +14,7 @@ export const ARTISTS_COLLECTION = "artists";
 
 // Definerer en "type" for artistdata
 export interface Artist {
-  id?: string; // ID for dokumentet i Firestore (valgfritt for nye oppføringer)
+  id: string; // ID for dokumentet i Firestore (valgfritt for nye oppføringer)
   displayName: string; // Brukernavn for artisten
   email: string; // E-postadresse for artisten
   profileImageUrl?: string; // Valgfritt: URL til profilbildet

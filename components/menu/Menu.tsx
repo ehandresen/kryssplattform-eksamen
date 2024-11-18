@@ -11,13 +11,15 @@ type MenuProps = {
   onIncreaseTextSize: () => void;
   onEnableColorBlindFilter: () => void;
   onSearchPress: () => void;
-  onUploadPress: () => void; // New prop for upload press
+  onUploadPress: () => void;
   isVisible: boolean;
   allArtworks: any[];
   setFilteredData: React.Dispatch<React.SetStateAction<any[]>>;
   selectedFilter: string | null;
   setSelectedFilter: React.Dispatch<React.SetStateAction<string | null>>;
   hashtags: string[];
+  onSortAZ: () => void; // Legger til sortering A-Z
+  onSortDate: () => void; // Legger til dato-sortering
 };
 
 export default function Menu({
@@ -25,13 +27,15 @@ export default function Menu({
   onIncreaseTextSize,
   onEnableColorBlindFilter,
   onSearchPress,
-  onUploadPress, // Destructure the new prop
+  onUploadPress,
   isVisible,
   allArtworks,
   setFilteredData,
   selectedFilter,
   setSelectedFilter,
   hashtags,
+  onSortAZ,
+  onSortDate, // Legger til destructuring for onSortDate
 }: MenuProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
@@ -83,11 +87,15 @@ export default function Menu({
             style={styles.accessibilityButton}
             isTextSizeIncreased={false}
           />
-          <TouchableOpacity
-            onPress={onUploadPress} // Use the new prop for Upload
-            style={styles.uploadButton}
-          >
+          <TouchableOpacity onPress={onUploadPress} style={styles.uploadButton}>
             <AntDesign name="plus" size={24} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onSortAZ} style={styles.sortButton}>
+            <AntDesign name="sort-alpha-asc" size={24} color="black" />
+          </TouchableOpacity>
+          {/* Ny knapp for dato-sortering */}
+          <TouchableOpacity onPress={onSortDate} style={styles.sortButton}>
+            <AntDesign name="calendar" size={24} color="black" />
           </TouchableOpacity>
         </>
       )}
