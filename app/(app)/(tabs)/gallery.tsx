@@ -2,11 +2,9 @@ import React, { useState, useEffect } from "react";
 import { View } from "react-native";
 import ArtworkList from "../../../components/ArtworkList";
 import Menu from "@/components/menu/Menu";
-import Search from "../../../components/menu/Search";
 import { getAllArtworks } from "@/api/artworkApi";
 import { Artwork } from "@/types/artwork";
 import { useAccessibility } from "@/hooks/useAccessibility"; // Unified accessibility hook
-import Upload from "../../../components/menu/Upload";
 
 /**
  * GalleryScreen viser en liste med kunstverk og gir brukeren funksjoner som
@@ -43,46 +41,33 @@ export default function GalleryScreen() {
     fetchArtworks();
   }, []);
 
+  const handleUploadPress = () => {
+    setIsUploadVisible(!isUploadVisible);
+  };
+
   return (
     <View className={`flex-1 p-4 bg-${currentColors.background}`}>
-      {/* Viser listen over filtrerte kunstverk */}
-      <View className="flex-1">
-        <ArtworkList data={filteredData} textSize={textSize} />
-      </View>
-
       <Menu
         sortTitle={true}
         onSortAZ={() => {}}
         onSortZA={() => {}}
-        onIncreaseTextSize={increaseTextSize}
-        onEnableColorBlindFilter={toggleColorBlindFilter}
-        onSearchPress={() => setIsSearchVisible(!isSearchVisible)}
-        onUploadPress={() => setIsUploadVisible(!isUploadVisible)}
-        isVisible={true}
         allArtworks={allArtworks}
         setFilteredData={setFilteredData}
+        isSearchVisible={isSearchVisible}
+        setIsSearchVisible={setIsSearchVisible}
+        isUploadVisible={isUploadVisible} // Pass upload visibility state
+        onUploadPress={handleUploadPress}
+        setIsUploadVisible={setIsUploadVisible} // Pass upload setter
+        onIncreaseTextSize={increaseTextSize}
+        onEnableColorBlindFilter={toggleColorBlindFilter}
+        isVisible={true} // Assuming the menu is always visible, set this accordingly
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
-        hashtags={[]}
+        hashtags={[]} // You can pass hashtags if needed
       />
 
-      {/* Komponent for opplasting av kunstverk */}
-      {isUploadVisible && (
-        <Upload
-          visible={isUploadVisible}
-          onClose={() => setIsUploadVisible(false)}
-        />
-      )}
-
-      {/* Komponent for søk etter kunstverk */}
-      {isSearchVisible && (
-        <Search
-          allArtworks={allArtworks}
-          setFilteredData={setFilteredData}
-          isSearchVisible={isSearchVisible}
-          setIsSearchVisible={setIsSearchVisible}
-        />
-      )}
+      {/* Display filtered artwork list */}
+      <ArtworkList data={filteredData} textSize={textSize} />
     </View>
   );
 }

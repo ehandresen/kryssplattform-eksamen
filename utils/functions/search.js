@@ -1,21 +1,22 @@
 /**
- * Filters artworks based on a search query.
- * @param {Array} artworks - The list of artworks to filter.
- * @param {string} query - The search query to filter by.
- * @returns {Array} - The filtered list of artworks.
+ * Filtrerer en liste med objekter basert på en søkestreng og en nøkkel (key).
+ * Funksjonen sjekker om søkestrengen finnes i verdien til den spesifikke nøkkelen.
+ *
+ * @param {Array} data - Listen med data som skal filtreres (kan være hvilken som helst datatype).
+ * @param {string} query - Søkestrengen som brukes for filtrering.
+ * @param {string} key - Nøkkelen i objektene som vi skal søke i.
+ * @returns {Array} - Den filtrerte listen.
  */
-export function filterArtworksByQuery(artworks, query) {
-  if (!query) return artworks;
+export function searchByKey(data, query, key) {
+  if (!query) return data; // Hvis søkestrengen er tom, returneres original data.
 
-  const lowercasedQuery = query.toLowerCase();
+  const lowercasedQuery = query.toLowerCase(); // Gjør søkestrengen til små bokstaver for case-insensitiv søk.
 
-  return artworks.filter(
-    (artwork) =>
-      (artwork.title &&
-        artwork.title.toLowerCase().includes(lowercasedQuery)) ||
-      (artwork.artist &&
-        artwork.artist.toLowerCase().includes(lowercasedQuery)) ||
-      (artwork.description &&
-        artwork.description.toLowerCase().includes(lowercasedQuery))
-  );
+  return data.filter((item) => {
+    const value = item[key]; // Hent verdien til den spesifikke nøkkelen
+    if (typeof value === "string") {
+      return value.toLowerCase().includes(lowercasedQuery); // Sjekk om verdien inneholder søkestrengen.
+    }
+    return false; // Hvis verdien ikke er en streng, filtreres det ut.
+  });
 }

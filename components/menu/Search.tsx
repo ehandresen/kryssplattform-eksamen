@@ -10,7 +10,7 @@ import {
   Keyboard,
 } from "react-native";
 import { Artwork } from "@/types/artwork";
-import { filterArtworksByQuery } from "@/utils/functions/search";
+import { searchByKey } from "@/utils/functions/search"; // Import searchByKey function
 
 /**
  * Props for Search-komponenten
@@ -39,68 +39,65 @@ export default function Search({
   const [searchQuery, setSearchQuery] = useState(""); // Tilstand for søketekst
   const searchInputRef = useRef<TextInput>(null); // Referanse til søkefeltet
 
+  // Effekt som filtrerer kunstverk når søkestrengen endres
   useEffect(() => {
-    // Filtrer kunstverk basert på søkestrengen
+    // Bruk searchByKey for å filtrere basert på søkestrengen og ønsket nøkkel
     const filtered = searchQuery
-      ? filterArtworksByQuery(allArtworks, searchQuery)
+      ? searchByKey(allArtworks, searchQuery, "title") // Du kan endre "title" til ønsket nøkkel
       : allArtworks;
     setFilteredData(filtered); // Oppdaterer listen med filtrerte data
   }, [searchQuery, allArtworks, setFilteredData]);
 
+  // Effekt som skjuler søkefeltet når tastaturet lukkes
   useEffect(() => {
-    // Skjul søkefeltet når tastaturet lukkes
     const keyboardDidHideListener = Keyboard.addListener(
       "keyboardDidHide",
-      () => setIsSearchVisible(false)
+      () => setIsSearchVisible(false) // Set isSearchVisible to false when keyboard hides
     );
 
     return () => {
-      keyboardDidHideListener.remove(); // Fjern lytteren når komponenten demonteres
+      keyboardDidHideListener.remove(); // Fjern lytteren ved demontering av komponenten
     };
   }, [setIsSearchVisible]);
 
-  if (!isSearchVisible) return null; // Returner ingenting hvis søkefeltet ikke er synlig
+  // Hvis isSearchVisible er false, returner null og skjul komponenten
+  if (!isSearchVisible) return null;
 
   return (
-    <KeyboardAvoidingView behavior="padding" style={styles.container}>
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={styles.overlay}>
+    <View style={styles.searchContainer}>
+      <KeyboardAvoidingView behavior="padding" style={styles.inputContainer}>
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <TextInput
             ref={searchInputRef}
             style={styles.searchInput}
-            placeholder="Search artworks..." // Plassholdertekst i søkefeltet
+            placeholder="Search by title"
             value={searchQuery}
-            onChangeText={setSearchQuery} // Oppdater søketekst ved endring
-            autoFocus // Åpne tastaturet automatisk når søkefeltet vises
+            onChangeText={setSearchQuery}
+            autoFocus={true} // Automatically focus on input field when search is opened
+            returnKeyType="search"
+            onSubmitEditing={() => Keyboard.dismiss()} // Dismiss keyboard when submit
           />
-        </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
-// Stiler for komponenten
 const styles = StyleSheet.create({
-  container: {
-    position: "absolute", // Plassering nederst på skjermen
-    bottom: 0,
-    width: "100%",
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderColor: "#ccc",
-    zIndex: 10,
+  searchContainer: {
+    marginTop: 20,
+    paddingHorizontal: 10,
   },
-  overlay: {
-    width: "100%",
-    padding: 10,
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
   },
   searchInput: {
-    height: 40, // Høyde på søkefeltet
-    borderColor: "#ccc", // Kantfarge
-    borderWidth: 1, // Kantbredde
-    borderRadius: 8, // Runde kanter
-    paddingHorizontal: 10, // Innvendig padding horisontalt
-    backgroundColor: "#fff", // Hvit bakgrunn
-    width: "100%", // Fyll hele bredden
+    flex: 1,
+    height: 40,
+    paddingLeft: 10,
+    fontSize: 16,
   },
 });

@@ -69,37 +69,82 @@ export const getAllArtworks = async (): Promise<Artwork[]> => {
 };
 
 /**
- * Henter ett kunstverk basert på ID
- * @param id - Firestore-dokument-ID for kunstverket
- * @returns Kunstverksdata
+ * Henter unike kategorier fra kunstverkene
+ * @returns Liste over unike kategorier
  */
-export const getArtworkById = async (id: string) => {
+export const getUniqueCategories = async (): Promise<string[]> => {
   try {
-    const artworkDoc = await getDoc(doc(db, ARTWORKS_COLLECTION, id));
-    if (!artworkDoc.exists()) {
-      console.warn("Ingen kunstverk funnet med ID:", id);
-      return null;
-    }
+    const artworks = await getAllArtworks();
+    const categoriesSet = new Set<string>();
 
-    return {
-      ...artworkDoc.data(),
-      id: artworkDoc.id,
-    } as Artwork;
+    // Legg til hver kategori i et Set for å sikre unike verdier
+    artworks.forEach((artwork) => {
+      if (artwork.category) {
+        categoriesSet.add(artwork.category); // Legg til kategorien hvis den finnes
+      }
+    });
+
+    // Returner en liste med unike kategorier
+    return Array.from(categoriesSet);
   } catch (error) {
-    console.error("Feil ved henting av kunstverk med ID:", id, error);
+    console.error("Feil ved henting av kategorier:", error);
+    return [];
   }
 };
 
 /**
- * Sletter et kunstverk fra Firestore
- * @param id - Firestore-dokument-ID for kunstverket
+ * Henter et kunstverk fra Firestore ved hjelp av ID
+ * @param id - Kunstverkets ID
+ * @returns Kunstverket med spesifisert ID
  */
-export const deleteArtwork = async (id: string) => {
+export const getArtworkById = async (id: string): Promise<Artwork | null> => {
   try {
-    await deleteDoc(doc(db, ARTWORKS_COLLECTION, id));
-    console.log("Kunstverk slettet med ID:", id);
+    const docRef = doc(db, ARTWORKS_COLLECTION, id);
+    const docSnapshot = await getDoc(docRef);
+    if (docSnapshot.exists()) {
+      return {
+        ...docSnapshot.data(),
+        id: docSnapshot.id,
+      } as Artwork;
+    } else {
+      console.log("Ingen kunstverk funnet med den ID-en.");
+      return null;
+    }
+  } catch (error) {
+    console.error("Feil ved henting av kunstverk etter ID:", error);
+    return null;
+  }
+};
+
+/**
+ * Sletter et kunstverk fra Firestore ved hjelp av ID
+ * @param id - Kunstverkets ID
+ */
+export const deleteArtworkById = async (id: string) => {
+  try {
+    const docRef = doc(db, ARTWORKS_COLLECTION, id);
+    await deleteDoc(docRef);
+    console.log(`Kunstverk med ID ${id} er slettet.`);
   } catch (error) {
     console.error("Feil ved sletting av kunstverk:", error);
+  }
+};
+
+/**
+ * Oppdaterer et kunstverk i Firestore
+ * @param id - Kunstverkets ID
+ * @param updatedArtwork - Det oppdaterte kunstverket
+ */
+export const updateArtworkById = async (
+  id: string,
+  updatedArtwork: Artwork
+) => {
+  try {
+    const docRef = doc(db, ARTWORKS_COLLECTION, id);
+    await updateDoc(docRef, updatedArtwork);
+    console.log(`Kunstverk med ID ${id} er oppdatert.`);
+  } catch (error) {
+    console.error("Feil ved oppdatering av kunstverk:", error);
   }
 };
 
