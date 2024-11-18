@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { AntDesign, FontAwesome, Entypo } from "@expo/vector-icons";
-import Clear from "./Clear";
+import { AntDesign, Entypo } from "@expo/vector-icons";
 import Accessibility from "./Accessibility";
 import Filter from "./Filter";
 import Sort from "./Sort"; // Sort component
@@ -10,11 +9,10 @@ type MenuProps = {
   sortTitle?: boolean; // Optional prop to determine sorting behavior
   onSortAZ: () => void;
   onSortZA: () => void;
-  onClearAll: () => void;
   onIncreaseTextSize: () => void;
   onEnableColorBlindFilter: () => void;
   onSearchPress: () => void;
-  onUploadPress: () => void;
+  onUploadPress?: () => void;
   isVisible: boolean;
   allArtworks: any[];
   setFilteredData: React.Dispatch<React.SetStateAction<any[]>>;
@@ -25,7 +23,6 @@ type MenuProps = {
 
 const Menu = ({
   sortTitle = true,
-  onClearAll,
   onIncreaseTextSize,
   onEnableColorBlindFilter,
   onSearchPress,
@@ -71,13 +68,23 @@ const Menu = ({
       {/* Menyinnhold */}
       {isMenuOpen && (
         <>
-          <Clear onClearAll={onClearAll} style={styles.clearAllButton} />
-          <TouchableOpacity onPress={onSearchPress} style={styles.searchButton}>
-            <AntDesign name="search1" size={24} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={onFilterPress} style={styles.filterButton}>
-            <AntDesign name="filter" size={24} color="black" />
-          </TouchableOpacity>
+          {/* Conditional rendering based on sortTitle */}
+          {sortTitle && (
+            <>
+              <TouchableOpacity
+                onPress={onSearchPress}
+                style={styles.searchButton}
+              >
+                <AntDesign name="search1" size={24} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={onFilterPress}
+                style={styles.filterButton}
+              >
+                <AntDesign name="filter" size={24} color="black" />
+              </TouchableOpacity>
+            </>
+          )}
 
           <Sort
             filteredData={allArtworks}
@@ -92,9 +99,16 @@ const Menu = ({
             style={styles.accessibilityButton}
             isTextSizeIncreased={false}
           />
-          <TouchableOpacity onPress={onUploadPress} style={styles.uploadButton}>
-            <AntDesign name="plus" size={24} color="black" />
-          </TouchableOpacity>
+
+          {/* Only show upload button if sortTitle is true */}
+          {sortTitle && (
+            <TouchableOpacity
+              onPress={onUploadPress}
+              style={styles.uploadButton}
+            >
+              <AntDesign name="plus" size={24} color="black" />
+            </TouchableOpacity>
+          )}
         </>
       )}
 
@@ -138,17 +152,6 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 5,
   },
-  clearAllButton: {
-    position: "absolute",
-    bottom: 40,
-    right: 80,
-    backgroundColor: "#e0b3b3",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   searchButton: {
     position: "absolute",
     bottom: 80,
@@ -162,7 +165,7 @@ const styles = StyleSheet.create({
   },
   filterButton: {
     position: "absolute",
-    bottom: 150,
+    bottom: 290,
     right: 0,
     backgroundColor: "#e0b3b3",
     width: 60,
@@ -184,7 +187,7 @@ const styles = StyleSheet.create({
   },
   accessibilityButton: {
     position: "absolute",
-    bottom: 290,
+    bottom: 150,
     right: 0,
     backgroundColor: "#e0b3b3",
     width: 60,

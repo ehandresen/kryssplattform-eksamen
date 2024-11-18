@@ -43,18 +43,6 @@ export default function GalleryScreen() {
     fetchArtworks();
   }, []);
 
-  // Tilbakestiller filtreringen og viser hele listen med kunstverk.
-
-  // const handleClearAll = () => {
-  //   try {
-  //     setSelectedFilter(null);
-  //     setFilteredData(allArtworks);
-  //     console.log("Filtrering tilbakestilt."); // Debugging
-  //   } catch (error) {
-  //     console.error("Feil ved tilbakestilling av filtrering:", error);
-  //   }
-  // };
-
   return (
     <View className={`flex-1 p-4 bg-${currentColors.background}`}>
       {/* Viser listen over filtrerte kunstverk */}
@@ -66,7 +54,6 @@ export default function GalleryScreen() {
         sortTitle={true}
         onSortAZ={() => {}}
         onSortZA={() => {}}
-        onClearAll={() => {}}
         onIncreaseTextSize={increaseTextSize}
         onEnableColorBlindFilter={toggleColorBlindFilter}
         onSearchPress={() => setIsSearchVisible(!isSearchVisible)}
