@@ -1,3 +1,5 @@
+// components/Search.tsx
+
 import React, { useState, useRef, useEffect } from "react";
 import {
   View,
@@ -10,6 +12,13 @@ import {
 import { Artwork } from "@/types/artwork";
 import { filterArtworksByQuery } from "@/utils/functions/search";
 
+/**
+ * Props for Search-komponenten
+ * @param allArtworks - Liste over alle kunstverk
+ * @param setFilteredData - Funksjon for å oppdatere filtrerte data
+ * @param isSearchVisible - Bestemmer om søkefeltet er synlig
+ * @param setIsSearchVisible - Funksjon for å oppdatere synlighet av søkefeltet
+ */
 interface SearchProps {
   allArtworks: Artwork[];
   setFilteredData: React.Dispatch<React.SetStateAction<Artwork[]>>;
@@ -17,35 +26,40 @@ interface SearchProps {
   setIsSearchVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+/**
+ * Search-komponenten lar brukeren filtrere kunstverk basert på søkestrenger.
+ * Søkeresultater oppdateres dynamisk.
+ */
 export default function Search({
   allArtworks,
   setFilteredData,
   isSearchVisible,
   setIsSearchVisible,
 }: SearchProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const searchInputRef = useRef<TextInput>(null);
+  const [searchQuery, setSearchQuery] = useState(""); // Tilstand for søketekst
+  const searchInputRef = useRef<TextInput>(null); // Referanse til søkefeltet
 
   useEffect(() => {
-    // Filter artworks based on the search query
+    // Filtrer kunstverk basert på søkestrengen
     const filtered = searchQuery
       ? filterArtworksByQuery(allArtworks, searchQuery)
       : allArtworks;
-    setFilteredData(filtered);
+    setFilteredData(filtered); // Oppdaterer listen med filtrerte data
   }, [searchQuery, allArtworks, setFilteredData]);
 
   useEffect(() => {
+    // Skjul søkefeltet når tastaturet lukkes
     const keyboardDidHideListener = Keyboard.addListener(
       "keyboardDidHide",
       () => setIsSearchVisible(false)
     );
 
     return () => {
-      keyboardDidHideListener.remove();
+      keyboardDidHideListener.remove(); // Fjern lytteren når komponenten demonteres
     };
   }, [setIsSearchVisible]);
 
-  if (!isSearchVisible) return null;
+  if (!isSearchVisible) return null; // Returner ingenting hvis søkefeltet ikke er synlig
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.container}>
@@ -54,10 +68,10 @@ export default function Search({
           <TextInput
             ref={searchInputRef}
             style={styles.searchInput}
-            placeholder="Search artworks..."
+            placeholder="Search artworks..." // Plassholdertekst i søkefeltet
             value={searchQuery}
-            onChangeText={setSearchQuery}
-            autoFocus
+            onChangeText={setSearchQuery} // Oppdater søketekst ved endring
+            autoFocus // Åpne tastaturet automatisk når søkefeltet vises
           />
         </View>
       </TouchableWithoutFeedback>
@@ -65,9 +79,10 @@ export default function Search({
   );
 }
 
+// Stiler for komponenten
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
+    position: "absolute", // Plassering nederst på skjermen
     bottom: 0,
     width: "100%",
     backgroundColor: "#fff",
@@ -80,12 +95,12 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   searchInput: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    backgroundColor: "#fff",
-    width: "100%",
+    height: 40, // Høyde på søkefeltet
+    borderColor: "#ccc", // Kantfarge
+    borderWidth: 1, // Kantbredde
+    borderRadius: 8, // Runde kanter
+    paddingHorizontal: 10, // Innvendig padding horisontalt
+    backgroundColor: "#fff", // Hvit bakgrunn
+    width: "100%", // Fyll hele bredden
   },
 });

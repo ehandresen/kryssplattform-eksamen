@@ -1,4 +1,5 @@
 // components/menu/Filter.tsx
+
 import React from "react";
 import {
   View,
@@ -11,6 +12,16 @@ import {
 import { applyFilter, clearFilter } from "@/utils/functions/filter";
 import { Artwork } from "@/types/artwork";
 
+/**
+ * Props for Filter-komponenten
+ * @param visible - Bestemmer om filtermenyen skal være synlig.
+ * @param onClose - Funksjon som lukkes filtermenyen.
+ * @param allArtworks - Komplett liste over kunstverk.
+ * @param setFilteredData - Funksjon for å oppdatere filtrert data.
+ * @param selectedFilter - Gjeldende valgte filter.
+ * @param setSelectedFilter - Funksjon for å oppdatere valgte filter.
+ * @param hashtags - Liste over tilgjengelige filterkategorier (hashtags).
+ */
 type FilterProps = {
   visible: boolean;
   onClose: () => void;
@@ -21,6 +32,11 @@ type FilterProps = {
   hashtags: string[];
 };
 
+/**
+ * Filter-komponent:
+ * - En modal for å filtrere kunstverk etter kategori.
+ * - Gir brukeren muligheten til å velge en kategori eller tilbakestille filtreringen.
+ */
 const Filter = ({
   visible,
   onClose,
@@ -30,23 +46,33 @@ const Filter = ({
   setSelectedFilter,
   hashtags,
 }: FilterProps) => {
+  /**
+   * Funksjon for å anvende et valgt filter.
+   * @param filter - Filternavn (kategori/hashtag).
+   */
   const handleApplyFilter = (filter: string | null) => {
     setFilteredData(applyFilter(allArtworks, filter));
     setSelectedFilter(filter);
-    onClose();
+    onClose(); // Lukker modal etter filtrering.
   };
 
+  /**
+   * Funksjon for å tilbakestille alle filtre.
+   */
   const handleClearFilter = () => {
     setFilteredData(clearFilter(allArtworks));
     setSelectedFilter(null);
-    onClose();
+    onClose(); // Lukker modal etter tilbakestilling.
   };
 
   return (
     <Modal animationType="slide" transparent={true} visible={visible}>
+      {/* Bakgrunnsoverlay for modal */}
       <View style={styles.overlay}>
         <View style={styles.listContainer}>
+          {/* Tittel */}
           <Text style={styles.title}>Select a Category</Text>
+          {/* Liste over tilgjengelige filter */}
           <ScrollView style={styles.scrollView}>
             {hashtags.map((hashtag) => (
               <TouchableOpacity
@@ -58,12 +84,14 @@ const Filter = ({
               </TouchableOpacity>
             ))}
           </ScrollView>
+          {/* Knapp for å tilbakestille filtre */}
           <TouchableOpacity
             onPress={handleClearFilter}
             style={styles.clearButton}
           >
             <Text style={styles.clearButtonText}>Clear Filter</Text>
           </TouchableOpacity>
+          {/* Knapp for å lukke filtermodal */}
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>Cancel</Text>
           </TouchableOpacity>
@@ -73,17 +101,18 @@ const Filter = ({
   );
 };
 
+// Stiler for Filter-komponenten
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Halvtransparent mørkt bakgrunnslag
     justifyContent: "center",
     alignItems: "center",
   },
   listContainer: {
     width: "90%",
     padding: 20,
-    backgroundColor: "#d19898",
+    backgroundColor: "#d19898", // Bakgrunnsfarge for modal
     borderRadius: 15,
     alignItems: "center",
   },
@@ -94,7 +123,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     width: "100%",
-    maxHeight: 200,
+    maxHeight: 200, // Maks høyde for å unngå at listen blir for lang
     marginBottom: 15,
   },
   hashtagButton: {

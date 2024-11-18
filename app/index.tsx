@@ -22,7 +22,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       {/* Viser velkomsttekst */}
-      <Text style={styles.welcomeText}>Velkommen til ArtVista</Text>
+      <Text style={styles.welcomeText}>ArtVista</Text>
     </View>
   );
 }

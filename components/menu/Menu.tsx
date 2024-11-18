@@ -1,11 +1,29 @@
+// components/menu/Menu.tsx
+
 import React, { useState } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { AntDesign, Entypo } from "@expo/vector-icons";
-import Clear from "./Clear";
-import Accessibility from "./Accessibility";
-import Filter from "./Filter";
-import Sort from "./Sort";
+import { AntDesign, FontAwesome, Entypo } from "@expo/vector-icons";
+import Clear from "./Clear"; // Knapp for å tilbakestille alle filtre
+import Accessibility from "./Accessibility"; // Komponent for tilgjengelighetsalternativer
+import Filter from "./Filter"; // Modal for filtreringsvalg
+import Sort from "./Sort"; // Komponent for sorteringsfunksjonalitet
 
+/**
+ * Props for `Menu`-komponenten
+ * @param onClearAll - Funksjon for å tilbakestille alle filtre
+ * @param onIncreaseTextSize - Funksjon for å øke tekststørrelsen
+ * @param onEnableColorBlindFilter - Funksjon for å aktivere fargeblindfilter
+ * @param onSearchPress - Funksjon for å aktivere søk
+ * @param onUploadPress - Funksjon for å åpne opplastingsmodal
+ * @param isVisible - Bestemmer om menyen skal være synlig
+ * @param allArtworks - Liste over alle kunstverk
+ * @param setFilteredData - Funksjon for å oppdatere filtrert data
+ * @param selectedFilter - Gjeldende valgt filter
+ * @param setSelectedFilter - Funksjon for å oppdatere valgt filter
+ * @param hashtags - Liste over tilgjengelige filtre/hashtags
+ * @param onSortAZ - Funksjon for å sortere alfabetisk (A-Z)
+ * @param onSortDate - Funksjon for å sortere etter dato
+ */
 type MenuProps = {
   onClearAll: () => void;
   onIncreaseTextSize: () => void;
@@ -18,10 +36,14 @@ type MenuProps = {
   selectedFilter: string | null;
   setSelectedFilter: React.Dispatch<React.SetStateAction<string | null>>;
   hashtags: string[];
-  onSortAZ: () => void; // Legger til sortering A-Z
-  onSortDate: () => void; // Legger til dato-sortering
+  onSortAZ: () => void;
+  onSortDate: () => void;
 };
 
+/**
+ * `Menu`-komponent som gir tilgang til søk, filter, sortering og tilgjengelighetsalternativer.
+ * @param props Inneholder funksjoner og tilstand for menyens funksjonalitet.
+ */
 export default function Menu({
   onClearAll,
   onIncreaseTextSize,
@@ -35,19 +57,20 @@ export default function Menu({
   setSelectedFilter,
   hashtags,
   onSortAZ,
-  onSortDate, // Legger til destructuring for onSortDate
+  onSortDate,
 }: MenuProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Tilstand for menyens synlighet
+  const [isFilterVisible, setIsFilterVisible] = useState(false); // Tilstand for filtermodal
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const onFilterPress = () => setIsFilterVisible(true);
-  const closeFilter = () => setIsFilterVisible(false);
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen); // Bytt menyens synlighet
+  const onFilterPress = () => setIsFilterVisible(true); // Åpne filtermodal
+  const closeFilter = () => setIsFilterVisible(false); // Lukk filtermodal
 
-  if (!isVisible) return null;
+  if (!isVisible) return null; // Skjul menyen hvis `isVisible` er `false`
 
   return (
     <View style={styles.container}>
+      {/* Hovedmeny-knapp */}
       <TouchableOpacity
         onPress={toggleMenu}
         activeOpacity={0.7}
@@ -67,6 +90,7 @@ export default function Menu({
         </View>
       </TouchableOpacity>
 
+      {/* Menyinnhold */}
       {isMenuOpen && (
         <>
           <Clear onClearAll={onClearAll} style={styles.clearAllButton} />
@@ -90,16 +114,17 @@ export default function Menu({
           <TouchableOpacity onPress={onUploadPress} style={styles.uploadButton}>
             <AntDesign name="plus" size={24} color="black" />
           </TouchableOpacity>
+          {/* Sortering-knapper */}
           <TouchableOpacity onPress={onSortAZ} style={styles.sortButton}>
-            <AntDesign name="sort-alpha-asc" size={24} color="black" />
+            <FontAwesome name="sort-alpha-desc" size={24} color="black" />
           </TouchableOpacity>
-          {/* Ny knapp for dato-sortering */}
           <TouchableOpacity onPress={onSortDate} style={styles.sortButton}>
             <AntDesign name="calendar" size={24} color="black" />
           </TouchableOpacity>
         </>
       )}
 
+      {/* Filtermodal */}
       <Filter
         visible={isFilterVisible}
         onClose={closeFilter}
@@ -113,6 +138,7 @@ export default function Menu({
   );
 }
 
+// Stiler for komponenten
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
