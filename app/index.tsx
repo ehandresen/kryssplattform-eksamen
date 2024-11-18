@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text } from "react-native";
 import { useRouter } from "expo-router";
 
 /**
@@ -20,25 +20,11 @@ export default function Index() {
   }, [router]);
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 justify-center items-center p-4 bg-white">
       {/* Viser velkomsttekst */}
-      <Text style={styles.welcomeText}>ArtVista</Text>
+      <Text className="text-4xl font-bold text-center text-teal-600">
+        ArtVista
+      </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1, // Fyller hele skjermen
-    justifyContent: "center", // Sentraliserer innholdet vertikalt
-    alignItems: "center", // Sentraliserer innholdet horisontalt
-    padding: 16, // Marg rundt innholdet
-    backgroundColor: "#fff", // Bakgrunnsfarge
-  },
-  welcomeText: {
-    fontSize: 28, // Størrelsen på velkomstteksten
-    fontWeight: "bold", // Fet tekst
-    textAlign: "center", // Sentraliserer teksten
-    color: "#1D6F6B", // Tekstfarge (tilpasset fargepalett)
-  },
-});

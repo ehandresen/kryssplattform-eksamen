@@ -8,7 +8,6 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
-  StyleSheet,
 } from "react-native";
 
 /**
@@ -26,9 +25,11 @@ const ExhibitionScreen = () => {
   if (isLoading) {
     console.log("Loading exhibitions..."); // Debugging
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center bg-gray-100">
         <ActivityIndicator size="large" color="#0000ff" />
-        <Text style={styles.loadingText}>Laster utstillinger...</Text>
+        <Text className="mt-2 text-lg text-gray-700">
+          Laster utstillinger...
+        </Text>
       </View>
     );
   }
@@ -37,7 +38,9 @@ const ExhibitionScreen = () => {
    * Hvis det ikke er noen utstillinger, viser en tom liste-melding.
    */
   const renderEmptyList = () => (
-    <Text style={styles.emptyText}>Ingen utstillinger tilgjengelig.</Text>
+    <Text className="text-center text-lg text-gray-400">
+      Ingen utstillinger tilgjengelig.
+    </Text>
   );
 
   /**
@@ -50,7 +53,7 @@ const ExhibitionScreen = () => {
       console.log("Rendering exhibition:", item);
 
       return (
-        <TouchableOpacity style={styles.exhibitionCard}>
+        <TouchableOpacity className="p-4 mb-3 bg-gray-100 rounded-lg shadow-md">
           <Link
             href={{
               pathname: "/exhibitionDetails/[id]",
@@ -58,9 +61,11 @@ const ExhibitionScreen = () => {
             }}
           >
             <View>
-              <Text style={styles.title}>{item.title}</Text>
-              <Text style={styles.location}>{item.location}</Text>
-              <Text style={styles.date}>
+              <Text className="text-lg font-bold text-gray-800 mb-1">
+                {item.title}
+              </Text>
+              <Text className="text-sm text-gray-600">{item.location}</Text>
+              <Text className="text-xs text-gray-500 mt-1">
                 {item.startDate} - {item.endDate}
               </Text>
             </View>
@@ -81,59 +86,9 @@ const ExhibitionScreen = () => {
       data={exhibitions}
       keyExtractor={(item) => item.id}
       ListEmptyComponent={renderEmptyList}
-      contentContainerStyle={styles.listContainer}
       renderItem={renderExhibition}
     />
   );
 };
-
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f5f5f5", // Lys bakgrunn under lasting
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: "#333", // Mørk grå tekst
-  },
-  listContainer: {
-    padding: 16,
-    backgroundColor: "#ffffff", // Hvit bakgrunn for listen
-  },
-  emptyText: {
-    textAlign: "center",
-    fontSize: 16,
-    color: "#999", // Lys grå tekst for tom liste
-  },
-  exhibitionCard: {
-    padding: 16,
-    marginBottom: 12,
-    backgroundColor: "#f0f0f0", // Lys grå bakgrunn for kort
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3, // For Android
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333", // Mørk grå titteltekst
-    marginBottom: 4,
-  },
-  location: {
-    fontSize: 14,
-    color: "#666", // Medium grå lokasjonstekst
-  },
-  date: {
-    fontSize: 12,
-    color: "#999", // Lys grå datotekst
-    marginTop: 4,
-  },
-});
 
 export default ExhibitionScreen;

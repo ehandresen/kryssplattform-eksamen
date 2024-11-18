@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import ArtworkList from "../../../components/ArtworkList";
 import Menu from "../../../components/menu/Menu";
 import Search from "../../../components/menu/Search";
@@ -84,11 +84,9 @@ export default function GalleryScreen() {
   };
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: currentColors.background }]}
-    >
+    <View className={`flex-1 p-4 bg-${currentColors.background}`}>
       {/* Viser listen over filtrerte kunstverk */}
-      <View style={styles.listContainer}>
+      <View className="flex-1">
         <ArtworkList data={filteredData} textSize={textSize} />
       </View>
 
@@ -135,12 +133,3 @@ export default function GalleryScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  listContainer: {
-    flex: 1,
-  },
-});

@@ -2,7 +2,7 @@ import { Tabs, usePathname } from "expo-router";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import React from "react";
 import Header from "../../../components/header/Header";
-import { View, StyleSheet, Text } from "react-native"; // Importerer Text
+import { View, Text } from "react-native"; // Importerer Text
 
 /**
  * TabsLayout er hovedlayouten som håndterer navigasjon mellom de tre skjermene:
@@ -27,7 +27,7 @@ const TabsLayout = () => {
       : "Exhibitions"; // Standard undertittel for Exhibitions-skjermen
 
     return (
-      <View style={styles.container}>
+      <View className="flex-1">
         {/* Header-komponent som vises øverst i layouten */}
         <Header
           subtitle={subtitle} // Dynamisk undertittel basert på aktiv skjerm
@@ -38,7 +38,6 @@ const TabsLayout = () => {
         {/* Tab-navigasjon for å bytte mellom Gallery, Artists og Exhibitions */}
         <Tabs
           screenOptions={{
-            tabBarStyle: styles.tabBarStyle, // Tilpasset stil for fanene
             tabBarLabelStyle: { fontSize: 14 }, // Skriftstørrelse for etikettene
             tabBarActiveTintColor: "red", // Farge for aktiv fane
             tabBarInactiveTintColor: "black", // Farge for inaktive faner
@@ -88,15 +87,15 @@ const TabsLayout = () => {
     }
     // Returnerer en fallback-komponent hvis noe går galt
     return (
-      <View style={styles.container}>
+      <View className="flex-1">
         <Header
           subtitle="Error"
           showLogoutButton={false}
           showProfileButton={false}
         />
-        <View>
+        <View className="mt-20">
           {/* Feilmelding til brukeren */}
-          <Text style={styles.errorText}>
+          <Text className="text-red-600 text-lg text-center">
             Det oppstod en feil i navigasjonen. Prøv igjen senere.
           </Text>
         </View>
@@ -104,22 +103,5 @@ const TabsLayout = () => {
     );
   }
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1, // Gjør at layouten fyller hele skjermen
-  },
-  tabBarStyle: {
-    height: 80, // Høyde på fanebaren
-    position: "relative", // Sørger for at fanebaren er riktig plassert nederst
-    paddingTop: 5, // Liten avstand over fanebaren
-  },
-  errorText: {
-    color: "red", // Rød tekst for å indikere en feil
-    fontSize: 16, // Størrelse på teksten
-    textAlign: "center", // Sentrerer teksten
-    marginTop: 20, // Avstand fra toppen
-  },
-});
 
 export default TabsLayout;

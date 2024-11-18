@@ -2,7 +2,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Slot, usePathname, Redirect, Stack } from "expo-router";
 import React from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { StyleSheet } from "react-native";
 
 /**
  * AppLayout håndterer den overordnede strukturen for appen, inkludert navigasjon og
@@ -24,7 +23,7 @@ export default function AppLayout() {
    * Returnerer strukturen for appen med navigasjon og sideinnhold.
    */
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1">
       <Stack>
         {/* Definerer de ulike skjermene og deres tilhørende innstillinger */}
         <Stack.Screen
@@ -56,10 +55,3 @@ export default function AppLayout() {
     </SafeAreaView>
   );
 }
-
-// Stildefinisjoner for hovedcontaineren
-const styles = StyleSheet.create({
-  container: {
-    flex: 1, // Sørger for at containeren fyller hele skjermen
-  },
-});

@@ -2,7 +2,7 @@
 
 // Importerer nødvendige moduler for å lage en tilbake-knapp.
 import React from "react";
-import { TouchableOpacity, StyleSheet } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router"; // Hook for navigasjon
 import AntDesign from "@expo/vector-icons/AntDesign"; // Ikonbibliotek
 
@@ -22,19 +22,15 @@ const ReturnBtn = () => {
   };
 
   return (
-    <TouchableOpacity onPress={handlePress} style={styles.button}>
+    <TouchableOpacity
+      onPress={handlePress}
+      className="p-2" // Tailwind klasse for padding
+    >
       {/* Bruker AntDesign for å vise en pil som symboliserer tilbake */}
       <AntDesign name="arrowleft" size={24} color="black" />
     </TouchableOpacity>
   );
 };
-
-// Stiler for ReturnBtn-komponenten
-const styles = StyleSheet.create({
-  button: {
-    padding: 5, // Liten padding for å gjøre knappen enklere å trykke på
-  },
-});
 
 // Eksporterer komponenten som standard
 export default ReturnBtn;

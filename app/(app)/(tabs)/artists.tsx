@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, Text } from "react-native";
 import ArtistList from "../../../components/ArtistList";
 import Menu from "../../../components/menu/Menu";
 import { getAllArtists } from "@/api/artistApi";
@@ -105,11 +105,9 @@ export default function ArtistsScreen() {
   };
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: currentColors.background }]}
-    >
+    <View className={`flex-1 p-4 bg-${currentColors.background}`}>
       {/* Viser den filtrerte listen over artister */}
-      <View style={styles.listContainer}>
+      <View className="flex-1">
         <ArtistList artists={filteredArtists} textSize={textSize} />
       </View>
 
@@ -142,13 +140,3 @@ export default function ArtistsScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1, // Fyller hele skjermen
-    padding: 16, // Innvendig marg
-  },
-  listContainer: {
-    flex: 1, // Fyller tilgjengelig plass
-  },
-});

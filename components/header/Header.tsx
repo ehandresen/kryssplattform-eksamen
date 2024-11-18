@@ -1,9 +1,7 @@
 // Header.tsx
 
-// Importerer nødvendige moduler og komponenter for headerens funksjonalitet.
-// Dette inkluderer stilmoduler, knapper, og en tittelkomponent.
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Title from "./Title"; // Viser en sentrert tittel
 import ProfileBtn from "./ProfileBtn"; // Knapp for å navigere til profil
@@ -46,15 +44,15 @@ const Header = ({
   }
 
   return (
-    <SafeAreaView edges={["top"]} style={styles.safeArea}>
-      <View style={styles.headerContainer}>
+    <SafeAreaView edges={["top"]} className="bg-white">
+      <View className="flex-row items-center justify-between px-4 bg-white border-b border-gray-300">
         {/* Venstre seksjon: Viser enten tilbake-knappen, logg ut-knappen, eller en tom plassholder */}
         {showReturnButton ? (
           <ReturnBtn />
         ) : showLogoutButton ? (
           <LogOutBtn />
         ) : (
-          <View style={{ width: 40 }} /> // Sørger for visuell balanse hvis ingen knapp vises
+          <View className="w-10" /> // Sørger for visuell balanse hvis ingen knapp vises
         )}
 
         {/* Midten: Tittel */}
@@ -66,28 +64,12 @@ const Header = ({
         ) : showLogoutButton && showReturnButton ? (
           <LogOutBtn />
         ) : (
-          <View style={{ width: 40 }} /> // Sørger for visuell balanse hvis ingen knapp vises
+          <View className="w-10" /> // Sørger for visuell balanse hvis ingen knapp vises
         )}
       </View>
     </SafeAreaView>
   );
 };
-
-// Stiler for Header-komponenten
-const styles = StyleSheet.create({
-  safeArea: {
-    backgroundColor: "#fff", // Hvit bakgrunn for headeren
-  },
-  headerContainer: {
-    flexDirection: "row", // Gjør at elementer legges horisontalt
-    alignItems: "center", // Sentrerer elementene vertikalt
-    justifyContent: "space-between", // Plasserer elementene jevnt mellomromt
-    paddingHorizontal: 16, // Legger horisontal padding
-    backgroundColor: "#fff", // Hvit bakgrunn
-    borderBottomWidth: 1, // Legger til en linje nederst
-    borderBottomColor: "#ddd", // Farge på linjen for en subtil separasjon
-  },
-});
 
 // Eksporterer komponenten som standard
 export default Header;

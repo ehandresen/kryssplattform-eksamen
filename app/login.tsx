@@ -1,13 +1,12 @@
+import React, { useState, useEffect } from "react";
 import {
   ActivityIndicator,
   Alert,
   Button,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
-import React, { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth"; // Hook for autentisering
 import { router } from "expo-router"; // Brukes til navigasjon
 import { signUp } from "@/api/authApi"; // Importerer sign-up funksjonen fra API
@@ -79,15 +78,15 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
+    <View className="flex-1 justify-center p-4 bg-white">
+      <Text className="text-2xl font-bold mb-6 text-center text-teal-600">
         {isSignUpMode ? "Opprett bruker" : "Logg inn"}
       </Text>
 
       {/* Input-felt for brukernavn (kun ved opprettelse av bruker) */}
       {isSignUpMode && (
         <TextInput
-          style={styles.input}
+          className="h-10 border border-gray-300 rounded-md p-2 mb-4"
           placeholder="Brukernavn"
           value={username}
           onChangeText={setUsername}
@@ -98,7 +97,7 @@ const LoginScreen = () => {
 
       {/* Input-felt for e-post */}
       <TextInput
-        style={styles.input}
+        className="h-10 border border-gray-300 rounded-md p-2 mb-4"
         placeholder="E-post"
         value={email}
         onChangeText={setEmail}
@@ -109,7 +108,7 @@ const LoginScreen = () => {
 
       {/* Input-felt for passord */}
       <TextInput
-        style={styles.input}
+        className="h-10 border border-gray-300 rounded-md p-2 mb-4"
         placeholder="Passord"
         value={password}
         onChangeText={setPassword}
@@ -140,29 +139,5 @@ const LoginScreen = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 16,
-    backgroundColor: "#fff", // Bakgrunnsfarge
-  },
-  title: {
-    fontSize: 24, // Størrelse på tittel
-    fontWeight: "bold", // Fet tekst
-    marginBottom: 16, // Avstand under tittelen
-    textAlign: "center", // Sentrert tekst
-    color: "#1D6F6B", // Tekstfarge
-  },
-  input: {
-    height: 40, // Høyde på tekstfeltet
-    borderColor: "#ccc", // Grenselinjefarge
-    borderWidth: 1, // Grenselinjens tykkelse
-    marginBottom: 12, // Avstand mellom felt
-    paddingHorizontal: 8, // Innvendig marg for tekst
-    borderRadius: 4, // Runde kanter
-  },
-});
 
 export default LoginScreen;

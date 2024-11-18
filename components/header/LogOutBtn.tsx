@@ -2,7 +2,7 @@
 
 // Importerer nødvendige moduler og hooks for å håndtere brukerens logg-ut-funksjonalitet.
 import React from "react";
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { TouchableOpacity, Text } from "react-native";
 import { useRouter } from "expo-router"; // Hook for navigasjon
 import { useAuth } from "@/hooks/useAuth"; // Hook for autentisering og konteksttilgang
 
@@ -30,27 +30,16 @@ const LogOutBtn = () => {
   };
 
   return (
-    <TouchableOpacity onPress={handlePress} style={styles.button}>
-      <Text style={styles.logoutText}>
-        Log{"\n"}out {/* Viser teksten med linjeskift for kompakt layout */}
+    <TouchableOpacity
+      onPress={handlePress}
+      className="p-2 items-center bg-transparent"
+    >
+      <Text className="text-red-600 font-bold text-center text-lg">
+        Log{"\n"}out
       </Text>
     </TouchableOpacity>
   );
 };
-
-// Stiler for LogOutBtn-komponenten
-const styles = StyleSheet.create({
-  button: {
-    padding: 5, // Gir litt plass rundt knappen
-    alignItems: "center", // Sentrerer innholdet horisontalt
-  },
-  logoutText: {
-    fontSize: 16, // Størrelse på teksten
-    color: "red", // Rød farge for å indikere en viktig handling
-    fontWeight: "bold", // Fet tekst for synlighet
-    textAlign: "center", // Sentrerer teksten
-  },
-});
 
 // Eksporterer komponenten som standard
 export default LogOutBtn;

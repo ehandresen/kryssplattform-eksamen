@@ -5,7 +5,6 @@ import {
   TextInput,
   Button,
   Image,
-  StyleSheet,
   TouchableOpacity,
   Modal,
 } from "react-native";
@@ -112,26 +111,26 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 items-center bg-white p-5">
       {/* Profilbilde med redigeringsalternativer */}
-      <View style={{ position: "relative" }}>
+      <View className="relative">
         <Image
           source={{ uri: profileImageUrl || "https://via.placeholder.com/150" }}
-          style={styles.profileImage}
+          className="w-36 h-36 rounded-full"
         />
         {isEditing && (
           <>
             <TouchableOpacity
-              style={[styles.editIcon, { right: 10 }]}
+              className="absolute bottom-1 right-2 bg-black p-2 rounded-md"
               onPress={() => setShowCamera(true)}
             >
-              <Text style={{ color: "#fff", fontSize: 12 }}>Kamera</Text>
+              <Text className="text-white text-xs">Kamera</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.editIcon, { left: 10 }]}
+              className="absolute bottom-1 left-2 bg-black p-2 rounded-md"
               onPress={pickImageFromGallery}
             >
-              <Text style={{ color: "#fff", fontSize: 12 }}>Last opp</Text>
+              <Text className="text-white text-xs">Last opp</Text>
             </TouchableOpacity>
           </>
         )}
@@ -141,20 +140,20 @@ export default function ProfileScreen() {
       {isEditing ? (
         <View>
           <TextInput
-            style={styles.input}
+            className="w-4/5 p-3 border border-gray-300 rounded-md mb-3"
             placeholder="Navn"
             value={displayName}
             onChangeText={setDisplayName}
           />
           <TextInput
-            style={styles.input}
+            className="w-4/5 p-3 border border-gray-300 rounded-md mb-3"
             placeholder="E-post"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
           />
           <TextInput
-            style={styles.input}
+            className="w-4/5 p-3 border border-gray-300 rounded-md mb-3"
             placeholder="Bio"
             value={bio}
             onChangeText={setBio}
@@ -164,11 +163,11 @@ export default function ProfileScreen() {
         </View>
       ) : (
         <View>
-          <Text style={styles.name}>{displayName}</Text>
-          <Text style={styles.email}>{email}</Text>
-          <Text style={styles.bio}>{bio}</Text>
+          <Text className="text-2xl font-bold">{displayName}</Text>
+          <Text className="text-lg text-gray-600">{email}</Text>
+          <Text className="text-sm text-gray-500">{bio}</Text>
           <TouchableOpacity onPress={() => setIsEditing(true)}>
-            <Text>Rediger profil</Text>
+            <Text className="text-blue-500">Rediger profil</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -185,45 +184,3 @@ export default function ProfileScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    backgroundColor: "#fff",
-    padding: 20,
-  },
-  profileImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-  },
-  editIcon: {
-    position: "absolute",
-    bottom: 5,
-    backgroundColor: "#000",
-    padding: 5,
-    borderRadius: 5,
-  },
-  input: {
-    width: "80%",
-    padding: 10,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 10,
-    fontSize: 16,
-  },
-  name: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  email: {
-    fontSize: 16,
-    color: "#666",
-  },
-  bio: {
-    fontSize: 14,
-    color: "#999",
-  },
-});

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, ActivityIndicator, StyleSheet, Text } from "react-native";
+import { View, ActivityIndicator, Text } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { getArtistById } from "@/api/artistApi"; // Henter informasjon om en spesifikk artist
 import { getAllArtworks } from "@/api/artworkApi"; // Henter alle kunstverk
@@ -66,11 +66,9 @@ export default function ArtistDetails() {
    */
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center bg-gray-100">
         <ActivityIndicator size="large" color={currentColors.secondary} />
-        <Text style={{ marginTop: 10, fontSize: 16, color: "#555" }}>
-          Laster data...
-        </Text>
+        <Text className="mt-2 text-lg text-gray-700">Laster data...</Text>
       </View>
     );
   }
@@ -80,12 +78,8 @@ export default function ArtistDetails() {
    */
   if (error) {
     return (
-      <View style={styles.container}>
-        <Text
-          style={[styles.errorText, { color: currentColors.error || "#f00" }]}
-        >
-          {error}
-        </Text>
+      <View className="flex-1 justify-center items-center bg-gray-100">
+        <Text className="text-xl text-red-600">{error}</Text>
       </View>
     );
   }
@@ -95,12 +89,8 @@ export default function ArtistDetails() {
    */
   if (!artist) {
     return (
-      <View style={styles.container}>
-        <Text
-          style={[styles.errorText, { color: currentColors.error || "#f00" }]}
-        >
-          Fant ingen artist.
-        </Text>
+      <View className="flex-1 justify-center items-center bg-gray-100">
+        <Text className="text-xl text-red-600">Fant ingen artist.</Text>
       </View>
     );
   }
@@ -109,7 +99,7 @@ export default function ArtistDetails() {
    * Returnerer brukergrensesnittet for artistens detaljer og deres kunstverk.
    */
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-white p-4">
       {/* Viser artistens detaljer */}
       <ArtistCard
         artist={artist}
@@ -118,12 +108,10 @@ export default function ArtistDetails() {
       />
 
       {/* Viser en liste over artistens kunstverk */}
-      <View style={styles.artworksContainer}>
+      <View className="mt-4">
         <Text
-          style={[
-            styles.sectionTitle,
-            { color: currentColors.primary, fontSize: textSize },
-          ]}
+          className="text-lg font-bold text-primary mb-3"
+          style={{ fontSize: textSize }}
         >
           Kunstverk av {artist.displayName}
         </Text>
@@ -132,28 +120,3 @@ export default function ArtistDetails() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff", // Standard bakgrunnsfarge
-    padding: 16, // Innvendig marg
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center", // Sentraliserer innholdet vertikalt
-    alignItems: "center", // Sentraliserer innholdet horisontalt
-  },
-  errorText: {
-    fontSize: 18, // Størrelse på feilmeldinger
-    textAlign: "center", // Sentrerer teksten
-  },
-  artworksContainer: {
-    marginTop: 16, // Avstand fra toppen
-  },
-  sectionTitle: {
-    fontSize: 20, // Tittelstørrelse
-    fontWeight: "bold", // Fet tekst
-    marginBottom: 8, // Avstand til neste element
-  },
-});

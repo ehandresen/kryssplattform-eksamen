@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import { View, ActivityIndicator, Text } from "react-native";
 import { Exhibition } from "@/types/exhibition";
 import { useLocalSearchParams } from "expo-router";
 import { useExhibition } from "@/hooks/useExhibition";
@@ -7,7 +7,7 @@ import { useExhibition } from "@/hooks/useExhibition";
 /**
  * Komponent for å vise detaljer om en utstilling.
  */
-const ExhibitionDetails = () => {
+export default function ExhibitionDetails() {
   // Henter utstillings-ID fra ruteparametrene
   const { id } = useLocalSearchParams();
 
@@ -58,20 +58,22 @@ const ExhibitionDetails = () => {
    */
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center bg-gray-100">
         <ActivityIndicator size="large" color="#0000ff" />
-        <Text style={styles.loadingText}>Laster utstillingsdata...</Text>
+        <Text className="mt-2 text-lg text-gray-700">
+          Laster utstillingsdata...
+        </Text>
       </View>
     );
   }
 
   /**
-   * Viser en melding hvis utstillingen ikke finnes.
+   * Viser en feilmelding hvis utstillingen ikke finnes.
    */
   if (!exhibition) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Fant ingen utstilling.</Text>
+      <View className="flex-1 justify-center items-center bg-gray-100">
+        <Text className="text-xl text-red-600">Fant ingen utstilling.</Text>
       </View>
     );
   }
@@ -80,53 +82,14 @@ const ExhibitionDetails = () => {
    * Returnerer brukergrensesnittet for utstillingens detaljer.
    */
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{exhibition.title}</Text>
-      <Text style={styles.location}>{exhibition.location}</Text>
-      <Text style={styles.dates}>
+    <View className="flex-1 p-4 bg-white">
+      <Text className="text-2xl font-bold text-gray-800 mb-3">
+        {exhibition.title}
+      </Text>
+      <Text className="text-xl text-gray-600 mb-2">{exhibition.location}</Text>
+      <Text className="text-lg text-gray-500">
         {exhibition.startDate} - {exhibition.endDate}
       </Text>
     </View>
   );
-};
-
-// Styling for komponenten
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "#fff", // Bakgrunnsfarge
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center", // Sentraliserer innhold vertikalt
-    alignItems: "center", // Sentraliserer innhold horisontalt
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: "#555", // Grå tekstfarge
-  },
-  title: {
-    fontSize: 24, // Tittelstørrelse
-    fontWeight: "bold", // Fet skrift
-    color: "#333", // Mørk tekstfarge
-    marginBottom: 8, // Avstand til neste element
-  },
-  location: {
-    fontSize: 18, // Størrelse på tekst for lokasjon
-    color: "#666", // Middels grå farge
-    marginBottom: 4, // Avstand til neste element
-  },
-  dates: {
-    fontSize: 16, // Størrelse på tekst for datoer
-    color: "#999", // Lys grå farge
-  },
-  errorText: {
-    fontSize: 18, // Størrelse på feilmeldinger
-    color: "red", // Rød tekstfarge
-    textAlign: "center", // Sentrer teksten
-  },
-});
-
-export default ExhibitionDetails;
+}

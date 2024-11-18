@@ -1,7 +1,7 @@
 import { Exhibition } from "@/types/exhibition";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, Alert } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
 const MapScreen = () => {
@@ -39,9 +39,9 @@ const MapScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1">
       <MapView
-        style={styles.map}
+        className="w-full h-full"
         initialRegion={
           exhibitionData
             ? {
@@ -66,15 +66,5 @@ const MapScreen = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1, // Sørger for at beholderen fyller hele skjermen
-  },
-  map: {
-    width: "100%", // Kartet fyller hele bredden
-    height: "100%", // Kartet fyller hele høyden
-  },
-});
 
 export default MapScreen;

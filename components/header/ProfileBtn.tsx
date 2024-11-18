@@ -2,7 +2,7 @@
 
 // Importerer nødvendige moduler og biblioteker for profilknappen.
 import React from "react";
-import { TouchableOpacity, StyleSheet } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router"; // Hook for navigasjon
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5"; // Ikonbibliotek
 
@@ -21,19 +21,15 @@ const ProfileBtn = () => {
   };
 
   return (
-    <TouchableOpacity onPress={handlePress} style={styles.button}>
+    <TouchableOpacity
+      onPress={handlePress}
+      className="p-2" // Tailwind klasse for padding
+    >
       {/* Bruker FontAwesome5 for å vise et profilikon */}
       <FontAwesome5 name="user-circle" size={24} color="black" />
     </TouchableOpacity>
   );
 };
-
-// Stiler for ProfileBtn-komponenten
-const styles = StyleSheet.create({
-  button: {
-    padding: 5, // Liten padding rundt knappen for trykkbarhet
-  },
-});
 
 // Eksporterer komponenten som standard
 export default ProfileBtn;
