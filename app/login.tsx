@@ -54,7 +54,9 @@ const LoginScreen = () => {
 
     setIsLoading(true);
     try {
+      // Call the updated signUp function
       await signUp(email, password, username);
+      Alert.alert("Success", "User created successfully!");
     } catch (error) {
       Alert.alert("Sign Up Error", "An error occurred during sign up");
     } finally {

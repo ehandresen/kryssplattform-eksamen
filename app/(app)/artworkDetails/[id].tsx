@@ -14,18 +14,17 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Artwork } from "@/types/artwork";
 import * as artworkApi from "@/api/artworkApi";
 import * as commentApi from "@/api/commentApi";
-
 import { CommentObject } from "@/types/comment";
 import ArtworkCard from "@/components/ArtworkCard";
 import { useAuth } from "@/hooks/useAuth";
-import { useTextSize } from "@/hooks/useTextSize"; // Import the text size hook
 import { FontAwesome } from "@expo/vector-icons";
 import { Exhibition } from "@/types/exhibition";
 import MapScreen from "../map";
 import { useExhibition } from "@/hooks/useExhibition";
+import { useAccessibility } from "@/hooks/useAccessibility"; // Import the accessibility hook
 
 export default function ArtDetails() {
-  const { textSize } = useTextSize(); // Access textSize from the context
+  const { textSize, currentColors } = useAccessibility(); // Destructure textSize and currentColors
   const [artwork, setArtwork] = useState<Artwork | null>(null);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentObject[]>([]);
@@ -219,7 +218,7 @@ export default function ArtDetails() {
               isLiked={isLiked}
               numLikes={numLikes}
               toggleLike={toggleLike}
-              textSize={textSize}
+              textSize={textSize} // Pass textSize to ArtworkCard
             />
             {artwork.artistId === user?.uid && (
               <Pressable
@@ -229,7 +228,7 @@ export default function ArtDetails() {
                 <Text
                   style={{
                     color: "white",
-                    fontSize: textSize,
+                    fontSize: textSize, // Use textSize for font size
                     fontWeight: "bold",
                   }}
                 >
@@ -241,13 +240,22 @@ export default function ArtDetails() {
             {/* show button to navigate to mapScreen if there is an exhibition related to the artwork */}
             {exhibition && (
               <View className="mt-4 p-4 bg-gray-300 rounded-lg">
-                <Text className="text-xl font-semibold text-gray-800 mb-2">
+                <Text
+                  className="text-xl font-semibold text-gray-800 mb-2"
+                  style={{ fontSize: textSize + 4 }}
+                >
                   Exhibition: {exhibition.title}
                 </Text>
-                <Text className="text-md text-gray-600">
+                <Text
+                  className="text-md text-gray-600"
+                  style={{ fontSize: textSize }}
+                >
                   Location: {exhibition.location}
                 </Text>
-                <Text className="text-md text-gray-600">
+                <Text
+                  className="text-md text-gray-600"
+                  style={{ fontSize: textSize }}
+                >
                   Dates: {exhibition.startDate} - {exhibition.endDate}
                 </Text>
                 <TouchableOpacity
@@ -272,7 +280,12 @@ export default function ArtDetails() {
         {/* comments */}
         <View className="mt-4 p-4 bg-gray-300 rounded-lg">
           <View>
-            <Text className="text-lg mb-2 font-bold">Comments</Text>
+            <Text
+              className="text-lg mb-2 font-bold"
+              style={{ fontSize: textSize + 2 }}
+            >
+              Comments
+            </Text>
             <View>
               {isLoadingComments ? (
                 <ActivityIndicator />
@@ -288,10 +301,16 @@ export default function ArtDetails() {
                       <ActivityIndicator size="small" color="#ff0000" />
                     ) : (
                       <>
-                        <Text className="font-bold mr-2">
+                        <Text
+                          className="font-bold mr-2"
+                          style={{ fontSize: textSize }}
+                        >
                           {comment.comment?.artistName ?? ""}
                         </Text>
-                        <Text className="flex-1">
+                        <Text
+                          className="flex-1"
+                          style={{ fontSize: textSize - 2 }}
+                        >
                           {comment.comment?.comment ?? ""}
                         </Text>
 
@@ -311,7 +330,6 @@ export default function ArtDetails() {
           </View>
 
           {/* add comment section */}
-          {/* only show if comments is not loading */}
           {!isLoadingComments && (
             <View className="flex-row items-center w-full mt-4">
               <TextInput
@@ -320,6 +338,7 @@ export default function ArtDetails() {
                 placeholder="Add a comment..."
                 placeholderTextColor="gray"
                 className="flex-1 border-b border-gray-400 p-2 mr-2"
+                style={{ fontSize: textSize }}
               />
 
               <TouchableOpacity
@@ -330,7 +349,12 @@ export default function ArtDetails() {
                 {isLoadingAddComment ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text className="text-white font-bold">Add</Text>
+                  <Text
+                    className="text-white font-bold"
+                    style={{ fontSize: textSize }}
+                  >
+                    Add
+                  </Text>
                 )}
               </TouchableOpacity>
             </View>

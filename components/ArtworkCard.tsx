@@ -1,15 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Image, Pressable, StyleSheet } from "react-native";
 import { Artwork } from "../types/artwork";
-import { Colors } from "../constants/colors"; // Import the colors from constants/colors.ts
-import { useColorBlindFilter } from "@/hooks/useColorBlindFilter"; // Import the context
+import { useAccessibility } from "@/hooks/useAccessibility"; // Unified accessibility hook
+import { getArtistById } from "@/api/artistApi"; // Import API to fetch artist details
 
 interface ArtworkCardProps {
   artwork: Artwork;
   isLiked: boolean;
   numLikes: number;
   toggleLike: () => void;
-  textSize: number;
 }
 
 export default function ArtworkCard({
@@ -17,15 +16,33 @@ export default function ArtworkCard({
   isLiked,
   numLikes,
   toggleLike,
-  textSize,
 }: ArtworkCardProps) {
-  const { currentColors } = useColorBlindFilter(); // Access the color-blind friendly colors
+  const { textSize, currentColors } = useAccessibility(); // Unified logic for accessibility
+  const [artistName, setArtistName] = useState<string>("");
+
+  useEffect(() => {
+    const fetchArtistName = async () => {
+      if (artwork.artistId) {
+        try {
+          const artist = await getArtistById(artwork.artistId);
+          setArtistName(artist?.displayName || "Unknown Artist");
+        } catch (error) {
+          console.error("Error fetching artist name:", error);
+          setArtistName("Unknown Artist");
+        }
+      } else {
+        setArtistName("Unknown Artist");
+      }
+    };
+
+    fetchArtistName();
+  }, [artwork.artistId]);
 
   return (
     <View
       style={[
         styles.cardContainer,
-        { backgroundColor: currentColors.primary || Colors.primary }, // Use color-blind mode or fallback to default color
+        { backgroundColor: currentColors.primary }, // Apply currentColors
       ]}
     >
       <Image
@@ -39,9 +56,9 @@ export default function ArtworkCard({
         style={[
           styles.title,
           {
-            fontSize: textSize,
-            color: currentColors.secondary || Colors.secondary,
-          }, // Apply dynamic text color
+            fontSize: textSize, // Apply textSize
+            color: currentColors.secondary, // Apply currentColors
+          },
         ]}
       >
         {artwork.title}
@@ -50,20 +67,20 @@ export default function ArtworkCard({
         style={[
           styles.artist,
           {
-            fontSize: textSize - 2,
-            color: currentColors.secondary || Colors.secondary,
-          }, // Apply dynamic text color
+            fontSize: textSize - 2, // Slightly smaller than title
+            color: currentColors.secondary,
+          },
         ]}
       >
-        by {artwork.artistId}
+        by {artistName}
       </Text>
       <Text
         style={[
           styles.description,
           {
-            fontSize: textSize - 4,
-            color: currentColors.secondary || Colors.secondary,
-          }, // Apply dynamic text color
+            fontSize: textSize - 4, // Slightly smaller for descriptions
+            color: currentColors.secondary,
+          },
         ]}
       >
         {artwork.description}
@@ -74,8 +91,8 @@ export default function ArtworkCard({
           styles.likes,
           {
             fontSize: textSize - 4,
-            color: currentColors.secondary || Colors.secondary,
-          }, // Apply dynamic text color
+            color: currentColors.secondary,
+          },
         ]}
       >
         {numLikes} {numLikes === 1 ? "like" : "likes"}
@@ -86,8 +103,8 @@ export default function ArtworkCard({
           style={{
             fontSize: textSize - 2,
             color: isLiked
-              ? currentColors.primary || Colors.primary
-              : currentColors.secondary || Colors.secondary, // Adjust like button color
+              ? currentColors.primary // Change color when liked
+              : currentColors.secondary,
           }}
         >
           {isLiked ? "Unlike" : "Like"}
