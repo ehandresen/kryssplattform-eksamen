@@ -56,7 +56,6 @@ export default function ArtistsScreen() {
 
       <ArtistList
         artists={filteredArtists}
-        textSize={textSize}
         onRefresh={fetchArtists}
         refreshing={refreshing}
       />

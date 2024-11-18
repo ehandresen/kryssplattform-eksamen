@@ -6,14 +6,12 @@ import { Artist } from "@/types/artist"; // Typedefinisjon for Artist
 
 interface ArtistListProps {
   artists: Artist[]; // Liste over artister som skal vises
-  textSize?: number; // Valgfri tekststørrelse, standardverdi er satt
   onRefresh: () => Promise<void>; // Funksjon for oppdatering
   refreshing: boolean; // Indikator for oppdateringsstatus
 }
 
 export default function ArtistList({
   artists,
-  textSize = 16,
   onRefresh,
   refreshing,
 }: ArtistListProps) {
@@ -30,7 +28,6 @@ export default function ArtistList({
         <ArtistCard
           artist={item} // Sender artistdata til ArtistCard
           onPress={() => router.push(`/artistDetails/${item.id}`)} // Navigerer til detaljer
-          textSize={textSize} // Sender tekststørrelse til ArtistCard
         />
       )}
       contentContainerStyle={styles.listContainer} // Styling for listen

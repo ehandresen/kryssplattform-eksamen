@@ -1,11 +1,6 @@
-/**
- * Komponent for å vise informasjon om en artist.
- * Denne komponenten presenterer artistens profilbilde, navn og biografi.
- * Brukeren kan trykke på kortet for å utføre en handling via `onPress`.
- */
-
 import React from "react";
 import { View, Text, Image, Pressable, StyleSheet } from "react-native";
+import { useAccessibility } from "@/hooks/useAccessibility"; // Tilgjengelighetshook for tekststørrelse og farger
 
 interface ArtistCardProps {
   artist: {
@@ -16,23 +11,18 @@ interface ArtistCardProps {
     bio?: string; // Valgfri biografi
   };
   onPress: () => void; // Handling som utføres ved trykk på kortet
-  textSize: number; // Dynamisk tekststørrelse
 }
 
-export default function ArtistCard({
-  artist,
-  onPress,
-  textSize,
-}: ArtistCardProps) {
-  // Debugging: Logger artistdata for å sikre korrekt input
-  console.log("ArtistCard mottok data:", artist);
+export default function ArtistCard({ artist, onPress }: ArtistCardProps) {
+  const { textSize, currentColors } = useAccessibility(); // Tilgjengelighetsinnstillinger
 
   return (
     <Pressable
       onPress={onPress}
-      style={styles.cardContainer}
-      // Debugging: Logger når kortet trykkes
-      onPressIn={() => console.log("ArtistCard trykket:", artist.id)}
+      style={[
+        styles.cardContainer,
+        { backgroundColor: currentColors.primary }, // Dynamisk bakgrunnsfarge
+      ]}
     >
       {/* Profilbilde */}
       <Image
@@ -40,7 +30,6 @@ export default function ArtistCard({
           uri: artist.profileImageUrl || "https://via.placeholder.com/150", // Placeholder for manglende bilder
         }}
         style={styles.image}
-        // Debugging: Logger bilde-URL
         onError={(error) =>
           console.error(
             `Feil ved innlasting av bilde for artist ${artist.id}:`,
@@ -50,50 +39,57 @@ export default function ArtistCard({
       />
 
       {/* Artistens navn */}
-      <Text style={[styles.name, { fontSize: textSize }]}>
-        {artist.displayName || "Ukjent artist"}{" "}
-        {/* Standard tekst hvis navn mangler */}
+      <Text
+        style={[
+          styles.name,
+          {
+            fontSize: textSize, // Dynamisk tekststørrelse
+            color: currentColors.secondary, // Dynamisk farge
+          },
+        ]}
+      >
+        {artist.displayName || "Ukjent artist"}
       </Text>
 
       {/* Artistens biografi */}
-      <Text style={[styles.bio, { fontSize: textSize - 2 }]}>
-        {artist.bio || "Ingen biografi tilgjengelig."}{" "}
-        {/* Standard tekst hvis bio mangler */}
+      <Text
+        style={[
+          styles.bio,
+          {
+            fontSize: textSize - 2, // Justert tekststørrelse
+            color: currentColors.secondary, // Dynamisk farge
+          },
+        ]}
+      >
+        {artist.bio || "Ingen biografi tilgjengelig."}
       </Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  // Stil for kortets container
   cardContainer: {
     padding: 16,
     borderRadius: 8,
-    backgroundColor: "#f9f9f9", // Lys bakgrunnsfarge
-    shadowColor: "#000", // Skyggefarge
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2, // Hever kortet visuelt
+    elevation: 2,
     alignItems: "center",
-    marginBottom: 16, // Mellomrom mellom kortene
+    marginBottom: 16,
   },
-  // Stil for profilbildet
   image: {
     width: 100,
     height: 100,
-    borderRadius: 50, // Gjør bildet rundt
-    marginBottom: 12, // Mellomrom til teksten
+    borderRadius: 50,
+    marginBottom: 12,
   },
-  // Stil for artistens navn
   name: {
     fontWeight: "bold",
-    textAlign: "center", // Sentrerer teksten
-    marginBottom: 4, // Mellomrom til bioen
-    color: "#333", // Mørk tekstfarge
+    textAlign: "center",
+    marginBottom: 4,
   },
-  // Stil for artistens biografi
   bio: {
-    color: "#666", // Grå tekstfarge
-    textAlign: "center", // Sentrerer teksten
+    textAlign: "center",
   },
 });
