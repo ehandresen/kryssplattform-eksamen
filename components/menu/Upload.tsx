@@ -15,8 +15,9 @@ import { Artwork } from "@/types/artwork";
 import { addArtworkToFirestore } from "@/api/artworkApi"; // Assuming this function handles Firestore interaction
 import { useAuth } from "@/hooks/useAuth"; // Assuming this gives user authentication data
 import { formatToEuropeanDate } from "@/utils/helpers"; // Assuming this formats date
-import { useExhibitions } from "@/hooks/useExhibitions"; // Use the custom hook for fetching exhibitions
+import { useExhibition } from "@/hooks/useExhibition"; // Use the custom hook for fetching exhibitions
 import { Picker } from "@react-native-picker/picker"; // Correct import for Picker
+import { Exhibition } from "@/types/exhibition";
 
 type UploadProps = {
   visible: boolean;
@@ -30,10 +31,12 @@ const Upload = ({ visible, onClose }: UploadProps) => {
   const [image, setImage] = useState<string | null>(null);
   const [category, setCategory] = useState("");
   const [showCamera, setShowCamera] = useState(false);
-  const [exhibitionId, setExhibitionId] = useState<string | null>(null); // State for exhibition ID selection
+  const [exhibitionId, setExhibitionId] = useState<string | undefined>(
+    undefined
+  ); // State for exhibition ID selection
 
   const { user } = useAuth();
-  const { exhibitions, isLoading } = useExhibitions(); // Use the hook to get exhibitions
+  const { exhibitions, isLoading } = useExhibition(); // Use the hook to get exhibitions
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync();
@@ -150,7 +153,7 @@ const Upload = ({ visible, onClose }: UploadProps) => {
                 } // Explicitly typing itemValue
               >
                 <Picker.Item label="Select an exhibition" value={null} />
-                {exhibitions.map((item) => (
+                {exhibitions.map((item: Exhibition) => (
                   <Picker.Item
                     key={item.id}
                     label={item.title}

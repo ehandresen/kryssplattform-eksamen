@@ -5,12 +5,12 @@ import { useLocalSearchParams } from "expo-router";
 import { useExhibition } from "@/hooks/useExhibition";
 
 const ExhibitionDetails = () => {
-  const { id } = useLocalSearchParams();
   const [exhibition, setExhibition] = useState<Exhibition | undefined>(
     undefined
   );
   const [loading, setLoading] = useState(true);
 
+  const { id } = useLocalSearchParams();
   const { getExhibitionById } = useExhibition();
 
   useEffect(() => {
