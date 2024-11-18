@@ -1,5 +1,3 @@
-// components/Search.tsx
-
 import React, { useState, useRef, useEffect } from "react";
 import {
   View,
@@ -9,58 +7,58 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { Artwork } from "@/types/artwork";
 import { searchByKey } from "@/utils/functions/search"; // Import searchByKey function
 
 /**
  * Props for Search-komponenten
- * @param allArtworks - Liste over alle kunstverk
+ * @param allData - Liste over data som skal filtreres (artworks eller artists)
  * @param setFilteredData - Funksjon for å oppdatere filtrerte data
  * @param isSearchVisible - Bestemmer om søkefeltet er synlig
  * @param setIsSearchVisible - Funksjon for å oppdatere synlighet av søkefeltet
+ * @param searchKey - Nøkkelen i dataobjektene som skal brukes til søk (f.eks. "title" eller "name")
  */
-interface SearchProps {
-  allArtworks: Artwork[];
-  setFilteredData: React.Dispatch<React.SetStateAction<Artwork[]>>;
+interface SearchProps<T> {
+  allData: T[];
+  setFilteredData: React.Dispatch<React.SetStateAction<T[]>>;
   isSearchVisible: boolean;
   setIsSearchVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  searchKey: keyof T;
 }
 
 /**
- * Search-komponenten lar brukeren filtrere kunstverk basert på søkestrenger.
- * Søkeresultater oppdateres dynamisk.
+ * Generisk Search-komponent for filtrering av data basert på en søkestreng.
+ * Kan brukes både for kunstverk og artister.
  */
-export default function Search({
-  allArtworks,
+export default function Search<T>({
+  allData,
   setFilteredData,
   isSearchVisible,
   setIsSearchVisible,
-}: SearchProps) {
+  searchKey,
+}: SearchProps<T>) {
   const [searchQuery, setSearchQuery] = useState(""); // Tilstand for søketekst
   const searchInputRef = useRef<TextInput>(null); // Referanse til søkefeltet
 
-  // Effekt som filtrerer kunstverk når søkestrengen endres
+  // Effekt som filtrerer data når søkestrengen endres
   useEffect(() => {
-    // Bruk searchByKey for å filtrere basert på søkestrengen og ønsket nøkkel
     const filtered = searchQuery
-      ? searchByKey(allArtworks, searchQuery, "title") // Du kan endre "title" til ønsket nøkkel
-      : allArtworks;
+      ? searchByKey(allData, searchQuery, searchKey as string)
+      : allData;
     setFilteredData(filtered); // Oppdaterer listen med filtrerte data
-  }, [searchQuery, allArtworks, setFilteredData]);
+  }, [searchQuery, allData, setFilteredData, searchKey]);
 
   // Effekt som skjuler søkefeltet når tastaturet lukkes
   useEffect(() => {
     const keyboardDidHideListener = Keyboard.addListener(
       "keyboardDidHide",
-      () => setIsSearchVisible(false) // Set isSearchVisible to false when keyboard hides
+      () => setIsSearchVisible(false)
     );
 
     return () => {
-      keyboardDidHideListener.remove(); // Fjern lytteren ved demontering av komponenten
+      keyboardDidHideListener.remove();
     };
   }, [setIsSearchVisible]);
 
-  // Hvis isSearchVisible er false, returner null og skjul komponenten
   if (!isSearchVisible) return null;
 
   return (
@@ -70,12 +68,12 @@ export default function Search({
           <TextInput
             ref={searchInputRef}
             style={styles.searchInput}
-            placeholder="Search by title"
+            placeholder="Search..."
             value={searchQuery}
             onChangeText={setSearchQuery}
-            autoFocus={true} // Automatically focus on input field when search is opened
+            autoFocus={true}
             returnKeyType="search"
-            onSubmitEditing={() => Keyboard.dismiss()} // Dismiss keyboard when submit
+            onSubmitEditing={() => Keyboard.dismiss()}
           />
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>

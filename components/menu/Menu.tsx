@@ -15,15 +15,15 @@ type MenuProps = {
   onEnableColorBlindFilter: () => void;
   onUploadPress: () => void; // Function to toggle upload visibility
   isVisible: boolean;
-  allArtworks: any[];
+  allData: any[]; // Generic data for Search (artists or artworks)
   setFilteredData: React.Dispatch<React.SetStateAction<any[]>>;
   selectedFilter: string | null;
   setSelectedFilter: React.Dispatch<React.SetStateAction<string | null>>;
-  hashtags: string[];
   isSearchVisible: boolean;
   setIsSearchVisible: React.Dispatch<React.SetStateAction<boolean>>;
   isUploadVisible: boolean; // Add the upload visibility state
   setIsUploadVisible: React.Dispatch<React.SetStateAction<boolean>>; // Add the upload visibility setter
+  searchKey: string; // Key to use for searching in Search component
 };
 
 const Menu = ({
@@ -31,7 +31,7 @@ const Menu = ({
   onIncreaseTextSize,
   onEnableColorBlindFilter,
   isVisible,
-  allArtworks,
+  allData,
   setFilteredData,
   selectedFilter,
   setSelectedFilter,
@@ -39,6 +39,7 @@ const Menu = ({
   setIsSearchVisible,
   isUploadVisible,
   setIsUploadVisible,
+  searchKey,
 }: MenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Toggle menu visibility
   const [isFilterVisible, setIsFilterVisible] = useState(false); // Filter modal visibility
@@ -105,16 +106,17 @@ const Menu = ({
           {/* Render the Search component */}
           {isSearchVisible && (
             <Search
-              allArtworks={allArtworks}
+              allData={allData}
               setFilteredData={setFilteredData}
               isSearchVisible={isSearchVisible}
               setIsSearchVisible={setIsSearchVisible}
+              searchKey={searchKey} // Dynamically pass the search key
             />
           )}
 
           {/* Sorting component */}
           <Sort
-            filteredData={allArtworks}
+            filteredData={allData}
             setFilteredData={setFilteredData}
             style={styles.sortButton}
             sortTitle={sortTitle}
@@ -134,7 +136,7 @@ const Menu = ({
       <Filter
         visible={isFilterVisible}
         onClose={closeFilter}
-        allArtworks={allArtworks}
+        allArtworks={allData}
         setFilteredData={setFilteredData}
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}

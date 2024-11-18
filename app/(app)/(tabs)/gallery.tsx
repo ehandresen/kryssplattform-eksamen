@@ -6,35 +6,24 @@ import { getAllArtworks } from "@/api/artworkApi";
 import { Artwork } from "@/types/artwork";
 import { useAccessibility } from "@/hooks/useAccessibility"; // Unified accessibility hook
 
-/**
- * GalleryScreen viser en liste med kunstverk og gir brukeren funksjoner som
- * søk, sortering og opplasting. Skjermen er optimalisert med tilgjengelighetsfunksjoner.
- */
 export default function GalleryScreen() {
-  // Tilgjengelighetsinnstillinger fra en tilpasset hook
   const { textSize, currentColors, toggleColorBlindFilter, increaseTextSize } =
     useAccessibility();
 
-  // State for å håndtere visning og filtrering
-  const [isSearchVisible, setIsSearchVisible] = useState(false); // Søkemodus
-  const [isUploadVisible, setIsUploadVisible] = useState(false); // Opplastingsmodus
-  const [selectedFilter, setSelectedFilter] = useState<string | null>(null); // Valgt filter
-  const [filteredData, setFilteredData] = useState<Artwork[]>([]); // Filtrert kunstverkliste
-  const [allArtworks, setAllArtworks] = useState<Artwork[]>([]); // Full kunstverkliste
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [isUploadVisible, setIsUploadVisible] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+  const [filteredData, setFilteredData] = useState<Artwork[]>([]);
+  const [allArtworks, setAllArtworks] = useState<Artwork[]>([]);
 
-  /**
-   * Henter alle kunstverk fra Firestore ved hjelp av `getAllArtworks` når
-   * komponenten laster inn første gang.
-   */
   useEffect(() => {
     const fetchArtworks = async () => {
       try {
         const artworks = await getAllArtworks();
-        console.log("Fetched artworks:", artworks); // Debugging
         setAllArtworks(artworks);
         setFilteredData(artworks); // Standardvisning
       } catch (error) {
-        console.error("Feil ved henting av kunstverk:", error); // Feilhåndtering
+        console.error("Feil ved henting av kunstverk:", error);
       }
     };
 
@@ -51,22 +40,21 @@ export default function GalleryScreen() {
         sortTitle={true}
         onSortAZ={() => {}}
         onSortZA={() => {}}
-        allArtworks={allArtworks}
+        allData={allArtworks} // Generisk data
         setFilteredData={setFilteredData}
         isSearchVisible={isSearchVisible}
         setIsSearchVisible={setIsSearchVisible}
-        isUploadVisible={isUploadVisible} // Pass upload visibility state
+        isUploadVisible={isUploadVisible}
         onUploadPress={handleUploadPress}
-        setIsUploadVisible={setIsUploadVisible} // Pass upload setter
+        setIsUploadVisible={setIsUploadVisible}
         onIncreaseTextSize={increaseTextSize}
         onEnableColorBlindFilter={toggleColorBlindFilter}
-        isVisible={true} // Assuming the menu is always visible, set this accordingly
+        isVisible={true}
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
-        hashtags={[]} // You can pass hashtags if needed
+        searchKey="title" // Nøkkel for søk i kunstverk
       />
 
-      {/* Display filtered artwork list */}
       <ArtworkList data={filteredData} textSize={textSize} />
     </View>
   );
