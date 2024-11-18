@@ -1,13 +1,17 @@
 // utils/functions/sort.js
+export const sortByKey = (data, key, order = "asc") => {
+  return [...data].sort((a, b) => {
+    const aValue = (a[key] || "").toString().toLowerCase();
+    const bValue = (b[key] || "").toString().toLowerCase();
 
-export const sortAZ = (data) => {
-  return [...data].sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    if (order === "desc") {
+      return bValue.localeCompare(aValue);
+    }
+    return aValue.localeCompare(bValue);
+  });
 };
 
-export const sortDate = (data) => {
-  return [...data].sort(
-    (a, b) =>
-      new Date(b.createdDate || "").getTime() -
-      new Date(a.createdDate || "").getTime()
-  );
-};
+export const sortTitleAZ = (data) => sortByKey(data, "title", "asc");
+export const sortTitleZA = (data) => sortByKey(data, "title", "desc");
+export const sortNameAZ = (data) => sortByKey(data, "name", "asc");
+export const sortNameZA = (data) => sortByKey(data, "name", "desc");

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { View } from "react-native";
 import ArtworkList from "../../../components/ArtworkList";
-import Menu from "../../../components/menu/Menu";
+import Menu from "@/components/menu/Menu";
 import Search from "../../../components/menu/Search";
 import { getAllArtworks } from "@/api/artworkApi";
 import { Artwork } from "@/types/artwork";
 import { useAccessibility } from "@/hooks/useAccessibility"; // Unified accessibility hook
-import { sortAZ, sortDate } from "@/utils/functions/sort";
 import Upload from "../../../components/menu/Upload";
 
 /**
@@ -44,44 +43,17 @@ export default function GalleryScreen() {
     fetchArtworks();
   }, []);
 
-  /**
-   * Sorterer kunstverk alfabetisk basert på tittel (A-Å).
-   */
-  const handleSortAZ = () => {
-    try {
-      const sorted = sortAZ(filteredData);
-      setFilteredData(sorted);
-      console.log("Sorted artworks A-Z:", sorted); // Debugging
-    } catch (error) {
-      console.error("Feil ved alfabetisk sortering:", error);
-    }
-  };
+  // Tilbakestiller filtreringen og viser hele listen med kunstverk.
 
-  /**
-   * Sorterer kunstverk basert på dato.
-   */
-  const handleSortDate = () => {
-    try {
-      const sorted = sortDate(filteredData);
-      setFilteredData(sorted);
-      console.log("Sorted artworks by date:", sorted); // Debugging
-    } catch (error) {
-      console.error("Feil ved dato-sortering:", error);
-    }
-  };
-
-  /**
-   * Tilbakestiller filtreringen og viser hele listen med kunstverk.
-   */
-  const handleClearAll = () => {
-    try {
-      setSelectedFilter(null);
-      setFilteredData(allArtworks);
-      console.log("Filtrering tilbakestilt."); // Debugging
-    } catch (error) {
-      console.error("Feil ved tilbakestilling av filtrering:", error);
-    }
-  };
+  // const handleClearAll = () => {
+  //   try {
+  //     setSelectedFilter(null);
+  //     setFilteredData(allArtworks);
+  //     console.log("Filtrering tilbakestilt."); // Debugging
+  //   } catch (error) {
+  //     console.error("Feil ved tilbakestilling av filtrering:", error);
+  //   }
+  // };
 
   return (
     <View className={`flex-1 p-4 bg-${currentColors.background}`}>
@@ -90,27 +62,21 @@ export default function GalleryScreen() {
         <ArtworkList data={filteredData} textSize={textSize} />
       </View>
 
-      {/* Meny for søk, sortering, opplasting og tilgjengelighetsfunksjoner */}
       <Menu
-        isVisible
-        onSearchPress={() => setIsSearchVisible(true)}
-        onUploadPress={() => setIsUploadVisible(true)}
-        onClearAll={handleClearAll}
+        sortTitle={true}
+        onSortAZ={() => {}}
+        onSortZA={() => {}}
+        onClearAll={() => {}}
         onIncreaseTextSize={increaseTextSize}
         onEnableColorBlindFilter={toggleColorBlindFilter}
+        onSearchPress={() => setIsSearchVisible(!isSearchVisible)}
+        onUploadPress={() => setIsUploadVisible(!isUploadVisible)}
+        isVisible={true}
         allArtworks={allArtworks}
         setFilteredData={setFilteredData}
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
-        hashtags={Array.from(
-          new Set(
-            allArtworks
-              .map((artwork) => artwork.category || "") // Bytter undefined med en tom streng
-              .filter((category) => category !== "") // Fjerner tomme strenger
-          )
-        )}
-        onSortAZ={handleSortAZ}
-        onSortDate={handleSortDate}
+        hashtags={[]}
       />
 
       {/* Komponent for opplasting av kunstverk */}

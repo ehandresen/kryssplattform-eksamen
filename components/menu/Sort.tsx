@@ -1,5 +1,3 @@
-// components/menu/Sort.tsx
-
 import React, { useState } from "react";
 import {
   View,
@@ -9,71 +7,114 @@ import {
   ViewStyle,
 } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { sortAZ, sortDate } from "@/utils/functions/sort";
-import { Artwork } from "@/types/artwork";
+import {
+  sortTitleAZ,
+  sortTitleZA,
+  sortNameAZ,
+  sortNameZA,
+} from "@/utils/functions/sort";
 
 /**
  * Props for Sort-komponenten
  * @param filteredData - Listen over filtrerte kunstverk som skal sorteres
  * @param setFilteredData - Funksjon for å oppdatere den sorterte listen
  * @param style - Valgfri tilpasset stil for hovedkomponenten
+ * @param sortTitle - En boolsk prop for å bestemme hvilken sortering som skal vises (true for Title, false for Name)
  */
 type SortProps = {
-  filteredData: Artwork[];
-  setFilteredData: React.Dispatch<React.SetStateAction<Artwork[]>>;
+  filteredData: any[];
+  setFilteredData: React.Dispatch<React.SetStateAction<any[]>>;
   style?: ViewStyle;
+  sortTitle: boolean; // Determines whether to show title-based or name-based sorting
 };
 
 /**
  * Komponent for å håndtere sortering av kunstverk.
  * Gir brukeren mulighet til å sortere alfabetisk (A-Z) eller etter dato.
  */
-const Sort = ({ filteredData, setFilteredData, style }: SortProps) => {
-  const [isSortOptionsVisible, setIsSortOptionsVisible] = useState(false); // Styrer visningen av sorteringsalternativer
+const Sort = ({
+  filteredData,
+  setFilteredData,
+  style,
+  sortTitle,
+}: SortProps) => {
+  const [isSortOptionsVisible, setIsSortOptionsVisible] = useState(false); // Controls whether the sort options are visible
 
   /**
-   * Veksler mellom å vise og skjule sorteringsalternativene
+   * Toggles the visibility of the sort options
    */
   const toggleSortOptions = () => {
     setIsSortOptionsVisible(!isSortOptionsVisible);
   };
 
   /**
-   * Sorterer kunstverk alfabetisk (A-Z) og oppdaterer listen
+   * Handles sorting based on the selected key (either title or name) and the order (asc or desc)
+   * @param key - Key to sort by (title or name)
+   * @param order - Sort order (asc or desc)
    */
-  const handleSortAZ = () => setFilteredData(sortAZ(filteredData));
-
-  /**
-   * Sorterer kunstverk etter dato og oppdaterer listen
-   */
-  const handleSortDate = () => setFilteredData(sortDate(filteredData));
+  const handleSort = (key: string, order: string) => {
+    let sortedData;
+    // Perform sorting based on the 'key' (title or name) and 'order' (asc or desc)
+    if (key === "title") {
+      sortedData =
+        order === "asc" ? sortTitleAZ(filteredData) : sortTitleZA(filteredData);
+    } else {
+      sortedData =
+        order === "asc" ? sortNameAZ(filteredData) : sortNameZA(filteredData);
+    }
+    // Update the filtered data with the sorted result
+    setFilteredData(sortedData);
+  };
 
   return (
     <View style={[styles.container, style]}>
-      {/* Hovedknappen for å vise sorteringsalternativer */}
+      {/* Main button to toggle sort options */}
       <TouchableOpacity onPress={toggleSortOptions} style={styles.mainButton}>
         <MaterialCommunityIcons name="sort" size={24} color="black" />
       </TouchableOpacity>
 
-      {/* Sorteringsalternativer (vises kun hvis `isSortOptionsVisible` er true) */}
+      {/* Sort options visible when 'isSortOptionsVisible' is true */}
       {isSortOptionsVisible && (
         <View style={styles.optionsContainer}>
-          <TouchableOpacity onPress={handleSortAZ} style={styles.optionButton}>
-            <Text style={styles.optionText}>A-Z</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={handleSortDate}
-            style={styles.optionButton}
-          >
-            <Text style={styles.optionText}>Date</Text>
-          </TouchableOpacity>
+          {/* Show title sorting options if 'sortTitle' is true */}
+          {sortTitle ? (
+            <>
+              <TouchableOpacity
+                onPress={() => handleSort("title", "asc")}
+                style={styles.optionButton}
+              >
+                <Text style={styles.optionText}>Title A-Z</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleSort("title", "desc")}
+                style={styles.optionButton}
+              >
+                <Text style={styles.optionText}>Title Z-A</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              {/* Show name sorting options if 'sortTitle' is false */}
+              <TouchableOpacity
+                onPress={() => handleSort("name", "asc")}
+                style={styles.optionButton}
+              >
+                <Text style={styles.optionText}>Name A-Z</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleSort("name", "desc")}
+                style={styles.optionButton}
+              >
+                <Text style={styles.optionText}>Name Z-A</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       )}
     </View>
   );
 };
 
-// Stiler for komponenten
 const styles = StyleSheet.create({
   container: {
     alignItems: "center", // Sentrerer innholdet horisontalt
