@@ -98,13 +98,13 @@ const Sort = ({
             <>
               {/* Show name sorting options if 'sortTitle' is false */}
               <TouchableOpacity
-                onPress={() => handleSort("name", "asc")}
+                onPress={() => handleSort("displayName", "asc")}
                 style={styles.optionButton}
               >
                 <Text style={styles.optionText}>Name A-Z</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => handleSort("name", "desc")}
+                onPress={() => handleSort("displayName", "desc")}
                 style={styles.optionButton}
               >
                 <Text style={styles.optionText}>Name Z-A</Text>
