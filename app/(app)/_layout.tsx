@@ -40,6 +40,12 @@ export default function AppLayout() {
           }}
         />
         <Stack.Screen
+          name="artistDetails/[id]" // Skjerm for detaljer om artists
+          options={{
+            title: "Artist Details", // Setter tittelen som vises i overskriften
+          }}
+        />
+        <Stack.Screen
           name="map" // Kartskjerm
           options={{
             title: "Map", // Tittel for kartsiden

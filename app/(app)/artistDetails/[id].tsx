@@ -101,11 +101,7 @@ export default function ArtistDetails() {
   return (
     <View className="flex-1 bg-white p-4">
       {/* Viser artistens detaljer */}
-      <ArtistCard
-        artist={artist}
-        onPress={() => {}} // Ingen handling for trykk i detaljvisning
-        textSize={16}
-      />
+      <ArtistCard artist={artist} />
 
       {/* Viser en liste over artistens kunstverk */}
       <View className="mt-4">

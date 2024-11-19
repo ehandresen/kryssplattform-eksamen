@@ -228,7 +228,6 @@ export default function ArtDetails() {
               isLiked={isLiked}
               numLikes={numLikes}
               toggleLike={toggleLike}
-              textSize={textSize} // Sender tekststørrelse til ArtworkCard for tilpasning
             />
             {/* Hvis kunstverket er opprettet av den nåværende brukeren, vis en knapp for å slette */}
             {artwork.artistId === user?.uid && (
