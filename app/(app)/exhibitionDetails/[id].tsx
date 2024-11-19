@@ -123,3 +123,5 @@ const ExhibitionDetails = () => {
     </View>
   );
 };
+
+export default ExhibitionDetails;
