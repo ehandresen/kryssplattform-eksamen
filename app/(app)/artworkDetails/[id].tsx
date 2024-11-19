@@ -44,7 +44,7 @@ export default function ArtDetails() {
 
   const { id } = useLocalSearchParams(); // Henter ID fra URL-parametere
   const router = useRouter(); // Bruker router for navigering
-  const { session, user } = useAuth(); // Henter autentiseringinformasjon
+  const { session, user, role } = useAuth(); // Henter autentiseringinformasjon
   const { getExhibitionById } = useExhibition(); // Henter informasjon om utstilling
   const fetchArtworkFromFirebase = async () => {
     try {
@@ -213,6 +213,17 @@ export default function ArtDetails() {
     return (
       <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  // Hvis bruker ikke er logget inn, hvis denne meldingen
+  if (role === "guest") {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text className="text-xl text-gray-600 text-center">
+          You must be logged in to view artwork details.
+        </Text>
       </View>
     );
   }

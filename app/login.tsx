@@ -5,7 +5,9 @@ import {
   Button,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
+  StyleSheet,
 } from "react-native";
 import { useAuth } from "@/hooks/useAuth"; // Hook for autentisering
 import { router } from "expo-router"; // Brukes til navigasjon
@@ -21,7 +23,7 @@ const LoginScreen = () => {
   const [username, setUsername] = useState(""); // Holder brukernavn ved opprettelse
   const [isSignUpMode, setIsSignUpMode] = useState(false); // Veksler mellom innlogging og opprettelse av bruker
 
-  const { signIn, isLoading, setIsLoading, session } = useAuth(); // Henter metoder og tilstand fra `useAuth`
+  const { signIn, isLoading, setIsLoading, session, loginAsGuest } = useAuth(); // Henter metoder og tilstand fra `useAuth`
 
   // Brukeren omdirigeres til galleriet hvis de allerede er logget inn
   useEffect(() => {
@@ -77,6 +79,11 @@ const LoginScreen = () => {
     }
   };
 
+  const handleGuestLogin = () => {
+    loginAsGuest();
+    router.navigate("/(app)/(tabs)/gallery");
+  };
+
   return (
     <View className="flex-1 justify-center p-4 bg-white">
       <Text className="text-2xl font-bold mb-6 text-center text-teal-600">
@@ -122,22 +129,64 @@ const LoginScreen = () => {
       ) : (
         <>
           {/* Knapp for enten å logge inn eller opprette bruker */}
-          <Button
-            title={isSignUpMode ? "Opprett bruker" : "Logg inn"}
+          <TouchableOpacity
+            style={styles.button}
             onPress={isSignUpMode ? handleSignUp : handleLogin}
-          />
+          >
+            <Text style={styles.buttonText}>
+              {isSignUpMode ? "Opprett bruker" : "Logg inn"}
+            </Text>
+          </TouchableOpacity>
 
           {/* Knapp for å bytte mellom innlogging og opprettelse av bruker */}
-          <Button
-            title={
-              isSignUpMode ? "Bytt til innlogging" : "Bytt til opprettelse"
-            }
+          <TouchableOpacity
+            style={[styles.button, styles.switchButton]}
             onPress={() => setIsSignUpMode(!isSignUpMode)}
-          />
+          >
+            <Text style={styles.switchButtonText}>
+              {isSignUpMode ? "Bytt til innlogging" : "Bytt til opprettelse"}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Knapp for gjeste logg inn */}
+          <TouchableOpacity
+            style={[styles.button, styles.guestButton]}
+            onPress={handleGuestLogin}
+          >
+            <Text style={styles.guestButtonText}>Fortsett som Gjest</Text>
+          </TouchableOpacity>
         </>
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: "#008080",
+    paddingVertical: 10,
+    borderRadius: 4,
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  switchButton: {
+    backgroundColor: "#004d4d",
+  },
+  switchButtonText: {
+    color: "#fff",
+  },
+  guestButton: {
+    backgroundColor: "#d3d3d3",
+    borderColor: "#ccc",
+    borderWidth: 1,
+  },
+  guestButtonText: {
+    color: "#888",
+  },
+});
 
 export default LoginScreen;

@@ -19,6 +19,8 @@ type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
+  role: "guest" | "authenticated";
+  loginAsGuest: () => void;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -29,16 +31,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [role, setRole] = useState<"guest" | "authenticated">("guest");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setSession(user ? user.email : null); // Use user email for session
-      setUser(user ? user : null);
+      if (user) {
+        setSession(user.email);
+        setUser(user);
+        setRole("authenticated");
+      } else {
+        setSession(null);
+        setUser(null);
+        setRole("guest");
+      }
       setIsLoading(false);
     });
 
-    return unsubscribe; // Clean up on component unmount
+    return unsubscribe;
   }, []);
+
+  const loginAsGuest = () => {
+    console.log("role from auth:", role);
+    setRole("guest");
+    setSession("guest-session"); // dummy data for guest logg inn
+    setUser(null);
+  };
 
   const signIn = async (
     email: string,
@@ -84,6 +101,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         user,
         isLoading,
         setIsLoading,
+        role,
+        loginAsGuest,
       }}
     >
       {children}
