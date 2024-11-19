@@ -1,49 +1,60 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { AntDesign, Entypo } from "@expo/vector-icons";
-import Clear from "./Clear";
 import Accessibility from "./Accessibility";
 import Filter from "./Filter";
 import Sort from "./Sort";
+import Search from "./Search"; // Import Search component
+import Upload from "./Upload"; // Import Upload component
 
 type MenuProps = {
-  onClearAll: () => void;
+  sortTitle?: boolean;
+  onSortAZ: () => void;
+  onSortZA: () => void;
   onIncreaseTextSize: () => void;
   onEnableColorBlindFilter: () => void;
-  onSearchPress: () => void;
-  onUploadPress: () => void; // New prop for upload press
+  onUploadPress: () => void; // Function to toggle upload visibility
   isVisible: boolean;
-  allArtworks: any[];
+  allData: any[]; // Generic data for Search (artists or artworks)
   setFilteredData: React.Dispatch<React.SetStateAction<any[]>>;
   selectedFilter: string | null;
   setSelectedFilter: React.Dispatch<React.SetStateAction<string | null>>;
-  hashtags: string[];
+  isSearchVisible: boolean;
+  setIsSearchVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  isUploadVisible: boolean; // Add the upload visibility state
+  setIsUploadVisible: React.Dispatch<React.SetStateAction<boolean>>; // Add the upload visibility setter
+  searchKey: string; // Key to use for searching in Search component
 };
 
-export default function Menu({
-  onClearAll,
+const Menu = ({
+  sortTitle = true,
   onIncreaseTextSize,
   onEnableColorBlindFilter,
-  onSearchPress,
-  onUploadPress, // Destructure the new prop
   isVisible,
-  allArtworks,
+  allData,
   setFilteredData,
   selectedFilter,
   setSelectedFilter,
-  hashtags,
-}: MenuProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  isSearchVisible,
+  setIsSearchVisible,
+  isUploadVisible,
+  setIsUploadVisible,
+  searchKey,
+}: MenuProps) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Toggle menu visibility
+  const [isFilterVisible, setIsFilterVisible] = useState(false); // Filter modal visibility
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const onFilterPress = () => setIsFilterVisible(true);
-  const closeFilter = () => setIsFilterVisible(false);
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen); // Toggle menu visibility
 
-  if (!isVisible) return null;
+  const onFilterPress = () => setIsFilterVisible(true); // Open filter modal
+
+  const closeFilter = () => setIsFilterVisible(false); // Close filter modal
+
+  if (!isVisible) return null; // If menu is not visible, return null
 
   return (
     <View style={styles.container}>
+      {/* Main menu button */}
       <TouchableOpacity
         onPress={toggleMenu}
         activeOpacity={0.7}
@@ -63,54 +74,91 @@ export default function Menu({
         </View>
       </TouchableOpacity>
 
+      {/* Menu content */}
       {isMenuOpen && (
         <>
-          <Clear onClearAll={onClearAll} style={styles.clearAllButton} />
-          <TouchableOpacity onPress={onSearchPress} style={styles.searchButton}>
+          {/* Conditional rendering based on sortTitle */}
+          {sortTitle && (
+            <>
+              <TouchableOpacity
+                onPress={onFilterPress}
+                style={styles.filterButton}
+              >
+                <AntDesign name="filter" size={24} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setIsUploadVisible(true)} // Show upload modal
+                style={styles.uploadButton}
+              >
+                <AntDesign name="plus" size={24} color="black" />
+              </TouchableOpacity>
+            </>
+          )}
+
+          {/* Search button */}
+          <TouchableOpacity
+            onPress={() => setIsSearchVisible(!isSearchVisible)}
+            style={styles.searchButton}
+          >
             <AntDesign name="search1" size={24} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={onFilterPress} style={styles.filterButton}>
-            <AntDesign name="filter" size={24} color="black" />
-          </TouchableOpacity>
+
+          {/* Render the Search component */}
+          {isSearchVisible && (
+            <Search
+              allData={allData}
+              setFilteredData={setFilteredData}
+              isSearchVisible={isSearchVisible}
+              setIsSearchVisible={setIsSearchVisible}
+              searchKey={searchKey} // Dynamically pass the search key
+            />
+          )}
+
+          {/* Sorting component */}
           <Sort
-            filteredData={allArtworks}
+            filteredData={allData}
             setFilteredData={setFilteredData}
             style={styles.sortButton}
+            sortTitle={sortTitle}
           />
+
+          {/* Accessibility options */}
           <Accessibility
             onIncreaseTextSize={onIncreaseTextSize}
             onEnableColorBlindFilter={onEnableColorBlindFilter}
             style={styles.accessibilityButton}
             isTextSizeIncreased={false}
           />
-          <TouchableOpacity
-            onPress={onUploadPress} // Use the new prop for Upload
-            style={styles.uploadButton}
-          >
-            <AntDesign name="plus" size={24} color="black" />
-          </TouchableOpacity>
         </>
       )}
 
+      {/* Filter modal */}
       <Filter
         visible={isFilterVisible}
         onClose={closeFilter}
-        allArtworks={allArtworks}
+        allArtworks={allData}
         setFilteredData={setFilteredData}
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
-        hashtags={hashtags}
+      />
+
+      {/* Upload modal */}
+      <Upload
+        visible={isUploadVisible}
+        onClose={() => setIsUploadVisible(false)} // Close upload modal
       />
     </View>
   );
-}
+};
 
+// Stiler for komponenten
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
     bottom: 20,
     right: 20,
     alignItems: "center",
+    zIndex: 100,
   },
   menuButton: {
     position: "absolute",
@@ -130,17 +178,6 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 5,
   },
-  clearAllButton: {
-    position: "absolute",
-    bottom: 40,
-    right: 80,
-    backgroundColor: "#e0b3b3",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   searchButton: {
     position: "absolute",
     bottom: 80,
@@ -154,7 +191,7 @@ const styles = StyleSheet.create({
   },
   filterButton: {
     position: "absolute",
-    bottom: 150,
+    bottom: 290,
     right: 0,
     backgroundColor: "#e0b3b3",
     width: 60,
@@ -176,7 +213,7 @@ const styles = StyleSheet.create({
   },
   accessibilityButton: {
     position: "absolute",
-    bottom: 290,
+    bottom: 150,
     right: 0,
     backgroundColor: "#e0b3b3",
     width: 60,
@@ -197,3 +234,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+export default Menu;

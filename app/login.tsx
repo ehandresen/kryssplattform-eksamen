@@ -1,112 +1,137 @@
+import React, { useState, useEffect } from "react";
 import {
   ActivityIndicator,
   Alert,
   Button,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
-import React, { useState, useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { router } from "expo-router"; // Use `router` to handle navigation
-import { signUp } from "@/api/authApi";
+import { useAuth } from "@/hooks/useAuth"; // Hook for autentisering
+import { router } from "expo-router"; // Brukes til navigasjon
+import { signUp } from "@/api/authApi"; // Importerer sign-up funksjonen fra API
 
+/**
+ * LoginScreen håndterer både innlogging og opprettelse av nye brukere.
+ */
 const LoginScreen = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
-  const [isSignUpMode, setIsSignUpMode] = useState(false);
+  // Tilstand for innlogging og opprettelse av bruker
+  const [email, setEmail] = useState(""); // Holder e-postinput
+  const [password, setPassword] = useState(""); // Holder passordinput
+  const [username, setUsername] = useState(""); // Holder brukernavn ved opprettelse
+  const [isSignUpMode, setIsSignUpMode] = useState(false); // Veksler mellom innlogging og opprettelse av bruker
 
-  const { signIn, isLoading, setIsLoading, session } = useAuth();
+  const { signIn, isLoading, setIsLoading, session } = useAuth(); // Henter metoder og tilstand fra `useAuth`
 
+  // Brukeren omdirigeres til galleriet hvis de allerede er logget inn
   useEffect(() => {
-    // Redirect to gallery if already logged in
     if (session) {
-      router.navigate("/(app)/(tabs)/gallery"); // Absolute path
+      router.navigate("/(app)/(tabs)/gallery"); // Navigerer til galleriet
     }
   }, [session]);
 
+  /**
+   * Håndterer innlogging av brukeren.
+   */
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Validation Error", "Email and password are required");
+      Alert.alert("Valideringsfeil", "E-post og passord er påkrevd.");
       return;
     }
 
     setIsLoading(true);
     try {
-      const user = await signIn(email, password);
+      const user = await signIn(email, password); // Forsøker å logge inn brukeren
       if (user) {
-        router.navigate("/(app)/(tabs)/gallery"); // Absolute path
+        router.navigate("/(app)/(tabs)/gallery");
       }
     } catch (error) {
-      Alert.alert("Error", "Invalid email or password");
+      console.error("Feil under innlogging:", error);
+      Alert.alert("Feil", "Ugyldig e-post eller passord.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  /**
+   * Håndterer opprettelse av ny bruker.
+   */
   const handleSignUp = async () => {
     if (!email || !password || !username) {
-      Alert.alert("All fields are required to sign up");
+      Alert.alert(
+        "Valideringsfeil",
+        "Alle feltene må fylles ut for å opprette en bruker."
+      );
       return;
     }
 
     setIsLoading(true);
     try {
-      // Call the updated signUp function
-      await signUp(email, password, username);
-      Alert.alert("Success", "User created successfully!");
+      await signUp(email, password, username); // Oppretter ny bruker
+      Alert.alert("Suksess", "Bruker opprettet!");
     } catch (error) {
-      Alert.alert("Sign Up Error", "An error occurred during sign up");
+      console.error("Feil under opprettelse av bruker:", error);
+      Alert.alert("Feil ved opprettelse", "En feil oppsto under opprettelsen.");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{isSignUpMode ? "Sign Up" : "Login"}</Text>
+    <View className="flex-1 justify-center p-4 bg-white">
+      <Text className="text-2xl font-bold mb-6 text-center text-teal-600">
+        {isSignUpMode ? "Opprett bruker" : "Logg inn"}
+      </Text>
 
+      {/* Input-felt for brukernavn (kun ved opprettelse av bruker) */}
       {isSignUpMode && (
         <TextInput
-          style={styles.input}
-          placeholder="Username"
+          className="h-10 border border-gray-300 rounded-md p-2 mb-4"
+          placeholder="Brukernavn"
           value={username}
           onChangeText={setUsername}
           autoCapitalize="none"
           placeholderTextColor="#888"
         />
       )}
+
+      {/* Input-felt for e-post */}
       <TextInput
-        style={styles.input}
-        placeholder="Email"
+        className="h-10 border border-gray-300 rounded-md p-2 mb-4"
+        placeholder="E-post"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
         placeholderTextColor="#888"
       />
+
+      {/* Input-felt for passord */}
       <TextInput
-        style={styles.input}
-        placeholder="Password"
+        className="h-10 border border-gray-300 rounded-md p-2 mb-4"
+        placeholder="Passord"
         value={password}
         onChangeText={setPassword}
+        secureTextEntry={true} // Skjuler passordet
         placeholderTextColor="#888"
-        secureTextEntry={true} // hide text input
       />
 
+      {/* Viser en spinner mens forespørsler lastes */}
       {isLoading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <>
+          {/* Knapp for enten å logge inn eller opprette bruker */}
           <Button
-            title={isSignUpMode ? "Create User" : "Login"}
+            title={isSignUpMode ? "Opprett bruker" : "Logg inn"}
             onPress={isSignUpMode ? handleSignUp : handleLogin}
-            disabled={isLoading}
           />
+
+          {/* Knapp for å bytte mellom innlogging og opprettelse av bruker */}
           <Button
-            title={isSignUpMode ? "Switch to Login" : "Switch to Sign Up"}
+            title={
+              isSignUpMode ? "Bytt til innlogging" : "Bytt til opprettelse"
+            }
             onPress={() => setIsSignUpMode(!isSignUpMode)}
           />
         </>
@@ -114,27 +139,5 @@ const LoginScreen = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
-    textAlign: "center",
-  },
-  input: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-    borderRadius: 4,
-  },
-});
 
 export default LoginScreen;

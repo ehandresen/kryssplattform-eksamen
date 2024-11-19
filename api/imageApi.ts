@@ -1,29 +1,41 @@
 import { getStorageRef } from "@/firebaseConfig";
 import { uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
+/**
+ * Laster opp et bilde til Firebase Storage og returnerer nedlastnings-URL-en
+ * @param uri - Filstien eller URI-en til bildet som skal lastes opp
+ * @returns En streng med nedlastnings-URL-en
+ */
 export const uploadImageToFirebase = async (uri: string): Promise<string> => {
   try {
-    // Fetch the image file as a blob
+    // Hent bildefilen som en blob
     const fetchResponse = await fetch(uri);
     const blob = await fetchResponse.blob();
 
-    // Generate a unique filename for the image
+    // Generer et unikt filnavn for bildet
     const filename = `images/${Date.now()}-${Math.random()
       .toString(36)
       .substr(2, 9)}`;
     const imageRef = getStorageRef(filename);
 
-    // Upload the file using Firebase Storage
+    // Last opp filen til Firebase Storage
     const uploadTask = uploadBytesResumable(imageRef, blob);
 
-    // Wait for the upload to complete and get the download URL
+    // Vent til opplastingen er fullført, og hent nedlastnings-URL-en
     await uploadTask;
     const downloadUrl = await getDownloadURL(imageRef);
 
-    console.log("Image uploaded and accessible at:", downloadUrl);
-    return downloadUrl; // Return the proper download URL
+    console.log("Bilde lastet opp og tilgjengelig på:", downloadUrl);
+    return downloadUrl; // Returnerer nedlastnings-URL-en
   } catch (error) {
-    console.error("Error uploading image to Firebase:", error);
-    throw error;
+    if (error instanceof Error) {
+      console.error(
+        "Feil ved opplasting av bilde til Firebase:",
+        error.message
+      );
+    } else {
+      console.error("Ukjent feil ved opplasting av bilde til Firebase:", error);
+    }
+    throw error; // Kaster feilen videre for å håndtere den der funksjonen brukes
   }
 };

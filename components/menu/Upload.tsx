@@ -1,4 +1,9 @@
-import React, { useState, useEffect } from "react";
+/**
+ * Komponent for opplasting av kunstverk.
+ * Tillater brukeren å legge til informasjon om kunstverket, laste opp bilder fra galleri eller kamera, og knytte kunstverket til en utstilling (valgfritt).
+ */
+
+import React, { useState } from "react";
 import {
   Modal,
   View,
@@ -10,14 +15,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import CameraScreen from "@/components/CameraScreen"; // Assuming you have this component for capturing photos
+import CameraScreen from "@/components/CameraScreen";
 import { Artwork } from "@/types/artwork";
-import { addArtworkToFirestore } from "@/api/artworkApi"; // Assuming this function handles Firestore interaction
-import { useAuth } from "@/hooks/useAuth"; // Assuming this gives user authentication data
-import { formatToEuropeanDate } from "@/utils/helpers"; // Assuming this formats date
-import { useExhibition } from "@/hooks/useExhibition"; // Use the custom hook for fetching exhibitions
-import { Picker } from "@react-native-picker/picker"; // Correct import for Picker
-import { Exhibition } from "@/types/exhibition";
+import { addArtworkToFirestore } from "@/api/artworkApi";
+import { useAuth } from "@/hooks/useAuth";
+import { formatToEuropeanDate } from "@/utils/helpers";
+import { useExhibition } from "@/hooks/useExhibition";
+import { Picker } from "@react-native-picker/picker";
 
 type UploadProps = {
   visible: boolean;
@@ -25,6 +29,7 @@ type UploadProps = {
 };
 
 const Upload = ({ visible, onClose }: UploadProps) => {
+  // State for skjemafelter
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [caption, setCaption] = useState("");
@@ -33,26 +38,40 @@ const Upload = ({ visible, onClose }: UploadProps) => {
   const [showCamera, setShowCamera] = useState(false);
   const [exhibitionId, setExhibitionId] = useState<string | undefined>(
     undefined
-  ); // State for exhibition ID selection
+  );
 
-  const { user } = useAuth();
-  const { exhibitions, isLoading } = useExhibition(); // Use the hook to get exhibitions
+  const { user } = useAuth(); // Henter brukerinformasjon
+  const { exhibitions, isLoading } = useExhibition(); // Henter utstillinger
 
+  /**
+   * Håndterer opplasting av bilde fra galleri.
+   */
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync();
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync();
+      if (!result.canceled) {
+        setImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Feil ved opplasting av bilde:", error);
     }
   };
 
+  /**
+   * Håndterer bilde tatt med kamera.
+   * @param capturedImageUri URI for det tatt bilde
+   */
   const handleCameraCapture = (capturedImageUri: string) => {
     setImage(capturedImageUri);
     setShowCamera(false);
   };
 
+  /**
+   * Sender det nye kunstverket til Firestore.
+   */
   const handleSubmit = async () => {
     const artwork: Artwork = {
-      id: Math.random().toFixed(7).toString(),
+      id: Math.random().toFixed(7).toString(), // Midlertidig ID
       title,
       artistId: user?.uid,
       imageUrl: image || "",
@@ -63,18 +82,23 @@ const Upload = ({ visible, onClose }: UploadProps) => {
       views: 0,
       likes: [],
       comments: [],
-      exhibitionId: exhibitionId || undefined, // Conditionally set exhibitionId (optional)
+      exhibitionId: exhibitionId || undefined,
     };
 
-    await addArtworkToFirestore(artwork);
-    onClose();
+    try {
+      await addArtworkToFirestore(artwork);
+      console.log("Kunstverk lagt til:", artwork);
+      onClose(); // Lukker modal etter opplasting
+    } catch (error) {
+      console.error("Feil ved opplasting av kunstverk:", error);
+    }
   };
 
-  // Display loading indicator while exhibitions are being fetched
+  // Viser lasteskjerm hvis utstillinger laster
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Loading Exhibitions...</Text>
+        <Text>Laster utstillinger...</Text>
       </View>
     );
   }
@@ -86,14 +110,7 @@ const Upload = ({ visible, onClose }: UploadProps) => {
       visible={visible}
       onRequestClose={onClose}
     >
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 20,
-        }}
-      >
+      <View style={styles.container}>
         {showCamera ? (
           <CameraScreen
             onCapture={handleCameraCapture}
@@ -101,59 +118,59 @@ const Upload = ({ visible, onClose }: UploadProps) => {
           />
         ) : (
           <View>
-            <Text style={styles.title}>Upload Artwork</Text>
+            <Text style={styles.title}>Last opp kunstverk</Text>
 
-            {/* Image Preview */}
+            {/* Forhåndsvisning av bilde */}
             <View style={styles.imageContainer}>
               {image ? (
                 <Image source={{ uri: image }} style={styles.imagePreview} />
               ) : (
                 <View style={styles.imagePlaceholder}>
-                  <Text>No Image Selected</Text>
+                  <Text>Ingen bilde valgt</Text>
                 </View>
               )}
-              <Button title="Upload Image from Gallery" onPress={pickImage} />
-              <Button title="Open Camera" onPress={() => setShowCamera(true)} />
+              <Button title="Velg bilde fra galleri" onPress={pickImage} />
+              <Button title="Åpne kamera" onPress={() => setShowCamera(true)} />
             </View>
 
-            {/* Form Fields */}
+            {/* Skjemafelter */}
             <TextInput
-              placeholder="Title of the artwork"
+              placeholder="Tittel på kunstverket"
               value={title}
               onChangeText={setTitle}
               style={styles.input}
             />
             <TextInput
-              placeholder="Enter caption"
+              placeholder="Bildetekst"
               value={caption}
               onChangeText={setCaption}
               style={styles.input}
             />
             <TextInput
-              placeholder="Enter description"
+              placeholder="Beskrivelse"
               value={description}
               onChangeText={setDescription}
               style={styles.input}
               multiline
             />
             <TextInput
-              placeholder="Enter category"
+              placeholder="Kategori"
               value={category}
               onChangeText={setCategory}
               style={styles.input}
             />
 
-            {/* Exhibition Selection (Dropdown) */}
+            {/* Valgfritt valg av utstilling */}
             <View style={styles.dropdownContainer}>
-              <Text>Select an Exhibition (Optional)</Text>
+              <Text>Velg en utstilling (valgfritt)</Text>
               <Picker
                 selectedValue={exhibitionId}
-                onValueChange={(itemValue: string) =>
-                  setExhibitionId(itemValue)
-                } // Explicitly typing itemValue
+                onValueChange={(itemValue) =>
+                  setExhibitionId(itemValue || undefined)
+                }
               >
-                <Picker.Item label="Select an exhibition" value={null} />
-                {exhibitions.map((item: Exhibition) => (
+                <Picker.Item label="Velg en utstilling" value={undefined} />
+                {exhibitions.map((item) => (
                   <Picker.Item
                     key={item.id}
                     label={item.title}
@@ -163,15 +180,15 @@ const Upload = ({ visible, onClose }: UploadProps) => {
               </Picker>
             </View>
 
-            {/* Submit and Cancel Buttons */}
+            {/* Lagre og avbryt-knapper */}
             <TouchableOpacity
               onPress={handleSubmit}
               style={styles.submitButton}
             >
-              <Text style={styles.buttonText}>Save</Text>
+              <Text style={styles.buttonText}>Lagre</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
-              <Text style={styles.buttonText}>Cancel</Text>
+              <Text style={styles.buttonText}>Avbryt</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -181,6 +198,12 @@ const Upload = ({ visible, onClose }: UploadProps) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
   title: {
     fontSize: 22,
     fontWeight: "bold",

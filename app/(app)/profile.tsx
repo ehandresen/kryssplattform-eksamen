@@ -5,7 +5,6 @@ import {
   TextInput,
   Button,
   Image,
-  StyleSheet,
   TouchableOpacity,
   Modal,
 } from "react-native";
@@ -17,15 +16,16 @@ import CameraScreen from "@/components/CameraScreen";
 import { uploadImageToFirebase } from "@/api/imageApi";
 
 export default function ProfileScreen() {
-  const { user, reloadUser } = useAuth();
-  const [displayName, setDisplayName] = useState("");
-  const [email, setEmail] = useState("");
-  const [bio, setBio] = useState("");
-  const [profileImageUrl, setProfileImageUrl] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
-  const [showCamera, setShowCamera] = useState(false);
+  const { user, reloadUser } = useAuth(); // Henter innlogget brukerdata og funksjon for å oppdatere bruker
+  const [displayName, setDisplayName] = useState(""); // Navn på brukeren
+  const [email, setEmail] = useState(""); // E-post for brukeren
+  const [bio, setBio] = useState(""); // Bio for brukeren
+  const [profileImageUrl, setProfileImageUrl] = useState(""); // URL for profilbilde
+  const [isEditing, setIsEditing] = useState(false); // Indikerer om brukeren redigerer profilen
+  const [showCamera, setShowCamera] = useState(false); // Indikerer om kameraet vises
 
   useEffect(() => {
+    // Henter data for innlogget bruker fra Firestore
     const fetchArtistData = async () => {
       if (user?.uid) {
         try {
@@ -42,7 +42,7 @@ export default function ProfileScreen() {
             );
           }
         } catch (error) {
-          console.error("Error fetching artist data:", error);
+          console.error("Feil ved henting av artistdata:", error); // Feilhåndtering
         }
       }
     };
@@ -50,6 +50,7 @@ export default function ProfileScreen() {
     fetchArtistData();
   }, [user]);
 
+  // Oppdaterer artistdata i Firestore
   const updateArtistInFirestore = async () => {
     try {
       if (user?.uid) {
@@ -60,13 +61,15 @@ export default function ProfileScreen() {
           bio,
           profileImageUrl,
         });
-        console.log("Artist document updated successfully.");
+        console.log("Artistdata oppdatert i Firestore."); // Debugging
+        setIsEditing(false); // Avslutt redigeringsmodus
       }
     } catch (error) {
-      console.error("Error updating artist document:", error);
+      console.error("Feil ved oppdatering av artistdata:", error); // Feilhåndtering
     }
   };
 
+  // Håndterer bilde fra kamera
   const handleCameraCapture = async (imageUri: string) => {
     try {
       const downloadUrl = await uploadImageToFirebase(imageUri);
@@ -79,10 +82,11 @@ export default function ProfileScreen() {
 
       setShowCamera(false);
     } catch (error) {
-      console.error("Error capturing or uploading image:", error);
+      console.error("Feil ved lagring av bilde:", error); // Feilhåndtering
     }
   };
 
+  // Håndterer bildevalg fra galleriet
   const pickImageFromGallery = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -102,70 +106,73 @@ export default function ProfileScreen() {
         }
       }
     } catch (error) {
-      console.error("Error picking or uploading image:", error);
+      console.error("Feil ved bildeopplasting:", error); // Feilhåndtering
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={{ position: "relative" }}>
+    <View className="flex-1 items-center bg-white p-5">
+      {/* Profilbilde med redigeringsalternativer */}
+      <View className="relative">
         <Image
           source={{ uri: profileImageUrl || "https://via.placeholder.com/150" }}
-          style={styles.profileImage}
+          className="w-36 h-36 rounded-full"
         />
         {isEditing && (
           <>
             <TouchableOpacity
-              style={[styles.editIcon, { right: 10 }]}
+              className="absolute bottom-1 right-2 bg-black p-2 rounded-md"
               onPress={() => setShowCamera(true)}
             >
-              <Text style={{ color: "#fff", fontSize: 12 }}>Camera</Text>
+              <Text className="text-white text-xs">Kamera</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.editIcon, { left: 10 }]}
+              className="absolute bottom-1 left-2 bg-black p-2 rounded-md"
               onPress={pickImageFromGallery}
             >
-              <Text style={{ color: "#fff", fontSize: 12 }}>Upload</Text>
+              <Text className="text-white text-xs">Last opp</Text>
             </TouchableOpacity>
           </>
         )}
       </View>
 
+      {/* Profilredigering eller visning */}
       {isEditing ? (
         <View>
           <TextInput
-            style={styles.input}
-            placeholder="Display Name"
+            className="w-4/5 p-3 border border-gray-300 rounded-md mb-3"
+            placeholder="Navn"
             value={displayName}
             onChangeText={setDisplayName}
           />
           <TextInput
-            style={styles.input}
-            placeholder="Email"
+            className="w-4/5 p-3 border border-gray-300 rounded-md mb-3"
+            placeholder="E-post"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
           />
           <TextInput
-            style={styles.input}
+            className="w-4/5 p-3 border border-gray-300 rounded-md mb-3"
             placeholder="Bio"
             value={bio}
             onChangeText={setBio}
           />
-          <Button title="Save Changes" onPress={updateArtistInFirestore} />
-          <Button title="Cancel" onPress={() => setIsEditing(false)} />
+          <Button title="Lagre endringer" onPress={updateArtistInFirestore} />
+          <Button title="Avbryt" onPress={() => setIsEditing(false)} />
         </View>
       ) : (
         <View>
-          <Text style={styles.name}>{displayName}</Text>
-          <Text style={styles.email}>{email}</Text>
-          <Text style={styles.bio}>{bio}</Text>
+          <Text className="text-2xl font-bold">{displayName}</Text>
+          <Text className="text-lg text-gray-600">{email}</Text>
+          <Text className="text-sm text-gray-500">{bio}</Text>
           <TouchableOpacity onPress={() => setIsEditing(true)}>
-            <Text>Edit Profile</Text>
+            <Text className="text-blue-500">Rediger profil</Text>
           </TouchableOpacity>
         </View>
       )}
 
+      {/* Kamera-modus */}
       {showCamera && (
         <Modal visible={showCamera} animationType="slide">
           <CameraScreen
@@ -177,33 +184,3 @@ export default function ProfileScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    backgroundColor: "#fff",
-    padding: 20,
-  },
-  profileImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-  },
-  editIcon: {
-    position: "absolute",
-    bottom: 5,
-    backgroundColor: "#000",
-    padding: 5,
-    borderRadius: 5,
-  },
-  input: {
-    width: "80%",
-    padding: 10,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 10,
-    fontSize: 16,
-  },
-});

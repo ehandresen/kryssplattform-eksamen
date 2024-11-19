@@ -7,33 +7,47 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { Artwork } from "@/types/artwork";
-import { filterArtworksByQuery } from "@/utils/functions/search";
+import { searchByKey } from "@/utils/functions/search"; // Import searchByKey function
 
-interface SearchProps {
-  allArtworks: Artwork[];
-  setFilteredData: React.Dispatch<React.SetStateAction<Artwork[]>>;
+/**
+ * Props for Search-komponenten
+ * @param allData - Liste over data som skal filtreres (artworks eller artists)
+ * @param setFilteredData - Funksjon for å oppdatere filtrerte data
+ * @param isSearchVisible - Bestemmer om søkefeltet er synlig
+ * @param setIsSearchVisible - Funksjon for å oppdatere synlighet av søkefeltet
+ * @param searchKey - Nøkkelen i dataobjektene som skal brukes til søk (f.eks. "title" eller "name")
+ */
+interface SearchProps<T> {
+  allData: T[];
+  setFilteredData: React.Dispatch<React.SetStateAction<T[]>>;
   isSearchVisible: boolean;
   setIsSearchVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  searchKey: keyof T;
 }
 
-export default function Search({
-  allArtworks,
+/**
+ * Generisk Search-komponent for filtrering av data basert på en søkestreng.
+ * Kan brukes både for kunstverk og artister.
+ */
+export default function Search<T>({
+  allData,
   setFilteredData,
   isSearchVisible,
   setIsSearchVisible,
-}: SearchProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const searchInputRef = useRef<TextInput>(null);
+  searchKey,
+}: SearchProps<T>) {
+  const [searchQuery, setSearchQuery] = useState(""); // Tilstand for søketekst
+  const searchInputRef = useRef<TextInput>(null); // Referanse til søkefeltet
 
+  // Effekt som filtrerer data når søkestrengen endres
   useEffect(() => {
-    // Filter artworks based on the search query
     const filtered = searchQuery
-      ? filterArtworksByQuery(allArtworks, searchQuery)
-      : allArtworks;
-    setFilteredData(filtered);
-  }, [searchQuery, allArtworks, setFilteredData]);
+      ? searchByKey(allData, searchQuery, searchKey as string)
+      : allData;
+    setFilteredData(filtered); // Oppdaterer listen med filtrerte data
+  }, [searchQuery, allData, setFilteredData, searchKey]);
 
+  // Effekt som skjuler søkefeltet når tastaturet lukkes
   useEffect(() => {
     const keyboardDidHideListener = Keyboard.addListener(
       "keyboardDidHide",
@@ -48,44 +62,40 @@ export default function Search({
   if (!isSearchVisible) return null;
 
   return (
-    <KeyboardAvoidingView behavior="padding" style={styles.container}>
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={styles.overlay}>
+    <View style={styles.searchContainer}>
+      <KeyboardAvoidingView behavior="padding" style={styles.inputContainer}>
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <TextInput
             ref={searchInputRef}
             style={styles.searchInput}
-            placeholder="Search artworks..."
+            placeholder="Search..."
             value={searchQuery}
             onChangeText={setSearchQuery}
-            autoFocus
+            autoFocus={true}
+            returnKeyType="search"
+            onSubmitEditing={() => Keyboard.dismiss()}
           />
-        </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderColor: "#ccc",
-    zIndex: 10,
+  searchContainer: {
+    marginTop: 20,
+    paddingHorizontal: 10,
   },
-  overlay: {
-    width: "100%",
-    padding: 10,
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
   },
   searchInput: {
+    flex: 1,
     height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    backgroundColor: "#fff",
-    width: "100%",
+    paddingLeft: 10,
+    fontSize: 16,
   },
 });

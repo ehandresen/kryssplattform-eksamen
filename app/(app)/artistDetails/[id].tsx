@@ -1,137 +1,122 @@
 import React, { useEffect, useState } from "react";
-import { View, ActivityIndicator, StyleSheet, Text } from "react-native";
+import { View, ActivityIndicator, Text } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { getArtistById } from "@/api/artistApi"; // API to fetch artist details
-import { getAllArtworks } from "@/api/artworkApi"; // API to fetch artworks
-import ArtistCard from "@/components/ArtistCard"; // Reuse ArtistCard for the artist details
-import ArtworkList from "@/components/ArtworkList"; // Reuse ArtworkList for the artworks
-import { useAccessibility } from "@/hooks/useAccessibility"; // Unified accessibility hook
+import { getArtistById } from "@/api/artistApi"; // Henter informasjon om en spesifikk artist
+import { getAllArtworks } from "@/api/artworkApi"; // Henter alle kunstverk
+import ArtistCard from "@/components/ArtistCard"; // Kortkomponent for artist
+import ArtworkList from "@/components/ArtworkList"; // Listekomponent for kunstverk
+import { useAccessibility } from "@/hooks/useAccessibility"; // Tilgjengelighetshook
+import { Artist } from "@/types/artist"; // Typedefinisjon for artist
+import { Artwork } from "@/types/artwork"; // Typedefinisjon for kunstverk
 
+/**
+ * Komponent for å vise detaljert informasjon om en spesifikk artist, samt deres kunstverk.
+ */
 export default function ArtistDetails() {
-  const { id } = useLocalSearchParams(); // Get artist ID from route params
-  const { textSize, currentColors } = useAccessibility(); // Accessibility hook
-  const [artist, setArtist] = useState<{
-    id: string;
-    displayName: string;
-    email: string;
-    profileImageUrl?: string;
-    bio?: string;
-  } | null>(null);
+  const { id } = useLocalSearchParams(); // Henter ID for artist fra ruteparametrene
+  const { textSize, currentColors } = useAccessibility(); // Tilgjengelighetsinnstillinger for tekststørrelse og farger
+  const [artist, setArtist] = useState<Artist | null>(null); // Holder informasjon om artisten
+  const [artworks, setArtworks] = useState<Artwork[]>([]); // Holder kunstverk tilhørende artisten
+  const [loading, setLoading] = useState(true); // Indikerer om data laster
+  const [error, setError] = useState<string | null>(null); // Holder eventuelle feilmeldinger
 
-  const [artworks, setArtworks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
+  /**
+   * Henter informasjon om artisten og deres kunstverk.
+   */
   useEffect(() => {
     const fetchArtistAndArtworks = async () => {
       try {
-        // Fetch artist details
-        const artistData = await getArtistById(id as string);
+        console.log("Henter detaljer for artist med ID:", id); // Debugging
 
-        if (!artistData) {
-          setError("Artist not found.");
+        // Henter artistdata fra API
+        const artistData = await getArtistById(id as string);
+        if (!artistData || !artistData.id) {
+          console.error("Fant ingen artist eller ugyldig ID:", artistData); // Debugging
+          setError("Fant ingen artist med gitt ID.");
           setLoading(false);
           return;
         }
 
         setArtist(artistData);
 
-        // Fetch all artworks and filter by the artist's ID
+        // Henter og filtrerer kunstverk basert på artistens ID
         const allArtworks = await getAllArtworks();
         const filteredArtworks = allArtworks.filter(
           (artwork) => artwork.artistId === id
         );
 
+        console.log(
+          `Fant ${filteredArtworks.length} kunstverk for artist med ID:`,
+          id
+        ); // Debugging
         setArtworks(filteredArtworks);
-        setLoading(false);
       } catch (error) {
-        console.error("Error fetching artist or artworks:", error);
-        setError("An error occurred while fetching data.");
-        setLoading(false);
+        console.error("Feil ved henting av artist eller kunstverk:", error); // Debugging
+        setError("En feil oppsto under henting av data.");
+      } finally {
+        setLoading(false); // Stopper lastindikatoren uansett
       }
     };
 
     fetchArtistAndArtworks();
   }, [id]);
 
+  /**
+   * Viser en lasteskjerm mens data hentes.
+   */
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center bg-gray-100">
         <ActivityIndicator size="large" color={currentColors.secondary} />
+        <Text className="mt-2 text-lg text-gray-700">Laster data...</Text>
       </View>
     );
   }
 
+  /**
+   * Viser en feilmelding hvis det oppstår en feil under henting av data.
+   */
   if (error) {
     return (
-      <View style={styles.container}>
-        <Text style={[styles.errorText, { color: currentColors.error }]}>
-          {error}
-        </Text>
+      <View className="flex-1 justify-center items-center bg-gray-100">
+        <Text className="text-xl text-red-600">{error}</Text>
       </View>
     );
   }
 
+  /**
+   * Viser en melding hvis artisten ikke finnes.
+   */
   if (!artist) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Artist not found.</Text>
+      <View className="flex-1 justify-center items-center bg-gray-100">
+        <Text className="text-xl text-red-600">Fant ingen artist.</Text>
       </View>
     );
   }
 
+  /**
+   * Returnerer brukergrensesnittet for artistens detaljer og deres kunstverk.
+   */
   return (
-    <View style={styles.container}>
-      {/* Display Artist Card */}
+    <View className="flex-1 bg-white p-4">
+      {/* Viser artistens detaljer */}
       <ArtistCard
-        artist={{
-          id: artist.id,
-          displayName: artist.displayName,
-          email: artist.email,
-          profileImageUrl: artist.profileImageUrl,
-          bio: artist.bio, // Include bio here
-        }}
-        onPress={() => {}} // No action needed for pressing in details view
+        artist={artist}
+        onPress={() => {}} // Ingen handling for trykk i detaljvisning
         textSize={16}
       />
 
-      {/* Display Artwork List */}
-      <View style={styles.artworksContainer}>
+      {/* Viser en liste over artistens kunstverk */}
+      <View className="mt-4">
         <Text
-          style={[
-            styles.sectionTitle,
-            { color: currentColors.primary, fontSize: textSize },
-          ]}
+          className="text-lg font-bold text-primary mb-3"
+          style={{ fontSize: textSize }}
         >
-          Artworks by {artist.displayName}
+          Kunstverk av {artist.displayName}
         </Text>
         <ArtworkList data={artworks} textSize={textSize} />
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  errorText: {
-    fontSize: 18,
-    textAlign: "center",
-  },
-  artworksContainer: {
-    marginTop: 16,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-});

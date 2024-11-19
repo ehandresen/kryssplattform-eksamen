@@ -24,7 +24,9 @@ import { useExhibition } from "@/hooks/useExhibition";
 import { useAccessibility } from "@/hooks/useAccessibility"; // Import the accessibility hook
 
 export default function ArtDetails() {
-  const { textSize, currentColors } = useAccessibility(); // Destructure textSize and currentColors
+  // Bruker tilpasset hook for tilgjengelighet (tekststørrelse og farger)
+  const { textSize, currentColors } = useAccessibility();
+  // Initialisering av state for kunstverk, kommentarer og andre nødvendige variabler
   const [artwork, setArtwork] = useState<Artwork | null>(null);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentObject[]>([]);
@@ -40,26 +42,22 @@ export default function ArtDetails() {
     undefined
   );
 
-  const { id } = useLocalSearchParams();
-  const router = useRouter();
-  const { session, user } = useAuth();
-  const { getExhibitionById } = useExhibition();
-
-  useEffect(() => {
-    fetchArtworkFromFirebase();
-  }, []);
-
+  const { id } = useLocalSearchParams(); // Henter ID fra URL-parametere
+  const router = useRouter(); // Bruker router for navigering
+  const { session, user } = useAuth(); // Henter autentiseringinformasjon
+  const { getExhibitionById } = useExhibition(); // Henter informasjon om utstilling
   const fetchArtworkFromFirebase = async () => {
     try {
+      // Henter kunstverk fra Firebase ved hjelp av kunstverk-ID
       const fetchedArtwork = await artworkApi.getArtworkById(id as string);
 
       if (fetchedArtwork) {
         setArtwork(fetchedArtwork);
-        setIsLiked(fetchedArtwork.likes.includes(user?.uid ?? ""));
-        setNumLikes(fetchedArtwork.likes.length);
-        fetchCommentsFromFirebase(fetchedArtwork.comments);
+        setIsLiked(fetchedArtwork.likes.includes(user?.uid ?? "")); // Sjekker om brukeren har likt kunstverket
+        setNumLikes(fetchedArtwork.likes.length); // Oppdaterer antall liker
+        fetchCommentsFromFirebase(fetchedArtwork.comments); // Henter kommentarer for kunstverket
 
-        // fetch exhibition details if exhibitionId is present
+        // Henter utstillingsdetaljer hvis kunstverket har en tilknyttet utstilling
         if (fetchedArtwork.exhibitionId) {
           const fetchedExhibition = await getExhibitionById(
             fetchedArtwork.exhibitionId
@@ -69,12 +67,19 @@ export default function ArtDetails() {
       }
       setLoading(false);
     } catch (error) {
+      // Feilhåndtering ved henting av kunstverk
       console.log("error fetching artwork", error);
     }
   };
 
+  useEffect(() => {
+    // Henter kunstverk og tilhørende data når komponenten lastes
+    fetchArtworkFromFirebase();
+  }, []); // Tom array betyr at effekten bare kjøres ved første render
+
   const goToExhibitionOnMap = () => {
     if (exhibition) {
+      // Navigerer til kart-skjerm med utstillingsdetaljer
       router.push({
         pathname: "/map",
         params: {
@@ -88,28 +93,33 @@ export default function ArtDetails() {
     if (!artwork) return;
 
     const updatedLikes = isLiked
-      ? artwork.likes.filter((uid) => uid !== user?.uid)
-      : [...artwork.likes, user?.uid ?? ""];
+      ? artwork.likes.filter((uid) => uid !== user?.uid) // Fjerner liker hvis allerede likt
+      : [...artwork.likes, user?.uid ?? ""]; // Legger til liker
 
     setIsLiked(!isLiked);
-    setNumLikes(updatedLikes.length);
-    setArtwork({ ...artwork, likes: updatedLikes });
+    setNumLikes(updatedLikes.length); // Oppdaterer antall liker
+    setArtwork({ ...artwork, likes: updatedLikes }); // Oppdaterer kunstverkets data
 
-    await artworkApi.updateArtworkLikes(artwork.id, user?.uid ?? "");
+    try {
+      // Oppdaterer likes på Firebase
+      await artworkApi.updateArtworkLikes(artwork.id, user?.uid ?? "");
+    } catch (error) {
+      console.log("Error updating likes:", error); // Feilhåndtering ved oppdatering
+    }
   };
 
   const fetchCommentsFromFirebase = async (commentsIds: string[]) => {
     try {
       setIsLoadingComments(true);
-      // fetch comments from firestore
+      // Henter kommentarer fra Firebase
       const comments = await commentApi.getCommentsByIds(commentsIds);
 
       if (comments) {
-        setComments(comments);
+        setComments(comments); // Setter kommentarer i state
       }
       setIsLoadingComments(false);
     } catch (error) {
-      console.log("error fetching comments", error);
+      console.log("error fetching comments", error); // Feilhåndtering ved henting av kommentarer
     }
   };
 
@@ -125,24 +135,24 @@ export default function ArtDetails() {
         });
 
         if (newCommentId) {
-          setCommentText("");
+          setCommentText(""); // Tømmer kommentarfeltet
 
           const updatedCommentsIds = [
             ...(artwork.comments || []),
             newCommentId,
           ];
-          setArtwork({ ...artwork, comments: updatedCommentsIds });
+          setArtwork({ ...artwork, comments: updatedCommentsIds }); // Oppdaterer kunstverkets kommentarer
 
-          // fetch the newly added comment only and append it to the comments list
+          // Henter og legger til den nylig kommentaren
           const newComment = await commentApi.getCommentsByIds([newCommentId]);
           if (newComment) {
-            setComments((prevComments) => [...prevComments, ...newComment]);
+            setComments((prevComments) => [...prevComments, ...newComment]); // Oppdaterer kommentarliste
           }
         }
       } catch (error) {
-        console.log("Error adding comment:", error);
+        console.log("Error adding comment:", error); // Feilhåndtering ved legg til kommentar
       } finally {
-        setIsLoadingAddComment(false);
+        setIsLoadingAddComment(false); // Resetter lastestatus
       }
     }
   };
@@ -167,11 +177,11 @@ export default function ArtDetails() {
           onPress: async () => {
             try {
               if (artwork) {
-                await artworkApi.deleteArtwork(artwork.id);
-                setArtwork(null);
+                await artworkApi.deleteArtwork(artwork.id); // Sletter kunstverket
+                setArtwork(null); // Nullstiller kunstverk
               }
             } catch (error) {
-              console.error("Error deleting artwork:", error);
+              console.error("Error deleting artwork:", error); // Feilhåndtering ved sletting
             }
           },
         },
@@ -182,25 +192,24 @@ export default function ArtDetails() {
   const handleDeleteComment = async (commentId: string) => {
     try {
       if (artwork) {
-        setDeletingCommentId(commentId);
+        setDeletingCommentId(commentId); // Setter slettet kommentar-ID for tilbakemelding
 
-        // delete the comment
-        await commentApi.deleteComment(commentId, artwork?.id);
+        await commentApi.deleteComment(commentId, artwork?.id); // Sletter kommentaren
         console.log("Comment deleted");
 
-        // update state to remove deleted comment
+        // Oppdaterer kommentarliste etter sletting
         setComments((prevComments) =>
           prevComments.filter((comment) => comment.id !== commentId)
         );
       }
     } catch (error) {
-      console.log("Error deleting comment", error);
+      console.log("Error deleting comment", error); // Feilhåndtering ved sletting av kommentar
     } finally {
-      setDeletingCommentId(null); // reset after deletion
+      setDeletingCommentId(null); // Nullstiller slettet kommentar-ID etter fullført prosess
     }
   };
-
   if (loading) {
+    // Hvis dataene lastes, vises en lastesirkel
     return (
       <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#0000ff" />
@@ -213,13 +222,15 @@ export default function ArtDetails() {
       <View className="flex-1 px-4 mb-6">
         {artwork ? (
           <>
+            {/* Viser kunstverkets kort med informasjon, liker-status og antall liker */}
             <ArtworkCard
               artwork={artwork}
               isLiked={isLiked}
               numLikes={numLikes}
               toggleLike={toggleLike}
-              textSize={textSize} // Pass textSize to ArtworkCard
+              textSize={textSize} // Sender tekststørrelse til ArtworkCard for tilpasning
             />
+            {/* Hvis kunstverket er opprettet av den nåværende brukeren, vis en knapp for å slette */}
             {artwork.artistId === user?.uid && (
               <Pressable
                 onPress={handleDeleteArtwork}
@@ -228,7 +239,7 @@ export default function ArtDetails() {
                 <Text
                   style={{
                     color: "white",
-                    fontSize: textSize, // Use textSize for font size
+                    fontSize: textSize, // Bruker tekststørrelsen for konsistens
                     fontWeight: "bold",
                   }}
                 >
@@ -237,7 +248,7 @@ export default function ArtDetails() {
               </Pressable>
             )}
 
-            {/* show button to navigate to mapScreen if there is an exhibition related to the artwork */}
+            {/* Viser utstillingsdetaljer hvis kunstverket har en tilknyttet utstilling */}
             {exhibition && (
               <View className="mt-4 p-4 bg-gray-300 rounded-lg">
                 <Text
@@ -260,7 +271,7 @@ export default function ArtDetails() {
                 </Text>
                 <TouchableOpacity
                   className="px-4 py-2 mt-4 bg-gray-700 rounded self-start"
-                  onPress={goToExhibitionOnMap}
+                  onPress={goToExhibitionOnMap} // Navigerer til kartet med utstillingens posisjon
                 >
                   <Text className="text-white font-bold">
                     View exhibition on map
@@ -270,6 +281,7 @@ export default function ArtDetails() {
             )}
           </>
         ) : (
+          // Hvis kunstverket ikke finnes, vises en feilmelding
           <Text
             style={{ textAlign: "center", color: "#555", fontSize: textSize }}
           >
@@ -277,7 +289,7 @@ export default function ArtDetails() {
           </Text>
         )}
 
-        {/* comments */}
+        {/* Kommentarer-seksjonen */}
         <View className="mt-4 p-4 bg-gray-300 rounded-lg">
           <View>
             <Text
@@ -287,20 +299,22 @@ export default function ArtDetails() {
               Comments
             </Text>
             <View>
+              {/* Hvis kommentarer lastes, vis lastesirkel */}
               {isLoadingComments ? (
                 <ActivityIndicator />
               ) : (
                 comments.map((comment) => (
-                  // each individual comment
+                  // Viser hver individuell kommentar
                   <View
                     key={comment.id}
                     className="flex-row py-2 border-b border-gray-300"
                   >
                     {deletingCommentId === comment.id ? (
-                      // show loading indicator when deleting a comment
+                      // Vis lastesirkel når kommentar slettes
                       <ActivityIndicator size="small" color="#ff0000" />
                     ) : (
                       <>
+                        {/* Viser kommentarens forfatter og tekst */}
                         <Text
                           className="font-bold mr-2"
                           style={{ fontSize: textSize }}
@@ -314,6 +328,7 @@ export default function ArtDetails() {
                           {comment.comment?.comment ?? ""}
                         </Text>
 
+                        {/* Vist søppelbøtte-ikon for sletting av kommentar hvis eier */}
                         {comment.comment.artistId === user?.uid && (
                           <TouchableOpacity
                             onPress={() => handleDeleteComment(comment.id)}
@@ -329,7 +344,7 @@ export default function ArtDetails() {
             </View>
           </View>
 
-          {/* add comment section */}
+          {/* Seksjon for å legge til kommentar */}
           {!isLoadingComments && (
             <View className="flex-row items-center w-full mt-4">
               <TextInput
@@ -343,10 +358,11 @@ export default function ArtDetails() {
 
               <TouchableOpacity
                 onPress={handleAddComment}
-                disabled={isLoadingAddComment}
+                disabled={isLoadingAddComment} // Deaktiverer knappen hvis kommentaren legges til
                 className="px-4 py-2 bg-blue-500 rounded"
               >
                 {isLoadingAddComment ? (
+                  // Vist lastesirkel mens kommentaren legges til
                   <ActivityIndicator color="#fff" />
                 ) : (
                   <Text

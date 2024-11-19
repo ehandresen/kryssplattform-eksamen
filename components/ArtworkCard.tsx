@@ -1,14 +1,21 @@
+/**
+ * ArtworkCard-komponent
+ * Viser et enkelt kunstverk med bilde, tittel, kunstnerens navn, beskrivelse, og liker-status.
+ * Inkluderer funksjonalitet for å "like" og "unlike" et kunstverk.
+ */
+
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, Pressable, StyleSheet } from "react-native";
 import { Artwork } from "../types/artwork";
-import { useAccessibility } from "@/hooks/useAccessibility"; // Unified accessibility hook
-import { getArtistById } from "@/api/artistApi"; // Import API to fetch artist details
+import { useAccessibility } from "@/hooks/useAccessibility"; // Tilgjengelighetshook for tekststørrelse og farger
+import { getArtistById } from "@/api/artistApi"; // Henter kunstnerdetaljer fra API
 
 interface ArtworkCardProps {
-  artwork: Artwork;
-  isLiked: boolean;
-  numLikes: number;
-  toggleLike: () => void;
+  artwork: Artwork; // Kunstverket som vises
+  isLiked: boolean; // Om brukeren har likt kunstverket
+  numLikes: number; // Antall likes kunstverket har
+  toggleLike: () => void; // Funksjon for å like/unlike kunstverket
+  textSize: number;
 }
 
 export default function ArtworkCard({
@@ -17,9 +24,13 @@ export default function ArtworkCard({
   numLikes,
   toggleLike,
 }: ArtworkCardProps) {
-  const { textSize, currentColors } = useAccessibility(); // Unified logic for accessibility
+  const { textSize, currentColors } = useAccessibility(); // Tilgjengelighetsinnstillinger for tekst og farger
   const [artistName, setArtistName] = useState<string>("");
 
+  /**
+   * Henter kunstnerens navn basert på artistId fra kunstverket.
+   * Logger eventuelle feil hvis kunstnerdetaljene ikke kan hentes.
+   */
   useEffect(() => {
     const fetchArtistName = async () => {
       if (artwork.artistId) {
@@ -27,7 +38,7 @@ export default function ArtworkCard({
           const artist = await getArtistById(artwork.artistId);
           setArtistName(artist?.displayName || "Unknown Artist");
         } catch (error) {
-          console.error("Error fetching artist name:", error);
+          console.error("Feil ved henting av kunstnerens navn:", error);
           setArtistName("Unknown Artist");
         }
       } else {
@@ -42,43 +53,49 @@ export default function ArtworkCard({
     <View
       style={[
         styles.cardContainer,
-        { backgroundColor: currentColors.primary }, // Apply currentColors
+        { backgroundColor: currentColors.primary }, // Dynamisk farge basert på tilgjengelighetsinnstillinger
       ]}
     >
+      {/* Bilde av kunstverket */}
       <Image
         source={{ uri: artwork.imageUrl }}
         style={styles.image}
-        onError={() => console.log("Image failed to load.")}
-        defaultSource={require("../assets/placeholder.png")} // Placeholder
+        onError={() => console.log("Feil ved innlasting av bilde.")} // Debugging for bildeinnlasting
+        defaultSource={require("../assets/placeholder.png")} // Placeholder-bilde hvis bilde mangler
       />
 
+      {/* Tittel på kunstverket */}
       <Text
         style={[
           styles.title,
           {
-            fontSize: textSize, // Apply textSize
-            color: currentColors.secondary, // Apply currentColors
+            fontSize: textSize, // Dynamisk tekststørrelse
+            color: currentColors.secondary, // Dynamisk farge
           },
         ]}
       >
         {artwork.title}
       </Text>
+
+      {/* Kunstnerens navn */}
       <Text
         style={[
           styles.artist,
           {
-            fontSize: textSize - 2, // Slightly smaller than title
+            fontSize: textSize - 2, // Litt mindre enn tittelen
             color: currentColors.secondary,
           },
         ]}
       >
         by {artistName}
       </Text>
+
+      {/* Beskrivelse av kunstverket */}
       <Text
         style={[
           styles.description,
           {
-            fontSize: textSize - 4, // Slightly smaller for descriptions
+            fontSize: textSize - 4, // Enda mindre tekststørrelse
             color: currentColors.secondary,
           },
         ]}
@@ -86,6 +103,7 @@ export default function ArtworkCard({
         {artwork.description}
       </Text>
 
+      {/* Antall likes */}
       <Text
         style={[
           styles.likes,
@@ -98,12 +116,13 @@ export default function ArtworkCard({
         {numLikes} {numLikes === 1 ? "like" : "likes"}
       </Text>
 
+      {/* Knapp for å like/unlike kunstverket */}
       <Pressable onPress={toggleLike} style={styles.likeButton}>
         <Text
           style={{
             fontSize: textSize - 2,
             color: isLiked
-              ? currentColors.primary // Change color when liked
+              ? currentColors.primary // Dynamisk farge hvis likt
               : currentColors.secondary,
           }}
         >
@@ -130,22 +149,22 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "bold",
     marginBottom: 8,
-    flexWrap: "wrap", // Ensures text wraps
-    width: "100%", // Ensures text fits within container width
+    flexWrap: "wrap", // Sørger for at teksten brytes
+    width: "100%", // Sikrer at teksten holder seg innenfor containeren
   },
   artist: {
     marginBottom: 8,
-    flexWrap: "wrap", // Ensures text wraps
-    width: "100%", // Ensures text fits within container width
+    flexWrap: "wrap",
+    width: "100%",
   },
   description: {
-    flexWrap: "wrap", // Ensures text wraps
-    width: "100%", // Ensures text fits within container width
+    flexWrap: "wrap",
+    width: "100%",
   },
   likes: {
     marginTop: 8,
-    flexWrap: "wrap", // Ensures text wraps
-    width: "100%", // Ensures text fits within container width
+    flexWrap: "wrap",
+    width: "100%",
   },
   likeButton: {
     marginTop: 10,

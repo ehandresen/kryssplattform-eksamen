@@ -14,23 +14,35 @@ import { useArtwork } from "@/hooks/useArtwork";
 import { useRouter } from "expo-router";
 
 const ExhibitionDetails = () => {
+  const { id } = useLocalSearchParams();
   const [exhibition, setExhibition] = useState<Exhibition | undefined>(
     undefined
   );
+
+  // State for å indikere om data fortsatt laster
   const [loading, setLoading] = useState(true);
   const [relatedArtworks, setRelatedArtworks] = useState<Artwork[]>([]);
 
-  const { id } = useLocalSearchParams();
   const { getExhibitionById } = useExhibition();
   const { artworks } = useArtwork();
   const router = useRouter();
 
+  /**
+   * useEffect kjører når komponenten rendres og henter data for utstillingen.
+   */
   useEffect(() => {
     fetchExhibition();
   }, [id]);
 
+  /**
+   * Funksjon for å hente utstilling fra databasen basert på ID.
+   * Lagrer utstillingen i state eller logger feil hvis noe går galt.
+   */
   const fetchExhibition = async () => {
     try {
+      console.log("Henter utstilling med ID:", id); // Debugging
+
+      // Hent data om utstillingen
       const fetchedExhibition = await getExhibitionById(id as string);
       setExhibition(fetchedExhibition);
 
@@ -39,31 +51,47 @@ const ExhibitionDetails = () => {
       );
       setRelatedArtworks(filteredArtworks);
     } catch (error) {
-      console.log("Error fetching exhibition:", error);
+      console.error("Feil ved henting av utstilling:", error); // Feilhåndtering
     } finally {
-      setLoading(false);
+      setLoading(false); // Sørger for at lastindikator stopper
     }
   };
 
+  /**
+   * Returnerer en lasteskjerm mens data hentes.
+   */
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center">
+      <View className="flex-1 justify-center items-center bg-gray-100">
         <ActivityIndicator size="large" color="#0000ff" />
+        <Text className="mt-2 text-lg text-gray-700">
+          Laster utstillingsdata...
+        </Text>
       </View>
     );
   }
 
+  /**
+   * Viser en feilmelding hvis utstillingen ikke finnes.
+   */
   if (!exhibition) {
-    return <Text>Exhibition not found.</Text>;
+    return (
+      <View className="flex-1 justify-center items-center bg-gray-100">
+        <Text className="text-xl text-red-600">Fant ingen utstilling.</Text>
+      </View>
+    );
   }
 
+  /**
+   * Returnerer brukergrensesnittet for utstillingens detaljer.
+   */
   return (
-    <View className="p-4">
-      <Text className="text-2xl font-bold text-gray-800 mb-4">
+    <View className="flex-1 p-4 bg-white">
+      <Text className="text-2xl font-bold text-gray-800 mb-3">
         {exhibition.title}
       </Text>
-      <Text className="text-lg text-gray-600 mb-2">{exhibition.location}</Text>
-      <Text className="text-base text-gray-500 mb-4">
+      <Text className="text-xl text-gray-600 mb-2">{exhibition.location}</Text>
+      <Text className="text-lg text-gray-500">
         {exhibition.startDate} - {exhibition.endDate}
       </Text>
 
@@ -95,5 +123,3 @@ const ExhibitionDetails = () => {
     </View>
   );
 };
-
-export default ExhibitionDetails;

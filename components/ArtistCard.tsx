@@ -1,44 +1,67 @@
 import React from "react";
 import { View, Text, Image, Pressable, StyleSheet } from "react-native";
+import { useAccessibility } from "@/hooks/useAccessibility"; // Tilgjengelighetshook for tekststørrelse og farger
 
 interface ArtistCardProps {
   artist: {
     id: string;
-    displayName?: string; // Optional to avoid crashing if missing
+    displayName?: string; // Valgfritt navn for å unngå krasj hvis det mangler
     email?: string;
-    profileImageUrl?: string;
-    bio?: string;
+    profileImageUrl?: string; // Valgfritt profilbilde
+    bio?: string; // Valgfri biografi
   };
-  onPress: () => void;
-  textSize: number; // Add textSize prop
+  onPress: () => void; // Handling som utføres ved trykk på kortet
 }
 
-export default function ArtistCard({
-  artist,
-  onPress,
-  textSize,
-}: ArtistCardProps) {
-  // Debugging: Log the artist data
-  console.log("ArtistCard received data:", artist);
+export default function ArtistCard({ artist, onPress }: ArtistCardProps) {
+  const { textSize, currentColors } = useAccessibility(); // Tilgjengelighetsinnstillinger
 
   return (
-    <Pressable onPress={onPress} style={styles.cardContainer}>
-      {/* Profile Image */}
+    <Pressable
+      onPress={onPress}
+      style={[
+        styles.cardContainer,
+        { backgroundColor: currentColors.primary }, // Dynamisk bakgrunnsfarge
+      ]}
+    >
+      {/* Profilbilde */}
       <Image
         source={{
-          uri: artist.profileImageUrl || "https://via.placeholder.com/150",
+          uri: artist.profileImageUrl || "https://via.placeholder.com/150", // Placeholder for manglende bilder
         }}
         style={styles.image}
+        onError={(error) =>
+          console.error(
+            `Feil ved innlasting av bilde for artist ${artist.id}:`,
+            error.nativeEvent
+          )
+        }
       />
 
-      {/* Display Name */}
-      <Text style={[styles.name, { fontSize: textSize }]}>
-        {artist.displayName || "Unknown Artist"}
+      {/* Artistens navn */}
+      <Text
+        style={[
+          styles.name,
+          {
+            fontSize: textSize, // Dynamisk tekststørrelse
+            color: currentColors.secondary, // Dynamisk farge
+          },
+        ]}
+      >
+        {artist.displayName || "Ukjent artist"}
       </Text>
 
-      {/* Bio */}
-      <Text style={[styles.bio, { fontSize: textSize - 2 }]}>
-        {artist.bio || "No bio available."}
+      {/* Artistens biografi */}
+      <Text
+        style={[
+          styles.bio,
+          {
+            fontSize: textSize - 2, // Justert tekststørrelse
+            color: currentColors.secondary, // Dynamisk farge
+          },
+        ]}
+      >
+        {artist.bio || "Ingen biografi tilgjengelig."}
       </Text>
     </Pressable>
   );
@@ -48,7 +71,6 @@ const styles = StyleSheet.create({
   cardContainer: {
     padding: 16,
     borderRadius: 8,
-    backgroundColor: "#f9f9f9",
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -66,10 +88,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 4,
-    color: "#333",
   },
   bio: {
-    color: "#666",
     textAlign: "center",
   },
 });

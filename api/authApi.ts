@@ -9,8 +9,14 @@ import { auth } from "@/firebaseConfig";
 import { setDoc, doc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 
-const ARTISTS_COLLECTION = "artists";
+const ARTISTS_COLLECTION = "artists"; // Navn på Firestore-kolleksjonen for artister
 
+/**
+ * Logger en bruker inn med e-post og passord
+ * @param email - Brukerens e-post
+ * @param password - Brukerens passord
+ * @returns UserCredential eller void hvis innlogging mislykkes
+ */
 export const signIn = async (
   email: string,
   password: string
@@ -21,56 +27,77 @@ export const signIn = async (
       email,
       password
     );
-    console.log("user signed in", userCredential);
+    console.log("Bruker logget inn:", userCredential.user.email);
     return userCredential;
   } catch (error) {
-    console.log("could not sign in", error);
+    if (error instanceof Error) {
+      console.error("Feil ved innlogging:", error.message);
+    } else {
+      console.error("Ukjent feil ved innlogging:", error);
+    }
   }
 };
 
+/**
+ * Logger en bruker ut fra Firebase Authentication
+ */
 export const signOut = async () => {
   try {
     await firebaseSignOut(auth);
-    console.log("successfully signed out");
+    console.log("Bruker logget ut.");
   } catch (error) {
-    console.error("Error during sign-out:", error);
+    if (error instanceof Error) {
+      console.error("Feil ved utlogging:", error.message);
+    } else {
+      console.error("Ukjent feil ved utlogging:", error);
+    }
   }
 };
 
+/**
+ * Registrerer en ny bruker og legger dem til i Firestore
+ * @param email - Brukerens e-post
+ * @param password - Brukerens passord
+ * @param username - Brukerens ønskede brukernavn
+ */
 export const signUp = async (
   email: string,
   password: string,
   username: string
 ): Promise<void> => {
   try {
+    // Opprett en ny bruker i Firebase Authentication
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
-
     const user = userCredential.user;
 
-    // Update the user's display name in Firebase Authentication
+    // Oppdater brukerens profil med visningsnavn
     await updateProfile(user, {
       displayName: username,
     });
 
-    console.log("User signed up:", user.email);
-    console.log("username:", user.displayName);
+    console.log("Ny bruker opprettet:", user.email);
+    console.log("Brukernavn satt til:", user.displayName);
 
-    // Add the new user to the artists collection in Firestore using the user's UID as the document ID
+    // Opprett et nytt dokument i Firestore for den nye artisten
     const artist = {
       displayName: username,
-      email: user.email || "",
-      profileImageUrl: "", // Default empty profile image
-      bio: "", // Default empty bio
-      createdAt: new Date().toISOString(),
+      email: user.email || "", // Standard tom e-post hvis e-post mangler
+      profileImageUrl: "", // Standard tom URL for profilbilde
+      bio: "", // Standard tom bio
+      createdAt: new Date().toISOString(), // Tidspunkt for opprettelse
     };
 
     await setDoc(doc(db, ARTISTS_COLLECTION, user.uid), artist);
-    console.log("Artist added to Firestore with UID:", user.uid);
+    console.log("Artist lagt til i Firestore med UID:", user.uid);
   } catch (error) {
-    console.error(`Error during sign-up: ${error.message}`);
+    if (error instanceof Error) {
+      console.error("Feil ved registrering:", error.message);
+    } else {
+      console.error("Ukjent feil ved registrering:", error);
+    }
   }
 };
