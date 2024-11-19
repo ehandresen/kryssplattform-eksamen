@@ -104,14 +104,18 @@ export default function ArtistDetails() {
       <ArtistCard artist={artist} />
 
       {/* Viser en liste over artistens kunstverk */}
-      <View className="mt-4">
+      <View className="flex-1 mt-4">
         <Text
           className="text-lg font-bold text-primary mb-3"
           style={{ fontSize: textSize }}
         >
           Kunstverk av {artist.displayName}
         </Text>
-        <ArtworkList data={artworks} textSize={textSize} />
+        <ArtworkList
+          data={artworks}
+          textSize={textSize}
+          disableRefresh={true}
+        />
       </View>
     </View>
   );

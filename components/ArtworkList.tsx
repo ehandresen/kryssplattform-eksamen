@@ -15,9 +15,13 @@ import * as artworkApi from "@/api/artworkApi"; // API for å hente og oppdatere
 interface ArtworkListProps {
   data: Artwork[]; // Array av kunstverk som skal vises
   textSize: number; // Dynamisk tekststørrelse
+  disableRefresh?: boolean;
 }
 
-export default function ArtworkList({ data }: ArtworkListProps) {
+export default function ArtworkList({
+  data,
+  disableRefresh,
+}: ArtworkListProps) {
   const [artworks, setArtworks] = useState<Artwork[]>(data); // Lokal state for kunstverk
   const [refreshing, setRefreshing] = useState(false); // Kontroll for oppdatering
   const router = useRouter(); // Router for navigasjon
@@ -35,6 +39,7 @@ export default function ArtworkList({ data }: ArtworkListProps) {
    * Vises ved å dra ned for å oppdatere.
    */
   const fetchArtworks = async () => {
+    if (disableRefresh) return; // Hindrer oppdatering hvis deaktivert
     setRefreshing(true);
     try {
       const updatedArtworks = await artworkApi.getAllArtworks();
