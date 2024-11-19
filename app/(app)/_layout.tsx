@@ -30,7 +30,7 @@ export default function AppLayout() {
           name="(tabs)" // Tab-navigasjon
           options={{
             headerShown: false, // Skjuler overskriften
-            title: "Gallery", // Tittel på skjermen
+            title: "Home", // Tittel på skjermen
           }}
         />
         <Stack.Screen
