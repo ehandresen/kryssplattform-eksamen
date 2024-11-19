@@ -8,7 +8,7 @@ import Search from "./Search"; // Import Search component
 import Upload from "./Upload"; // Import Upload component
 
 type MenuProps = {
-  sortTitle?: boolean;
+  sortTitle: boolean;
   onSortAZ: () => void;
   onSortZA: () => void;
   onIncreaseTextSize: () => void;
@@ -27,7 +27,7 @@ type MenuProps = {
 };
 
 const Menu = ({
-  sortTitle = true,
+  sortTitle,
   onIncreaseTextSize,
   onEnableColorBlindFilter,
   isVisible,

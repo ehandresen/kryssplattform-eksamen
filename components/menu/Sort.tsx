@@ -54,13 +54,15 @@ const Sort = ({
    */
   const handleSort = (key: string, order: string) => {
     let sortedData;
+    console.log(`Sort by ${key} (${order}) - sortTitle is: ${sortTitle}`);
+
     // Perform sorting based on the 'key' (title or name) and 'order' (asc or desc)
-    if (key === "title") {
-      sortedData =
-        order === "asc" ? sortTitleAZ(filteredData) : sortTitleZA(filteredData);
-    } else {
+    if (key === "displayName") {
       sortedData =
         order === "asc" ? sortNameAZ(filteredData) : sortNameZA(filteredData);
+    } else {
+      sortedData =
+        order === "asc" ? sortTitleAZ(filteredData) : sortTitleZA(filteredData);
     }
     // Update the filtered data with the sorted result
     setFilteredData(sortedData);

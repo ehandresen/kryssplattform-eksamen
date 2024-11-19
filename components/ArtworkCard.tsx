@@ -15,7 +15,6 @@ interface ArtworkCardProps {
   isLiked: boolean; // Om brukeren har likt kunstverket
   numLikes: number; // Antall likes kunstverket har
   toggleLike: () => void; // Funksjon for å like/unlike kunstverket
-  textSize: number;
 }
 
 export default function ArtworkCard({

@@ -5,7 +5,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { FlatList, RefreshControl, View, TouchableOpacity } from "react-native";
+import { FlatList, RefreshControl, TouchableOpacity } from "react-native";
 import ArtworkCard from "./ArtworkCard";
 import { Artwork } from "../types/artwork";
 import { useRouter } from "expo-router"; // Navigasjon
@@ -17,7 +17,7 @@ interface ArtworkListProps {
   textSize: number; // Dynamisk tekststørrelse
 }
 
-export default function ArtworkList({ data, textSize }: ArtworkListProps) {
+export default function ArtworkList({ data }: ArtworkListProps) {
   const [artworks, setArtworks] = useState<Artwork[]>(data); // Lokal state for kunstverk
   const [refreshing, setRefreshing] = useState(false); // Kontroll for oppdatering
   const router = useRouter(); // Router for navigasjon
@@ -80,7 +80,6 @@ export default function ArtworkList({ data, textSize }: ArtworkListProps) {
       data={artworks} // Data for kunstverk
       keyExtractor={(item) => item.id} // Unik nøkkel for hvert element
       refreshControl={
-        // Kontroll for oppdatering (Pull to refresh)
         <RefreshControl refreshing={refreshing} onRefresh={fetchArtworks} />
       }
       renderItem={({ item }) => (
@@ -96,7 +95,6 @@ export default function ArtworkList({ data, textSize }: ArtworkListProps) {
             isLiked={item.likes.includes(user?.uid ?? "")} // Sjekker om brukeren har likt
             numLikes={item.likes.length} // Viser antall likes
             toggleLike={() => handleToggleLike(item.id)} // Funksjon for å like/unlike
-            textSize={textSize} // Dynamisk tekststørrelse
           />
         </TouchableOpacity>
       )}

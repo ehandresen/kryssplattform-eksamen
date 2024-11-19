@@ -40,7 +40,7 @@ export default function GalleryScreen() {
         sortTitle={true}
         onSortAZ={() => {}}
         onSortZA={() => {}}
-        allData={allArtworks} // Generisk data
+        allData={allArtworks}
         setFilteredData={setFilteredData}
         isSearchVisible={isSearchVisible}
         setIsSearchVisible={setIsSearchVisible}
@@ -52,7 +52,7 @@ export default function GalleryScreen() {
         isVisible={true}
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
-        searchKey="title" // Nøkkel for søk i kunstverk
+        searchKey="title"
       />
 
       <ArtworkList data={filteredData} textSize={textSize} />

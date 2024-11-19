@@ -55,7 +55,6 @@ export const getAllArtworks = async (): Promise<Artwork[]> => {
   try {
     const artworksDocs = await getDocs(collection(db, ARTWORKS_COLLECTION));
 
-    // Map hvert dokument til et Artwork-objekt
     return artworksDocs.docs.map((doc) => {
       return {
         ...doc.data(),

@@ -1,3 +1,4 @@
+import { Artist } from "@/types/artist";
 import { db } from "@/firebaseConfig";
 import {
   addDoc,
@@ -11,17 +12,6 @@ import {
 
 // Navn på Firestore-kolleksjonen for artister
 export const ARTISTS_COLLECTION = "artists";
-
-// Definerer en "type" for artistdata
-export interface Artist {
-  id: string; // ID for dokumentet i Firestore (valgfritt for nye oppføringer)
-  displayName: string; // Brukernavn for artisten
-  email: string; // E-postadresse for artisten
-  profileImageUrl?: string; // Valgfritt: URL til profilbildet
-  bio?: string; // Valgfritt: Artistens bio
-  createdAt?: string; // Når artisten ble opprettet (tidspunkt)
-  updatedAt?: string; // Når artisten sist ble oppdatert (tidspunkt)
-}
 
 /**
  * Legger til en ny artist i Firestore

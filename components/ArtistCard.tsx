@@ -10,18 +10,16 @@ interface ArtistCardProps {
     profileImageUrl?: string; // Valgfritt profilbilde
     bio?: string; // Valgfri biografi
   };
-  onPress: () => void; // Handling som utføres ved trykk på kortet
 }
 
-export default function ArtistCard({ artist, onPress }: ArtistCardProps) {
+export default function ArtistCard({ artist }: ArtistCardProps) {
   const { textSize, currentColors } = useAccessibility(); // Tilgjengelighetsinnstillinger
 
   return (
-    <Pressable
-      onPress={onPress}
+    <View
       style={[
         styles.cardContainer,
-        { backgroundColor: currentColors.primary }, // Dynamisk bakgrunnsfarge
+        { backgroundColor: currentColors.primary }, // Dynamisk farge basert på tilgjengelighetsinnstillinger
       ]}
     >
       {/* Profilbilde */}
@@ -63,7 +61,7 @@ export default function ArtistCard({ artist, onPress }: ArtistCardProps) {
       >
         {artist.bio || "Ingen biografi tilgjengelig."}
       </Text>
-    </Pressable>
+    </View>
   );
 }
 
@@ -71,25 +69,23 @@ const styles = StyleSheet.create({
   cardContainer: {
     padding: 16,
     borderRadius: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    alignItems: "center",
+    shadowOpacity: 0.2,
     marginBottom: 16,
   },
   image: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: "100%",
+    height: 200,
+    borderRadius: 8,
     marginBottom: 12,
   },
   name: {
     fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 4,
+    marginBottom: 8,
+    flexWrap: "wrap", // Sørger for at teksten brytes
+    width: "100%", // Sikrer at teksten holder seg innenfor containeren
   },
   bio: {
-    textAlign: "center",
+    flexWrap: "wrap",
+    width: "100%",
   },
 });

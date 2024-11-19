@@ -12,24 +12,20 @@ export default function ArtistsScreen() {
 
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
-  const [filteredArtists, setFilteredData] = useState<Artist[]>([]);
+  const [filteredData, setFilteredData] = useState<Artist[]>([]);
   const [allArtists, setAllArtists] = useState<Artist[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
-
-  const fetchArtists = async () => {
-    setRefreshing(true);
-    try {
-      const artists = await getAllArtists();
-      setAllArtists(artists);
-      setFilteredData(artists);
-    } catch (error) {
-      console.error("Feil ved henting av artister:", error);
-    } finally {
-      setRefreshing(false);
-    }
-  };
 
   useEffect(() => {
+    const fetchArtists = async () => {
+      try {
+        const artists = await getAllArtists();
+        setAllArtists(artists);
+        setFilteredData(artists); // Standardvisning
+      } catch (error) {
+        console.error("Feil ved henting av artists:", error);
+      }
+    };
+
     fetchArtists();
   }, []);
 
@@ -54,11 +50,7 @@ export default function ArtistsScreen() {
         searchKey="displayName" // Endret til displayName
       />
 
-      <ArtistList
-        artists={filteredArtists}
-        onRefresh={fetchArtists}
-        refreshing={refreshing}
-      />
+      <ArtistList data={filteredData} textSize={textSize} />
     </View>
   );
 }
