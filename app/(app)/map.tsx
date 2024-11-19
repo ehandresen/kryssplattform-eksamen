@@ -1,7 +1,7 @@
 import { Exhibition } from "@/types/exhibition";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
-import { View, Alert } from "react-native";
+import { View, Alert, Text } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
 const MapScreen = () => {
@@ -19,14 +19,6 @@ const MapScreen = () => {
   // Debugging: Logger det parserte utstillingsobjektet
   console.log("Utstillingsobjekt:", exhibitionData);
 
-  // Standard posisjon (Oslo, Norge)
-  const defaultLocation = {
-    latitude: 59.9139,
-    longitude: 10.7522,
-    latitudeDelta: 0.1,
-    longitudeDelta: 0.1,
-  };
-
   // Når man klikker på markøren, kan en advarsel vises som et eksempel
   const handleMarkerPress = () => {
     if (exhibitionData) {
@@ -40,29 +32,29 @@ const MapScreen = () => {
 
   return (
     <View className="flex-1">
-      <MapView
-        className="w-full h-full"
-        initialRegion={
-          exhibitionData
-            ? {
-                latitude: exhibitionData.coordinates.latitude,
-                longitude: exhibitionData.coordinates.longitude,
-                latitudeDelta: 0.05,
-                longitudeDelta: 0.05,
-              }
-            : defaultLocation
-        }
-      >
-        {/* Legger til markør hvis utstillingsdata er tilgjengelig */}
-        {exhibitionData && (
+      {exhibitionData ? (
+        <MapView
+          style={{ flex: 1 }}
+          initialRegion={{
+            latitude: exhibitionData.coordinates.latitude,
+            longitude: exhibitionData.coordinates.longitude,
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.05,
+          }}
+        >
+          {/* Legger til markør hvis utstillingsdata er tilgjengelig */}
           <Marker
             coordinate={exhibitionData.coordinates}
             title={exhibitionData.title}
             description={exhibitionData.location}
             onPress={handleMarkerPress} // Håndterer trykk på markøren
           />
-        )}
-      </MapView>
+        </MapView>
+      ) : (
+        <View className="flex-1 justify-center items-center">
+          <Text>Ingen utstillingsdata tilgjengelig!</Text>
+        </View>
+      )}
     </View>
   );
 };

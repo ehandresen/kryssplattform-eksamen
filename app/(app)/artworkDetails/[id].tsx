@@ -177,7 +177,7 @@ export default function ArtDetails() {
           onPress: async () => {
             try {
               if (artwork) {
-                await artworkApi.deleteArtwork(artwork.id); // Sletter kunstverket
+                await artworkApi.deleteArtworkById(artwork.id); // Sletter kunstverket
                 setArtwork(null); // Nullstiller kunstverk
               }
             } catch (error) {
