@@ -12,6 +12,7 @@ import { useExhibition } from "@/hooks/useExhibition";
 import { Artwork } from "@/types/artwork";
 import { useArtwork } from "@/hooks/useArtwork";
 import { useRouter } from "expo-router";
+import { useAuth } from "@/hooks/useAuth";
 
 const ExhibitionDetails = () => {
   const { id } = useLocalSearchParams();
@@ -26,6 +27,7 @@ const ExhibitionDetails = () => {
   const { getExhibitionById } = useExhibition();
   const { artworks } = useArtwork();
   const router = useRouter();
+  const { role } = useAuth();
 
   /**
    * useEffect kjører når komponenten rendres og henter data for utstillingen.
@@ -56,6 +58,17 @@ const ExhibitionDetails = () => {
       setLoading(false); // Sørger for at lastindikator stopper
     }
   };
+
+  // Hvis bruker ikke er logget inn, hvis denne meldingen
+  if (role === "guest") {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text className="text-xl text-gray-600 text-center">
+          Du må være logget inn for å se exhibition detaljer.
+        </Text>
+      </View>
+    );
+  }
 
   /**
    * Returnerer en lasteskjerm mens data hentes.

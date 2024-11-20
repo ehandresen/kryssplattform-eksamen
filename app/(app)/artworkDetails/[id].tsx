@@ -208,22 +208,23 @@ export default function ArtDetails() {
       setDeletingCommentId(null); // Nullstiller slettet kommentar-ID etter fullført prosess
     }
   };
-  if (loading) {
-    // Hvis dataene lastes, vises en lastesirkel
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
 
   // Hvis bruker ikke er logget inn, hvis denne meldingen
   if (role === "guest") {
     return (
       <View className="flex-1 justify-center items-center">
         <Text className="text-xl text-gray-600 text-center">
-          You must be logged in to view artwork details.
+          Du må være logget inn for å se kunstverk.
         </Text>
+      </View>
+    );
+  }
+
+  if (loading) {
+    // Hvis dataene lastes, vises en lastesirkel
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
   }

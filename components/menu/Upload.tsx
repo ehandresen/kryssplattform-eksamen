@@ -40,7 +40,7 @@ const Upload = ({ visible, onClose }: UploadProps) => {
     undefined
   );
 
-  const { user } = useAuth(); // Henter brukerinformasjon
+  const { user, role } = useAuth(); // Henter brukerinformasjon
   const { exhibitions, isLoading } = useExhibition(); // Henter utstillinger
 
   /**
@@ -100,6 +100,30 @@ const Upload = ({ visible, onClose }: UploadProps) => {
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text>Laster utstillinger...</Text>
       </View>
+    );
+  }
+
+  // Hvis bruker ikke er logget inn, hvis denne meldingen
+  if (role === "guest") {
+    return (
+      <Modal
+        presentationStyle="formSheet"
+        animationType="slide"
+        visible={visible}
+        onRequestClose={onClose}
+      >
+        <View className="flex-1 justify-center items-center">
+          <Text className="text-xl text-gray-600 text-center mb-2">
+            Du må være logget inn for å laste opp kunstverk.
+          </Text>
+          <TouchableOpacity
+            onPress={onClose}
+            className="w-full py-2 bg-gray-100 rounded-lg items-center"
+          >
+            <Text className="text-gray-600 font-medium">Gå tilbake</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     );
   }
 

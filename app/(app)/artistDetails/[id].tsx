@@ -8,6 +8,7 @@ import ArtworkList from "@/components/ArtworkList"; // Listekomponent for kunstv
 import { useAccessibility } from "@/hooks/useAccessibility"; // Tilgjengelighetshook
 import { Artist } from "@/types/artist"; // Typedefinisjon for artist
 import { Artwork } from "@/types/artwork"; // Typedefinisjon for kunstverk
+import { useAuth } from "@/hooks/useAuth";
 
 /**
  * Komponent for å vise detaljert informasjon om en spesifikk artist, samt deres kunstverk.
@@ -20,6 +21,7 @@ export default function ArtistDetails() {
   const [loading, setLoading] = useState(true); // Indikerer om data laster
   const [error, setError] = useState<string | null>(null); // Holder eventuelle feilmeldinger
 
+  const { role } = useAuth();
   /**
    * Henter informasjon om artisten og deres kunstverk.
    */
@@ -60,6 +62,17 @@ export default function ArtistDetails() {
 
     fetchArtistAndArtworks();
   }, [id]);
+
+  // Hvis bruker ikke er logget inn, hvis denne meldingen
+  if (role === "guest") {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text className="text-xl text-gray-600 text-center">
+          Du må være logget inn for å se artist detaljer.
+        </Text>
+      </View>
+    );
+  }
 
   /**
    * Viser en lasteskjerm mens data hentes.
