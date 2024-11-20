@@ -96,7 +96,7 @@ export const getUniqueCategories = async (): Promise<string[]> => {
  * @param id - Kunstverkets ID
  * @returns Kunstverket med spesifisert ID
  */
-export const getArtworkById = async (id: string): Promise<Artwork | null> => {
+export const getArtworkById = async (id: string) => {
   try {
     const docRef = doc(db, ARTWORKS_COLLECTION, id);
     const docSnapshot = await getDoc(docRef);
@@ -107,11 +107,9 @@ export const getArtworkById = async (id: string): Promise<Artwork | null> => {
       } as Artwork;
     } else {
       console.log("Ingen kunstverk funnet med den ID-en.");
-      return null;
     }
   } catch (error) {
     console.error("Feil ved henting av kunstverk etter ID:", error);
-    return null;
   }
 };
 

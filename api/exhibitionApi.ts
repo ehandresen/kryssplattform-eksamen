@@ -34,9 +34,7 @@ export const getAllExhibitions = async (): Promise<Exhibition[]> => {
  * @param id - Firestore-dokument-ID for utstillingen
  * @returns Data for utstillingen
  */
-export const getExhibitionById = async (
-  id: string
-): Promise<Exhibition | null> => {
+export const getExhibitionById = async (id: string) => {
   try {
     const exhibitionDocRef = doc(db, EXHIBITIONS_COLLECTION, id);
 
@@ -49,7 +47,6 @@ export const getExhibitionById = async (
       } as Exhibition;
     } else {
       console.warn(`Ingen utstilling funnet med ID: ${id}`);
-      return null;
     }
   } catch (error) {
     if (error instanceof Error) {
@@ -57,6 +54,5 @@ export const getExhibitionById = async (
     } else {
       console.error("Ukjent feil ved henting av utstilling med ID:", error);
     }
-    return null;
   }
 };
