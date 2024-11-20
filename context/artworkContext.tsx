@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, ReactNode, useEffect, useState } from "react";
 import * as artworkApi from "@/api/artworkApi";
 import { Artwork } from "@/types/artwork";
 
@@ -61,7 +55,7 @@ export const ArtworkProvider = ({ children }: { children: ReactNode }) => {
 
   const deleteArtwork = async (id: string) => {
     try {
-      await artworkApi.deleteArtwork(id);
+      await artworkApi.deleteArtworkById(id);
       // Refresh the artwork list after deleting an artwork
       setArtworks((prevArtworks) =>
         prevArtworks.filter((artwork) => artwork.id !== id)
