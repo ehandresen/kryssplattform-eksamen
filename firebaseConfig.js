@@ -1,11 +1,12 @@
 import { initializeApp } from "firebase/app";
-import { browserLocalPersistence, initializeAuth } from "firebase/auth";
+import {
+  browserLocalPersistence,
+  initializeAuth,
+  getReactNativePersistence,
+} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref } from "firebase/storage";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
-// needed this import to fix for web
-// https://stackoverflow.com/questions/76961682/typeerror-0-auth-getreactnativepersistence-is-not-a-function
-import { getReactNativePersistence } from "@firebase/auth/dist/rn/index.js";
 import { Platform } from "react-native";
 
 // Your web app's Firebase configuration
