@@ -160,18 +160,21 @@ const Upload = ({ visible, onClose }: UploadProps) => {
             {/* Skjemafelter */}
             <TextInput
               placeholder="Tittel på kunstverket"
+              placeholderTextColor="#999"
               value={title}
               onChangeText={setTitle}
               style={styles.input}
             />
             <TextInput
               placeholder="Bildetekst"
+              placeholderTextColor="#999"
               value={caption}
               onChangeText={setCaption}
               style={styles.input}
             />
             <TextInput
               placeholder="Beskrivelse"
+              placeholderTextColor="#999"
               value={description}
               onChangeText={setDescription}
               style={styles.input}
@@ -179,6 +182,7 @@ const Upload = ({ visible, onClose }: UploadProps) => {
             />
             <TextInput
               placeholder="Kategori"
+              placeholderTextColor="#999"
               value={category}
               onChangeText={setCategory}
               style={styles.input}
@@ -186,14 +190,18 @@ const Upload = ({ visible, onClose }: UploadProps) => {
 
             {/* Valgfritt valg av utstilling */}
             <View style={styles.dropdownContainer}>
-              <Text>Velg en utstilling (valgfritt)</Text>
+              {/* <Text>Velg en utstilling (valgfritt)</Text> */}
               <Picker
                 selectedValue={exhibitionId}
                 onValueChange={(itemValue) =>
                   setExhibitionId(itemValue || undefined)
                 }
+                style={{ width: "100%" }}
               >
-                <Picker.Item label="Velg en utstilling" value={undefined} />
+                <Picker.Item
+                  label="Velg en utstilling (valgfritt)"
+                  value={undefined}
+                />
                 {exhibitions.map((item) => (
                   <Picker.Item
                     key={item.id}
@@ -227,6 +235,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+    marginBottom: 100,
   },
   title: {
     fontSize: 22,
@@ -259,7 +268,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   dropdownContainer: {
-    width: "100%",
+    // width: "100%",
     marginBottom: 12,
   },
   submitButton: {
