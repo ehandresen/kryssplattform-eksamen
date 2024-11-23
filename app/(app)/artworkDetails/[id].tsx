@@ -189,12 +189,12 @@ export default function ArtDetails() {
                 await deleteArtwork(artwork.id); // Sletter kunstverket
                 setArtwork(null); // Nullstiller kunstverk
 
+                // Vis bekreftelse når kunstverket blir slettet
                 Toast.show({
                   type: "success",
                   text1: "Success",
                   text2: "The artwork has been deleted.",
                 });
-                //Alert.alert("Success", "The artwork has been deleted."); // Vis bekreftelse når kunstverket blir slettet
                 router.push("/gallery"); // Naviger til gallery etter sletting
               }
             } catch (error) {

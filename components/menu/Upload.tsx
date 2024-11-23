@@ -194,7 +194,7 @@ const Upload = ({ visible, onClose }: UploadProps) => {
                 value={description}
                 onChangeText={setDescription}
                 style={styles.input}
-                multiline
+                multiline={true}
               />
               <TextInput
                 placeholder="Kategori"
@@ -257,10 +257,10 @@ const Upload = ({ visible, onClose }: UploadProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    // marginBottom: 100,
   },
   title: {
     fontSize: 22,
@@ -285,7 +285,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   input: {
-    width: "100%",
     padding: 12,
     borderWidth: 1,
     borderColor: "#d1d5db",
