@@ -1,3 +1,9 @@
+/**
+ * ProfileScreen viser brukerens profil, inkludert mulighet for å redigere navn,
+ * e-post, bio og profilbilde. Brukeren kan laste opp bilder fra galleriet eller
+ * bruke kamera for å oppdatere profilbildet.
+ */
+
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -16,16 +22,18 @@ import CameraScreen from "@/components/CameraScreen";
 import { uploadImageToFirebase } from "@/api/imageApi";
 
 export default function ProfileScreen() {
-  const { user, reloadUser } = useAuth(); // Henter innlogget brukerdata og funksjon for å oppdatere bruker
-  const [displayName, setDisplayName] = useState(""); // Navn på brukeren
-  const [email, setEmail] = useState(""); // E-post for brukeren
-  const [bio, setBio] = useState(""); // Bio for brukeren
-  const [profileImageUrl, setProfileImageUrl] = useState(""); // URL for profilbilde
-  const [isEditing, setIsEditing] = useState(false); // Indikerer om brukeren redigerer profilen
-  const [showCamera, setShowCamera] = useState(false); // Indikerer om kameraet vises
+  const { user, reloadUser } = useAuth();
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [bio, setBio] = useState("");
+  const [profileImageUrl, setProfileImageUrl] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
 
+  /**
+   * Henter innlogget brukers data fra Firestore og oppdaterer state.
+   */
   useEffect(() => {
-    // Henter data for innlogget bruker fra Firestore
     const fetchArtistData = async () => {
       if (user?.uid) {
         try {
@@ -42,7 +50,7 @@ export default function ProfileScreen() {
             );
           }
         } catch (error) {
-          console.error("Feil ved henting av artistdata:", error); // Feilhåndtering
+          console.error("Feil ved henting av artistdata:", error);
         }
       }
     };
@@ -50,7 +58,9 @@ export default function ProfileScreen() {
     fetchArtistData();
   }, [user]);
 
-  // Oppdaterer artistdata i Firestore
+  /**
+   * Oppdaterer brukerdata i Firestore når brukeren lagrer endringer.
+   */
   const updateArtistInFirestore = async () => {
     try {
       if (user?.uid) {
@@ -61,15 +71,17 @@ export default function ProfileScreen() {
           bio,
           profileImageUrl,
         });
-        console.log("Artistdata oppdatert i Firestore."); // Debugging
-        setIsEditing(false); // Avslutt redigeringsmodus
+        console.log("Artistdata oppdatert i Firestore.");
+        setIsEditing(false);
       }
     } catch (error) {
-      console.error("Feil ved oppdatering av artistdata:", error); // Feilhåndtering
+      console.error("Feil ved oppdatering av artistdata:", error);
     }
   };
 
-  // Håndterer bilde fra kamera
+  /**
+   * Håndterer bilde tatt med kamera og lagrer det i Firestore.
+   */
   const handleCameraCapture = async (imageUri: string) => {
     try {
       const downloadUrl = await uploadImageToFirebase(imageUri);
@@ -82,11 +94,13 @@ export default function ProfileScreen() {
 
       setShowCamera(false);
     } catch (error) {
-      console.error("Feil ved lagring av bilde:", error); // Feilhåndtering
+      console.error("Feil ved lagring av bilde:", error);
     }
   };
 
-  // Håndterer bildevalg fra galleriet
+  /**
+   * Lar brukeren velge et bilde fra galleriet og oppdaterer profilbildet.
+   */
   const pickImageFromGallery = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -106,13 +120,13 @@ export default function ProfileScreen() {
         }
       }
     } catch (error) {
-      console.error("Feil ved bildeopplasting:", error); // Feilhåndtering
+      console.error("Feil ved bildeopplasting:", error);
     }
   };
 
   return (
     <View className="flex-1 items-center bg-white p-5">
-      {/* Profilbilde med redigeringsalternativer */}
+      {/* Viser profilbilde med alternativer for kamera og galleri */}
       <View className="relative">
         <Image
           source={{ uri: profileImageUrl || "https://via.placeholder.com/150" }}
@@ -136,7 +150,7 @@ export default function ProfileScreen() {
         )}
       </View>
 
-      {/* Profilredigering eller visning */}
+      {/* Viser eller redigerer brukerens profil */}
       {isEditing ? (
         <View>
           <TextInput
@@ -172,7 +186,7 @@ export default function ProfileScreen() {
         </View>
       )}
 
-      {/* Kamera-modus */}
+      {/* Viser kamera-modus */}
       {showCamera && (
         <Modal visible={showCamera} animationType="slide">
           <CameraScreen

@@ -1,3 +1,8 @@
+/**
+ * MapScreen viser et kart med informasjon om en exhibition basert på
+ * ruteparametere. Støtter både web og mobil plattformer.
+ */
+
 import { Exhibition } from "@/types/exhibition";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
@@ -8,36 +13,34 @@ import WebMap from "@teovilla/react-native-web-maps";
 const GOOGLE_API_KEY = "AIzaSyC7buBoSMkXfSord-JMfBknaizdwB5CuPs";
 
 const MapScreen = () => {
-  // Henter data om utstillingen fra ruteparametrene
+  // Henter data om exhibition fra ruteparametrene
   const { exhibition } = useLocalSearchParams();
 
-  // Debugging: Logger den rå JSON-strengen for utstillingsdata
-  console.log("Utstillingsdata (string):", exhibition);
-
-  // Parser JSON-strengen til et Exhibition-objekt eller null hvis ingen data
+  // Konverterer JSON-strengen til et Exhibition-objekt
   const exhibitionData: Exhibition | null = exhibition
     ? JSON.parse(exhibition as string)
     : null;
 
-  // Debugging: Logger det parserte utstillingsobjektet
-  console.log("Utstillingsobjekt:", exhibitionData);
-
-  // Når man klikker på markøren, kan en advarsel vises som et eksempel
+  // Håndterer trykk på markør
   const handleMarkerPress = () => {
     if (exhibitionData) {
       Alert.alert(
-        "Utstilling",
+        "Exhibition",
         `Du trykket på ${exhibitionData.title}\nLokasjon: ${exhibitionData.location}`
       );
-      // TODO: Naviger til detaljskjerm for utstillingen
     }
   };
 
+  /**
+   * Viser kart for web-plattformen.
+   */
   if (Platform.OS === "web") {
     return (
       <View className="flex-1">
         {exhibitionData && (
+          // Viser kart med utgangspunkt i exhibition-data
           // @ts-ignore: Typescript klager men det fungerer
+
           <WebMap
             provider="google"
             initialRegion={{
@@ -56,6 +59,10 @@ const MapScreen = () => {
       </View>
     );
   }
+
+  /**
+   * Viser kart for andre plattformer enn web.
+   */
   return (
     <View className="flex-1">
       {exhibitionData ? (
@@ -68,17 +75,17 @@ const MapScreen = () => {
             longitudeDelta: 0.05,
           }}
         >
-          {/* Legger til markør hvis utstillingsdata er tilgjengelig */}
+          {/* Markør som representerer exhibition */}
           <Marker
             coordinate={exhibitionData.coordinates}
             title={exhibitionData.title}
             description={exhibitionData.location}
-            onPress={handleMarkerPress} // Håndterer trykk på markøren
+            onPress={handleMarkerPress}
           />
         </MapView>
       ) : (
         <View className="flex-1 justify-center items-center">
-          <Text>Ingen utstillingsdata tilgjengelig!</Text>
+          <Text>Ingen exhibition-data tilgjengelig!</Text>
         </View>
       )}
     </View>

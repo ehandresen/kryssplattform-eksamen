@@ -1,3 +1,8 @@
+/**
+ * CRUD-operasjoner (Create, Read, Update, Delete)
+ * for å håndtere kommentarer i Firebase.
+ */
+
 import { db } from "@/firebaseConfig";
 import { Comment, CommentObject } from "@/types/comment";
 import {
@@ -12,26 +17,24 @@ import {
 } from "firebase/firestore";
 import { ARTWORKS_COLLECTION } from "./artworkApi";
 
-const COMMENTS_COLLECTION = "comments"; // Navn på Firestore-kolleksjonen for kommentarer
+const COMMENTS_COLLECTION = "comments";
 
 /**
- * Legger til en kommentar i Firestore og oppdaterer kunstverket den er knyttet til
- * @param artworkId - ID for kunstverket som kommentaren er tilknyttet
- * @param comment - Kommentardata som skal lagres
- * @returns ID for den nye kommentaren
+ * Legger til en kommentar i Firestore
+ * og oppdaterer kunstverket den er knyttet til
+ * @param artworkId
+ * @param comment
+ * @returns
  */
 export const addComment = async (artworkId: string, comment: Comment) => {
   try {
-    // Legg til kommentaren i "comments"-kolleksjonen i Firestore
     const commentRef = await addDoc(
       collection(db, COMMENTS_COLLECTION),
       comment
     );
 
-    // Referanse til spesifikt kunstverksdokument basert på oppgitt ID
     const artworkRef = doc(db, ARTWORKS_COLLECTION, artworkId);
 
-    // Legg til den nye kommentarens ID i kunstverkets 'comments'-array (unngår duplikater)
     await updateDoc(artworkRef, {
       comments: arrayUnion(commentRef.id),
     });
@@ -49,19 +52,17 @@ export const addComment = async (artworkId: string, comment: Comment) => {
 
 /**
  * Henter kommentarer basert på en liste med ID-er
- * @param ids - Liste over kommentar-ID-er
- * @returns Liste med kommentarobjekter
+ * @param ids
+ * @returns
  */
 export const getCommentsByIds = async (ids: string[]) => {
   try {
-    // Hent alle kommentarer parallelt basert på ID-er
     const response = await Promise.all(
       ids.map((id) => {
         return getDoc(doc(db, COMMENTS_COLLECTION, id));
       })
     );
 
-    // Map dokumenter til en liste med kommentarobjekter
     return response
       .map((doc) => {
         if (!doc.exists()) {
@@ -70,7 +71,7 @@ export const getCommentsByIds = async (ids: string[]) => {
         }
         return { id: doc.id, comment: doc.data() } as CommentObject;
       })
-      .filter((comment) => comment !== null); // Fjern null-verdier for manglende dokumenter
+      .filter((comment) => comment !== null);
   } catch (error) {
     if (error instanceof Error) {
       console.error("Feil ved henting av kommentarer:", error.message);
@@ -81,21 +82,19 @@ export const getCommentsByIds = async (ids: string[]) => {
 };
 
 /**
- * Sletter en kommentar fra Firestore og oppdaterer kunstverket den er knyttet til
- * @param commentId - ID for kommentaren som skal slettes
- * @param artworkId - ID for kunstverket kommentaren er tilknyttet
+ * Sletter en kommentar fra Firestore
+ * og oppdaterer kunstverket den er knyttet til
+ * @param commentId
+ * @param artworkId
  */
 export const deleteComment = async (commentId: string, artworkId: string) => {
   try {
-    // Referanse til kunstverket som kommentaren er knyttet til
     const artworkRef = doc(db, ARTWORKS_COLLECTION, artworkId);
 
-    // Fjern kommentar-ID fra kunstverkets 'comments'-array
     await updateDoc(artworkRef, {
       comments: arrayRemove(commentId),
     });
 
-    // Slett kommentaren fra "comments"-kolleksjonen
     await deleteDoc(doc(db, COMMENTS_COLLECTION, commentId));
 
     console.log("Kommentar slettet med ID:", commentId);

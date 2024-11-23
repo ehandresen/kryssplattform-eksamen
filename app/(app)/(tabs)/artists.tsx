@@ -1,3 +1,7 @@
+/**
+ * Håndterer visning av artister.
+ */
+
 import React, { useState, useEffect } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 import ArtistList from "../../../components/ArtistList";
@@ -16,12 +20,13 @@ export default function ArtistsScreen() {
   const [allArtists, setAllArtists] = useState<Artist[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Henter alle artister ved oppstart
   useEffect(() => {
     const fetchArtists = async () => {
       try {
         const artists = await getAllArtists();
         setAllArtists(artists);
-        setFilteredData(artists); // Standardvisning
+        setFilteredData(artists);
       } catch (error) {
         console.error("Feil ved henting av artists:", error);
       } finally {
@@ -35,6 +40,7 @@ export default function ArtistsScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-100">
+        {/* Laster-indikator som vises mens data hentes */}
         <ActivityIndicator size="large" color="#008080" />
         <Text className="mt-4 text-lg text-gray-600">Laster artister...</Text>
       </View>
@@ -43,11 +49,12 @@ export default function ArtistsScreen() {
 
   return (
     <View className={`flex-1 p-4 bg-${currentColors.background}`}>
+      {/* Menykomponent for søk, filtrering og tilgjengelighetsalternativer */}
       <Menu
         sortTitle={false}
         onSortAZ={() => {}}
         onSortZA={() => {}}
-        allData={allArtists} // Generisk data
+        allData={allArtists}
         setFilteredData={setFilteredData}
         isSearchVisible={isSearchVisible}
         setIsSearchVisible={setIsSearchVisible}
@@ -59,9 +66,10 @@ export default function ArtistsScreen() {
         isVisible={true}
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
-        searchKey="displayName" // Endret til displayName
+        searchKey="displayName"
       />
 
+      {/* Liste over artister med støtte for dynamisk tekststørrelse */}
       <ArtistList data={filteredData} textSize={textSize} />
     </View>
   );

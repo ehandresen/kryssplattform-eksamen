@@ -1,15 +1,16 @@
+/**
+ * Håndterer den overordnede strukturen for appen, inkludert navigasjon og
+ * ruteautorisasjon. Sørger for at brukeren er autentisert før tilgang til innhold.
+ */
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Slot, usePathname, Redirect, Stack } from "expo-router";
 import React from "react";
 import { useAuth } from "@/hooks/useAuth";
 
-/**
- * AppLayout håndterer den overordnede strukturen for appen, inkludert navigasjon og
- * ruteautorisasjon. Sørger for at brukeren er autentisert før tilgang til innhold.
- */
 export default function AppLayout() {
-  const pathname = usePathname(); // Henter gjeldende rute for debugging eller betinget logikk
-  const { session, isLoading } = useAuth(); // Tilgang til autentisering og brukerdata
+  const pathname = usePathname();
+  const { session, isLoading } = useAuth();
 
   /**
    * Hvis brukeren ikke er logget inn, omdirigeres de til påloggingssiden.
@@ -27,34 +28,34 @@ export default function AppLayout() {
       <Stack>
         {/* Definerer de ulike skjermene og deres tilhørende innstillinger */}
         <Stack.Screen
-          name="(tabs)" // Tab-navigasjon
+          name="(tabs)"
           options={{
-            headerShown: false, // Skjuler overskriften
-            title: "Home", // Tittel på skjermen
+            headerShown: false,
+            title: "Home",
           }}
         />
         <Stack.Screen
-          name="artworkDetails/[id]" // Skjerm for detaljer om kunstverk
+          name="artworkDetails/[id]"
           options={{
-            title: "Artwork Details", // Setter tittelen som vises i overskriften
+            title: "Artwork Details",
           }}
         />
         <Stack.Screen
-          name="artistDetails/[id]" // Skjerm for detaljer om artists
+          name="artistDetails/[id]"
           options={{
-            title: "Artist Details", // Setter tittelen som vises i overskriften
+            title: "Artist Details",
           }}
         />
         <Stack.Screen
-          name="map" // Kartskjerm
+          name="map"
           options={{
-            title: "Map", // Tittel for kartsiden
+            title: "Map",
           }}
         />
         <Stack.Screen
-          name="exhibitionDetails/[id]" // Skjerm for utstillingsdetaljer
+          name="exhibitionDetails/[id]"
           options={{
-            title: "Exhibition Details", // Tittel for utstillingsdetaljer (kan tilpasses)
+            title: "Exhibition Details",
           }}
         />
       </Stack>

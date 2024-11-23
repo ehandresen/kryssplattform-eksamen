@@ -1,78 +1,71 @@
+/**
+ * Hovedlayout for appen som håndterer navigasjon mellom Gallery, Artists og Exhibitions.
+ * Inkluderer en dynamisk Header og Tab-navigasjon med ikoner for hver skjerm.
+ */
+
 import { Tabs, usePathname } from "expo-router";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import React from "react";
 import Header from "../../../components/header/Header";
-import { View, Text } from "react-native"; // Importerer Text
+import { View, Text } from "react-native";
 
-/**
- * TabsLayout er hovedlayouten som håndterer navigasjon mellom de tre skjermene:
- * Gallery, Artists og Exhibitions. Layouten inkluderer en tilpasset Header
- * og navigasjonsfaner med ikoner og tilpassede stiler. Den håndterer også dynamisk
- * oppsett av undertittelen basert på aktiv skjerm.
- */
 const TabsLayout = () => {
   try {
-    const pathname = usePathname(); // Henter nåværende sti i appen (f.eks. "/gallery")
-    console.log("Aktiv sti:", pathname); // Debugging: Logg den aktive stien for å spore navigasjon
+    const pathname = usePathname();
 
-    // Sjekker hvilken skjerm som vises basert på stien
     const isGalleryScreen = pathname === "/gallery";
     const isArtistsScreen = pathname === "/artists";
 
-    // Setter undertittel basert på hvilken skjerm som er aktiv
     const subtitle = isGalleryScreen
-      ? "Gallery" // Undertittel for Gallery-skjermen
+      ? "Gallery"
       : isArtistsScreen
-      ? "Artists" // Undertittel for Artists-skjermen
-      : "Exhibitions"; // Standard undertittel for Exhibitions-skjermen
+      ? "Artists"
+      : "Exhibitions";
 
     return (
       <View className="flex-1">
-        {/* Header-komponent som vises øverst i layouten */}
+        {/* Header som vises øverst */}
         <Header
-          subtitle={subtitle} // Dynamisk undertittel basert på aktiv skjerm
-          showLogoutButton={true} // Viser Logg ut-knappen på venstre side
-          showProfileButton={true} // Viser Profil-knappen på høyre side
+          subtitle={subtitle}
+          showLogoutButton={true}
+          showProfileButton={true}
         />
 
-        {/* Tab-navigasjon for å bytte mellom Gallery, Artists og Exhibitions */}
+        {/* Tab-navigasjon mellom skjermene */}
         <Tabs
           screenOptions={{
-            tabBarLabelStyle: { fontSize: 14 }, // Skriftstørrelse for etikettene
-            tabBarActiveTintColor: "red", // Farge for aktiv fane
-            tabBarInactiveTintColor: "black", // Farge for inaktive faner
-            headerShown: false, // Skjuler standard header fra navigasjonen
-            tabBarHideOnKeyboard: true, // Skjuler fanene når tastaturet er aktivt
+            tabBarLabelStyle: { fontSize: 14 },
+            tabBarActiveTintColor: "red",
+            tabBarInactiveTintColor: "black",
+            headerShown: false,
+            tabBarHideOnKeyboard: true,
           }}
         >
-          {/* Fane for Gallery-skjermen */}
           <Tabs.Screen
             name="gallery"
             options={{
-              title: "Gallery", // Tittel for fanen
+              title: "Gallery",
               tabBarIcon: ({ color }) => (
                 <FontAwesome5 name="images" size={22} color={color} />
-              ), // Ikon for fanen
+              ),
             }}
           />
-          {/* Fane for Artists-skjermen */}
           <Tabs.Screen
             name="artists"
             options={{
-              title: "Artists", // Tittel for fanen
+              title: "Artists",
               tabBarIcon: ({ color }) => (
                 <FontAwesome5 name="users" size={22} color={color} />
-              ), // Ikon for fanen
+              ),
             }}
           />
-          {/* Fane for Exhibitions-skjermen */}
           <Tabs.Screen
             name="exhibitions"
             options={{
-              title: "Exhibitions", // Tittel for fanen
+              title: "Exhibitions",
               tabBarIcon: ({ color }) => (
                 <FontAwesome5 name="landmark" size={22} color={color} />
-              ), // Ikon for fanen
+              ),
             }}
           />
         </Tabs>
@@ -85,7 +78,6 @@ const TabsLayout = () => {
     } else {
       console.error("Ukjent feil i TabsLayout:", error);
     }
-    // Returnerer en fallback-komponent hvis noe går galt
     return (
       <View className="flex-1">
         <Header
@@ -94,7 +86,6 @@ const TabsLayout = () => {
           showProfileButton={false}
         />
         <View className="mt-20">
-          {/* Feilmelding til brukeren */}
           <Text className="text-red-600 text-lg text-center">
             Det oppstod en feil i navigasjonen. Prøv igjen senere.
           </Text>

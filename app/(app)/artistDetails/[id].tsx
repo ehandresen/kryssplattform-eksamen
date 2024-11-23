@@ -1,69 +1,61 @@
+/**
+ * Viser detaljer om en spesifikk artist og deres artworks.
+ */
+
 import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator, Text } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { getArtistById } from "@/api/artistApi"; // Henter informasjon om en spesifikk artist
-import { getAllArtworks } from "@/api/artworkApi"; // Henter alle kunstverk
-import ArtistCard from "@/components/ArtistCard"; // Kortkomponent for artist
-import ArtworkList from "@/components/ArtworkList"; // Listekomponent for kunstverk
-import { useAccessibility } from "@/hooks/useAccessibility"; // Tilgjengelighetshook
-import { Artist } from "@/types/artist"; // Typedefinisjon for artist
-import { Artwork } from "@/types/artwork"; // Typedefinisjon for kunstverk
+import { getArtistById } from "@/api/artistApi";
+import { getAllArtworks } from "@/api/artworkApi";
+import ArtistCard from "@/components/ArtistCard";
+import ArtworkList from "@/components/ArtworkList";
+import { useAccessibility } from "@/hooks/useAccessibility";
+import { Artist } from "@/types/artist";
+import { Artwork } from "@/types/artwork";
 import { useAuth } from "@/hooks/useAuth";
 
-/**
- * Komponent for å vise detaljert informasjon om en spesifikk artist, samt deres kunstverk.
- */
 export default function ArtistDetails() {
-  const { id } = useLocalSearchParams(); // Henter ID for artist fra ruteparametrene
-  const { textSize, currentColors } = useAccessibility(); // Tilgjengelighetsinnstillinger for tekststørrelse og farger
-  const [artist, setArtist] = useState<Artist | null>(null); // Holder informasjon om artisten
-  const [artworks, setArtworks] = useState<Artwork[]>([]); // Holder kunstverk tilhørende artisten
-  const [loading, setLoading] = useState(true); // Indikerer om data laster
-  const [error, setError] = useState<string | null>(null); // Holder eventuelle feilmeldinger
+  const { id } = useLocalSearchParams();
+  const { textSize, currentColors } = useAccessibility();
+  const [artist, setArtist] = useState<Artist | null>(null);
+  const [artworks, setArtworks] = useState<Artwork[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const { role } = useAuth();
+
   /**
-   * Henter informasjon om artisten og deres kunstverk.
+   * Henter informasjon om artisten og deres artworks.
    */
   useEffect(() => {
     const fetchArtistAndArtworks = async () => {
       try {
-        console.log("Henter detaljer for artist med ID:", id); // Debugging
-
-        // Henter artistdata fra API
         const artistData = await getArtistById(id as string);
-        if (!artistData || !artistData.id) {
-          console.error("Fant ingen artist eller ugyldig ID:", artistData); // Debugging
+        if (!artistData) {
           setError("Fant ingen artist med gitt ID.");
           setLoading(false);
           return;
         }
-
         setArtist(artistData);
 
-        // Henter og filtrerer kunstverk basert på artistens ID
         const allArtworks = await getAllArtworks();
         const filteredArtworks = allArtworks.filter(
           (artwork) => artwork.artistId === id
         );
-
-        console.log(
-          `Fant ${filteredArtworks.length} kunstverk for artist med ID:`,
-          id
-        ); // Debugging
         setArtworks(filteredArtworks);
       } catch (error) {
-        console.error("Feil ved henting av artist eller kunstverk:", error); // Debugging
         setError("En feil oppsto under henting av data.");
       } finally {
-        setLoading(false); // Stopper lastindikatoren uansett
+        setLoading(false);
       }
     };
 
     fetchArtistAndArtworks();
   }, [id]);
 
-  // Hvis bruker ikke er logget inn, hvis denne meldingen
+  /**
+   * Viser en melding hvis brukeren ikke er logget inn.
+   */
   if (role === "guest") {
     return (
       <View className="flex-1 justify-center items-center">
@@ -87,7 +79,7 @@ export default function ArtistDetails() {
   }
 
   /**
-   * Viser en feilmelding hvis det oppstår en feil under henting av data.
+   * Viser en feilmelding hvis det oppstår en feil.
    */
   if (error) {
     return (
@@ -109,14 +101,11 @@ export default function ArtistDetails() {
   }
 
   /**
-   * Returnerer brukergrensesnittet for artistens detaljer og deres kunstverk.
+   * Viser artistens detaljer og en liste over deres artwork.
    */
   return (
     <View className="flex-1 bg-white p-4">
-      {/* Viser artistens detaljer */}
       <ArtistCard artist={artist} />
-
-      {/* Viser en liste over artistens kunstverk */}
       <View className="flex-1 mt-4">
         <Text
           className="text-lg font-bold text-primary mb-3"

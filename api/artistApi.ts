@@ -1,3 +1,8 @@
+/**
+ * CRUD-operasjoner (Create, Read, Update, Delete)
+ * for å håndtere "Artist" i Firebase.
+ */
+
 import { Artist } from "@/types/artist";
 import { db } from "@/firebaseConfig";
 import {
@@ -10,13 +15,12 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
-// Navn på Firestore-kolleksjonen for artister
 export const ARTISTS_COLLECTION = "artists";
 
 /**
  * Legger til en ny artist i Firestore
- * @param artist - Artistdata som skal lagres
- * @returns Dokument-IDen til den nye artisten
+ * @param artist
+ * @returns
  */
 export const addArtistToFirestore = async (
   artist: Artist
@@ -24,7 +28,7 @@ export const addArtistToFirestore = async (
   try {
     const newArtist = {
       ...artist,
-      createdAt: new Date().toISOString(), // Legger til opprettelsestidspunkt
+      createdAt: new Date().toISOString(),
     };
 
     const docRef = await addDoc(collection(db, ARTISTS_COLLECTION), newArtist);
@@ -47,7 +51,7 @@ export const getAllArtists = async (): Promise<Artist[]> => {
     return artistDocs.docs.map((doc) => {
       return {
         ...doc.data(),
-        id: doc.id, // Legger til dokument-ID i returdataene
+        id: doc.id,
       } as Artist;
     });
   } catch (error) {
@@ -58,8 +62,8 @@ export const getAllArtists = async (): Promise<Artist[]> => {
 
 /**
  * Henter én artist basert på ID
- * @param id - Firestore-dokument-ID for artisten
- * @returns Artistdata eller undefined hvis artisten ikke finnes
+ * @param id
+ * @returns
  */
 export const getArtistById = async (id: string): Promise<Artist | void> => {
   try {
@@ -80,8 +84,8 @@ export const getArtistById = async (id: string): Promise<Artist | void> => {
 
 /**
  * Oppdaterer dataene til en artist i Firestore
- * @param id - Firestore-dokument-ID for artisten
- * @param updatedData - De oppdaterte dataene
+ * @param id
+ * @param updatedData
  */
 export const updateArtist = async (
   id: string,
@@ -91,7 +95,7 @@ export const updateArtist = async (
     const artistRef = doc(db, ARTISTS_COLLECTION, id);
     await updateDoc(artistRef, {
       ...updatedData,
-      updatedAt: new Date().toISOString(), // Legger til tidspunkt for oppdatering
+      updatedAt: new Date().toISOString(),
     });
     console.log("Artist oppdatert med ID:", id);
   } catch (error) {
@@ -102,7 +106,7 @@ export const updateArtist = async (
 
 /**
  * Sletter en artist fra Firestore
- * @param id - Firestore-dokument-ID for artisten
+ * @param id
  */
 export const deleteArtist = async (id: string): Promise<void> => {
   try {
