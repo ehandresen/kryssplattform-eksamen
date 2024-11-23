@@ -1,40 +1,40 @@
+/**
+ * Håndterer innlogging, opprettelse av
+ * nye brukere og gjestetilgang.
+ */
+
 import React, { useState, useEffect } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Button,
   Text,
   TextInput,
   TouchableOpacity,
   View,
   StyleSheet,
 } from "react-native";
-import { useAuth } from "@/hooks/useAuth"; // Hook for autentisering
-import { router } from "expo-router"; // Brukes til navigasjon
-import { signUp } from "@/api/authApi"; // Importerer sign-up funksjonen fra API
+import { useAuth } from "@/hooks/useAuth";
+import { router } from "expo-router";
+import { signUp } from "@/api/authApi";
 
-/**
- * LoginScreen håndterer både innlogging og opprettelse av nye brukere.
- */
 const LoginScreen = () => {
-  // Tilstand for innlogging og opprettelse av bruker
-  const [email, setEmail] = useState(""); // Holder e-postinput
-  const [password, setPassword] = useState(""); // Holder passordinput
-  const [username, setUsername] = useState(""); // Holder brukernavn ved opprettelse
-  const [isSignUpMode, setIsSignUpMode] = useState(false); // Veksler mellom innlogging og opprettelse av bruker
+  // State for brukerinndata og modus
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [isSignUpMode, setIsSignUpMode] = useState(false);
 
-  const { signIn, isLoading, setIsLoading, session, loginAsGuest } = useAuth(); // Henter metoder og tilstand fra `useAuth`
+  const { signIn, isLoading, setIsLoading, session, loginAsGuest } = useAuth();
 
-  // Brukeren omdirigeres til galleriet hvis de allerede er logget inn
+  // Navigerer brukeren til galleriet hvis allerede logget inn
   useEffect(() => {
     if (session) {
-      router.navigate("/(app)/(tabs)/gallery"); // Navigerer til galleriet
+      router.navigate("/(app)/(tabs)/gallery");
     }
   }, [session]);
 
-  /**
-   * Håndterer innlogging av brukeren.
-   */
+  //Håndterer innlogging av brukere.
+
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert("Valideringsfeil", "E-post og passord er påkrevd.");
@@ -43,7 +43,7 @@ const LoginScreen = () => {
 
     setIsLoading(true);
     try {
-      const user = await signIn(email, password); // Forsøker å logge inn brukeren
+      const user = await signIn(email, password);
       if (user) {
         router.navigate("/(app)/(tabs)/gallery");
       }
@@ -55,9 +55,8 @@ const LoginScreen = () => {
     }
   };
 
-  /**
-   * Håndterer opprettelse av ny bruker.
-   */
+  // Håndterer opprettelse av nye brukere.
+
   const handleSignUp = async () => {
     if (!email || !password || !username) {
       Alert.alert(
@@ -69,7 +68,7 @@ const LoginScreen = () => {
 
     setIsLoading(true);
     try {
-      await signUp(email, password, username); // Oppretter ny bruker
+      await signUp(email, password, username);
       Alert.alert("Suksess", "Bruker opprettet!");
     } catch (error) {
       console.error("Feil under opprettelse av bruker:", error);
@@ -78,6 +77,8 @@ const LoginScreen = () => {
       setIsLoading(false);
     }
   };
+
+  // Håndterer innlogging som gjest.
 
   const handleGuestLogin = () => {
     loginAsGuest();
@@ -90,7 +91,7 @@ const LoginScreen = () => {
         {isSignUpMode ? "Opprett bruker" : "Logg inn"}
       </Text>
 
-      {/* Input-felt for brukernavn (kun ved opprettelse av bruker) */}
+      {/* Input-felt for brukernavn (kun ved opprettelse) */}
       {isSignUpMode && (
         <TextInput
           className="h-10 border border-gray-300 rounded-md p-2 mb-4"
@@ -119,16 +120,16 @@ const LoginScreen = () => {
         placeholder="Passord"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry={true} // Skjuler passordet
+        secureTextEntry={true}
         placeholderTextColor="#888"
       />
 
-      {/* Viser en spinner mens forespørsler lastes */}
+      {/* Viser en spinner under lasting */}
       {isLoading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <>
-          {/* Knapp for enten å logge inn eller opprette bruker */}
+          {/* Knapp for innlogging/opprettelse */}
           <TouchableOpacity
             style={styles.button}
             onPress={isSignUpMode ? handleSignUp : handleLogin}
@@ -138,7 +139,7 @@ const LoginScreen = () => {
             </Text>
           </TouchableOpacity>
 
-          {/* Knapp for å bytte mellom innlogging og opprettelse av bruker */}
+          {/* Veksle mellom innlogging og opprettelse */}
           <TouchableOpacity
             style={[styles.button, styles.switchButton]}
             onPress={() => setIsSignUpMode(!isSignUpMode)}
@@ -148,7 +149,7 @@ const LoginScreen = () => {
             </Text>
           </TouchableOpacity>
 
-          {/* Knapp for gjeste logg inn */}
+          {/* Knapp for gjestetilgang */}
           <TouchableOpacity
             style={[styles.button, styles.guestButton]}
             onPress={handleGuestLogin}
