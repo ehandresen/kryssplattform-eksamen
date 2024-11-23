@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, RefreshControl, TouchableOpacity } from "react-native";
-import ArtistCard from "./ArtistCard"; // Komponent for å vise hver artist som et kort
-import { Artist } from "@/types/artist"; // Typedefinisjon for Artist
-import { useRouter } from "expo-router"; // Navigasjon for detaljer
-import * as artistApi from "@/api/artistApi"; // API for å hente og oppdatere kunstv
+import ArtistCard from "./ArtistCard";
+import { Artist } from "@/types/artist";
+import { useRouter } from "expo-router";
+import * as artistApi from "@/api/artistApi";
 
 interface ArtistListProps {
-  data: Artist[]; // Liste over artister som skal vises
-  textSize: number; // Dynamisk tekststørrelse
+  data: Artist[];
+  textSize: number;
 }
 
 export default function ArtistList({ data }: ArtistListProps) {
-  const [artists, setArtists] = useState<Artist[]>(data); // Lokal state for kunstverk
-  const [refreshing, setRefreshing] = useState(false); // Kontroll for oppdatering
-  const router = useRouter(); // Router for navigasjon
+  const [artists, setArtists] = useState<Artist[]>(data);
+  const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter();
 
   /**
    * Oppdaterer lokal state når nye data sendes som prop.
@@ -28,7 +28,7 @@ export default function ArtistList({ data }: ArtistListProps) {
       const updatedArtists = await artistApi.getAllArtists();
       setArtists(updatedArtists); // Oppdaterer lokal state
     } catch (error) {
-      console.error("Feil ved henting av artists:", error); // Debugging
+      console.error("Error fetching artists:", error); // Debugging
     } finally {
       setRefreshing(false); // Deaktiver oppdateringsindikatoren
     }
@@ -36,27 +36,25 @@ export default function ArtistList({ data }: ArtistListProps) {
 
   return (
     <FlatList
-      data={artists} // Data for artistene
-      keyExtractor={(item) => item.id} // Unik nøkkel for hver artist
+      data={artists}
+      keyExtractor={(item) => item.id}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={fetchArtists} />
       }
       renderItem={({ item }) => (
         <TouchableOpacity
-          onPress={() => router.push(`/artistDetails/${item.id}`)} // Naviger til detaljer
+          onPress={() => router.push(`/artistDetails/${item.id}`)}
           style={{
             backgroundColor: "white",
             marginVertical: 16,
           }}
         >
-          <ArtistCard
-            artist={item} // Sender artistdata til ArtistCard
-          />
+          <ArtistCard artist={item} />
         </TouchableOpacity>
       )}
       contentContainerStyle={{
         paddingHorizontal: 8,
-        paddingBottom: 16, // Justering for spacing
+        paddingBottom: 16,
       }}
     />
   );

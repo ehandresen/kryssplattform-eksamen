@@ -7,14 +7,14 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, Pressable, StyleSheet } from "react-native";
 import { Artwork } from "../types/artwork";
-import { useAccessibility } from "@/hooks/useAccessibility"; // Tilgjengelighetshook for tekststørrelse og farger
-import { getArtistById } from "@/api/artistApi"; // Henter kunstnerdetaljer fra API
+import { useAccessibility } from "@/hooks/useAccessibility";
+import { getArtistById } from "@/api/artistApi";
 
 interface ArtworkCardProps {
-  artwork: Artwork; // Kunstverket som vises
-  isLiked: boolean; // Om brukeren har likt kunstverket
-  numLikes: number; // Antall likes kunstverket har
-  toggleLike: () => void; // Funksjon for å like/unlike kunstverket
+  artwork: Artwork;
+  isLiked: boolean;
+  numLikes: number;
+  toggleLike: () => void;
 }
 
 export default function ArtworkCard({
@@ -23,7 +23,7 @@ export default function ArtworkCard({
   numLikes,
   toggleLike,
 }: ArtworkCardProps) {
-  const { textSize, currentColors } = useAccessibility(); // Tilgjengelighetsinnstillinger for tekst og farger
+  const { textSize, currentColors } = useAccessibility();
   const [artistName, setArtistName] = useState<string>("");
 
   /**
@@ -37,7 +37,7 @@ export default function ArtworkCard({
           const artist = await getArtistById(artwork.artistId);
           setArtistName(artist?.displayName || "Unknown Artist");
         } catch (error) {
-          console.error("Feil ved henting av kunstnerens navn:", error);
+          console.error("Error fetching artist name:", error);
           setArtistName("Unknown Artist");
         }
       } else {
@@ -50,17 +50,14 @@ export default function ArtworkCard({
 
   return (
     <View
-      style={[
-        styles.cardContainer,
-        { backgroundColor: currentColors.primary }, // Dynamisk farge basert på tilgjengelighetsinnstillinger
-      ]}
+      style={[styles.cardContainer, { backgroundColor: currentColors.card }]}
     >
       {/* Bilde av kunstverket */}
       <Image
         source={{ uri: artwork.imageUrl }}
         style={styles.image}
-        onError={() => console.log("Feil ved innlasting av bilde.")} // Debugging for bildeinnlasting
-        defaultSource={require("../assets/placeholder.png")} // Placeholder-bilde hvis bilde mangler
+        onError={() => console.log("Error uploading image ved.")}
+        defaultSource={require("../assets/placeholder.png")}
       />
 
       {/* Tittel på kunstverket */}
@@ -68,8 +65,8 @@ export default function ArtworkCard({
         style={[
           styles.title,
           {
-            fontSize: textSize, // Dynamisk tekststørrelse
-            color: currentColors.secondary, // Dynamisk farge
+            fontSize: textSize,
+            color: currentColors.text,
           },
         ]}
       >
@@ -81,8 +78,8 @@ export default function ArtworkCard({
         style={[
           styles.artist,
           {
-            fontSize: textSize - 2, // Litt mindre enn tittelen
-            color: currentColors.secondary,
+            fontSize: textSize - 2,
+            color: currentColors.text,
           },
         ]}
       >
@@ -94,8 +91,8 @@ export default function ArtworkCard({
         style={[
           styles.description,
           {
-            fontSize: textSize - 4, // Enda mindre tekststørrelse
-            color: currentColors.secondary,
+            fontSize: textSize - 4,
+            color: currentColors.text,
           },
         ]}
       >
@@ -108,7 +105,7 @@ export default function ArtworkCard({
           styles.likes,
           {
             fontSize: textSize - 4,
-            color: currentColors.secondary,
+            color: currentColors.special,
           },
         ]}
       >
@@ -120,9 +117,7 @@ export default function ArtworkCard({
         <Text
           style={{
             fontSize: textSize - 2,
-            color: isLiked
-              ? currentColors.primary // Dynamisk farge hvis likt
-              : currentColors.secondary,
+            color: isLiked ? currentColors.error : currentColors.special,
           }}
         >
           {isLiked ? "Unlike" : "Like"}
@@ -148,8 +143,8 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "bold",
     marginBottom: 8,
-    flexWrap: "wrap", // Sørger for at teksten brytes
-    width: "100%", // Sikrer at teksten holder seg innenfor containeren
+    flexWrap: "wrap",
+    width: "100%",
   },
   artist: {
     marginBottom: 8,

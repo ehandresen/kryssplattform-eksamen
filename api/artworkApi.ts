@@ -27,7 +27,7 @@ export const addArtworkToFirestore = async (artwork: Artwork) => {
     const firebaseImage = await uploadImageToFirebase(artwork.imageUrl);
 
     if (firebaseImage === "error") {
-      console.error("Feil ved opplasting av bildet.");
+      console.error("Error uploading image.");
       return;
     }
 
@@ -42,9 +42,9 @@ export const addArtworkToFirestore = async (artwork: Artwork) => {
       collection(db, ARTWORKS_COLLECTION),
       artworkWithNewImageUrl
     );
-    console.log("Kunstverk lagret med ID:", docRef.id);
+    console.log("Artwork saved with ID:", docRef.id);
   } catch (error) {
-    console.error("Feil ved lagring av kunstverk:", error);
+    console.error("Error saving artwork:", error);
   }
 };
 
@@ -63,7 +63,7 @@ export const getAllArtworks = async (): Promise<Artwork[]> => {
       } as Artwork;
     });
   } catch (error) {
-    console.error("Feil ved henting av kunstverk fra Firestore:", error);
+    console.error("Error fetching artwork from Firebase:", error);
     return [];
   }
 };
@@ -85,7 +85,7 @@ export const getUniqueCategories = async (): Promise<string[]> => {
 
     return Array.from(categoriesSet);
   } catch (error) {
-    console.error("Feil ved henting av kategorier:", error);
+    console.error("Error fetching categories:", error);
     return [];
   }
 };
@@ -105,10 +105,10 @@ export const getArtworkById = async (id: string) => {
         id: docSnapshot.id,
       } as Artwork;
     } else {
-      console.log("Ingen kunstverk funnet med den ID-en.");
+      console.log("No artwork found with this ID.");
     }
   } catch (error) {
-    console.error("Feil ved henting av kunstverk etter ID:", error);
+    console.error("Error fetching artwork by ID:", error);
   }
 };
 
@@ -120,9 +120,9 @@ export const deleteArtworkById = async (id: string) => {
   try {
     const docRef = doc(db, ARTWORKS_COLLECTION, id);
     await deleteDoc(docRef);
-    console.log(`Kunstverk med ID ${id} er slettet.`);
+    console.log(`Artwork with ID ${id} is deleted.`);
   } catch (error) {
-    console.error("Feil ved sletting av kunstverk:", error);
+    console.error("Error deleting artwork:", error);
   }
 };
 
@@ -138,9 +138,9 @@ export const updateArtworkById = async (
   try {
     const docRef = doc(db, ARTWORKS_COLLECTION, id);
     await updateDoc(docRef, updatedArtwork);
-    console.log(`Kunstverk med ID ${id} er oppdatert.`);
+    console.log(`Artwork with ID ${id} is updated.`);
   } catch (error) {
-    console.error("Feil ved oppdatering av kunstverk:", error);
+    console.error("Error updating artwork:", error);
   }
 };
 
@@ -155,10 +155,7 @@ export const updateArtworkLikes = async (id: string, userId: string) => {
     const artworkSnapshot = await getDoc(artworkRef);
 
     if (!artworkSnapshot.exists()) {
-      console.warn(
-        "Ingen kunstverk funnet for oppdatering av likes med ID:",
-        id
-      );
+      console.warn("No artwork found when updating likes with ID:", id);
       return;
     }
 
@@ -169,10 +166,10 @@ export const updateArtworkLikes = async (id: string, userId: string) => {
       ? likes.filter((like: string) => like !== userId)
       : [...likes, userId];
 
-    console.log("Oppdaterte likes for ID:", id, updatedLikes);
+    console.log("Udpdated likes for ID:", id, updatedLikes);
 
     await updateDoc(artworkRef, { likes: updatedLikes });
   } catch (error) {
-    console.error("Feil ved oppdatering av likes for kunstverk:", error);
+    console.error("Error updating likes for artworks:", error);
   }
 };

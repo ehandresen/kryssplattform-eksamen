@@ -72,7 +72,7 @@ export default function ArtistDetails() {
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-100">
-        <ActivityIndicator size="large" color={currentColors.secondary} />
+        <ActivityIndicator size="large" color={currentColors.special} />
         <Text className="mt-2 text-lg text-gray-700">Loading...</Text>
       </View>
     );

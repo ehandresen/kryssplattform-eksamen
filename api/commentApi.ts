@@ -21,7 +21,7 @@ const COMMENTS_COLLECTION = "comments";
 
 /**
  * Legger til en kommentar i Firestore
- * og oppdaterer kunstverket den er knyttet til
+ * og oppdaterer artwork den er knyttet til
  * @param artworkId
  * @param comment
  * @returns
@@ -83,7 +83,7 @@ export const getCommentsByIds = async (ids: string[]) => {
 
 /**
  * Sletter en kommentar fra Firestore
- * og oppdaterer kunstverket den er knyttet til
+ * og oppdaterer artwork den er knyttet til
  * @param commentId
  * @param artworkId
  */

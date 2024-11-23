@@ -1,36 +1,33 @@
 import React from "react";
 import { View, Text, Image, Pressable, StyleSheet } from "react-native";
-import { useAccessibility } from "@/hooks/useAccessibility"; // Tilgjengelighetshook for tekststørrelse og farger
+import { useAccessibility } from "@/hooks/useAccessibility";
 
 interface ArtistCardProps {
   artist: {
     id: string;
-    displayName?: string; // Valgfritt navn for å unngå krasj hvis det mangler
+    displayName?: string;
     email?: string;
-    profileImageUrl?: string; // Valgfritt profilbilde
-    bio?: string; // Valgfri biografi
+    profileImageUrl?: string;
+    bio?: string;
   };
 }
 
 export default function ArtistCard({ artist }: ArtistCardProps) {
-  const { textSize, currentColors } = useAccessibility(); // Tilgjengelighetsinnstillinger
+  const { textSize, currentColors } = useAccessibility();
 
   return (
     <View
-      style={[
-        styles.cardContainer,
-        { backgroundColor: currentColors.primary }, // Dynamisk farge basert på tilgjengelighetsinnstillinger
-      ]}
+      style={[styles.cardContainer, { backgroundColor: currentColors.card }]}
     >
       {/* Profilbilde */}
       <Image
         source={{
-          uri: artist.profileImageUrl || "https://via.placeholder.com/150", // Placeholder for manglende bilder
+          uri: artist.profileImageUrl || "https://via.placeholder.com/150",
         }}
         style={styles.image}
         onError={(error) =>
           console.error(
-            `Feil ved innlasting av bilde for artist ${artist.id}:`,
+            `Error uploading image by artist ${artist.id}:`,
             error.nativeEvent
           )
         }
@@ -41,12 +38,12 @@ export default function ArtistCard({ artist }: ArtistCardProps) {
         style={[
           styles.name,
           {
-            fontSize: textSize, // Dynamisk tekststørrelse
-            color: currentColors.secondary, // Dynamisk farge
+            fontSize: textSize,
+            color: currentColors.text,
           },
         ]}
       >
-        {artist.displayName || "Ukjent artist"}
+        {artist.displayName || "Uknknown artist"}
       </Text>
 
       {/* Artistens biografi */}
@@ -54,12 +51,12 @@ export default function ArtistCard({ artist }: ArtistCardProps) {
         style={[
           styles.bio,
           {
-            fontSize: textSize - 2, // Justert tekststørrelse
-            color: currentColors.secondary, // Dynamisk farge
+            fontSize: textSize - 2,
+            color: currentColors.text,
           },
         ]}
       >
-        {artist.bio || "Ingen biografi tilgjengelig."}
+        {artist.bio || "No bio available."}
       </Text>
     </View>
   );
@@ -81,8 +78,8 @@ const styles = StyleSheet.create({
   name: {
     fontWeight: "bold",
     marginBottom: 8,
-    flexWrap: "wrap", // Sørger for at teksten brytes
-    width: "100%", // Sikrer at teksten holder seg innenfor containeren
+    flexWrap: "wrap",
+    width: "100%",
   },
   bio: {
     flexWrap: "wrap",

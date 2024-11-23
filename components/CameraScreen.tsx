@@ -1,4 +1,4 @@
-import { CameraView } from "expo-camera"; // Kamera-komponent fra Expo
+import { CameraView } from "expo-camera";
 import { useRef } from "react";
 import {
   Button,
@@ -10,15 +10,15 @@ import {
 } from "react-native";
 
 type CameraScreenProps = {
-  onCapture: (uri: string) => void; // Funksjon som returnerer URI til det tatt bildet
-  onClose: () => void; // Funksjon for å lukke kamerasiden
+  onCapture: (uri: string) => void;
+  onClose: () => void;
 };
 
 export default function CameraScreen({
   onCapture,
   onClose,
 }: CameraScreenProps) {
-  const cameraRef = useRef<any>(null); // Referanse til kameraet
+  const cameraRef = useRef<any>(null);
 
   /**
    * Håndterer prosessen med å ta et bilde.
@@ -27,16 +27,16 @@ export default function CameraScreen({
   const capturePhoto = async () => {
     try {
       if (cameraRef.current) {
-        const photo = await cameraRef.current.takePictureAsync(); // Tar et bilde
-        console.log("Bilde URI:", photo.uri); // Debugging: Log URI til bildet
-        onCapture(photo.uri); // Sender URI til forelderen
+        const photo = await cameraRef.current.takePictureAsync();
+        console.log("Image URI:", photo.uri);
+        onCapture(photo.uri);
       } else {
-        console.error("Kameraet er ikke klart."); // Feilhåndtering
-        Alert.alert("Feil", "Kameraet er ikke klart. Prøv igjen.");
+        console.error("Camera is not ready.");
+        Alert.alert("Error", "Camere is not ready. Try again.");
       }
     } catch (error) {
-      console.error("Feil under bildeopptak:", error); // Logger feil under opptak
-      Alert.alert("Feil", "Noe gikk galt under bildeopptaket.");
+      console.error("Error under image upload:", error);
+      Alert.alert("Error", "Something went wrong under image upload.");
     }
   };
 
@@ -47,9 +47,9 @@ export default function CameraScreen({
         <View style={styles.buttonContainer}>
           {/* Knapper for funksjonalitet */}
           <TouchableOpacity style={styles.button} onPress={capturePhoto}>
-            <Text style={styles.text}>Ta bilde</Text>
+            <Text style={styles.text}>Take picture</Text>
           </TouchableOpacity>
-          <Button title="Lukk kamera" onPress={onClose} />
+          <Button title="Close camera" onPress={onClose} />
         </View>
       </CameraView>
     </View>
