@@ -22,6 +22,8 @@ import { Exhibition } from "@/types/exhibition";
 import MapScreen from "../map";
 import { useExhibition } from "@/hooks/useExhibition";
 import { useAccessibility } from "@/hooks/useAccessibility"; // Import the accessibility hook
+import { useArtwork } from "@/hooks/useArtwork";
+import Toast from "react-native-toast-message";
 
 export default function ArtDetails() {
   // Bruker tilpasset hook for tilgjengelighet (tekststørrelse og farger)
@@ -41,11 +43,14 @@ export default function ArtDetails() {
   const [exhibition, setExhibition] = useState<Exhibition | undefined>(
     undefined
   );
+  const [isDeletingArtwork, setIsDeletingArtwork] = useState(false);
 
   const { id } = useLocalSearchParams(); // Henter ID fra URL-parametere
   const router = useRouter(); // Bruker router for navigering
   const { session, user, role } = useAuth(); // Henter autentiseringinformasjon
   const { getExhibitionById } = useExhibition(); // Henter informasjon om utstilling
+  const { deleteArtwork } = useArtwork();
+
   const fetchArtworkFromFirebase = async () => {
     try {
       // Henter kunstverk fra Firebase ved hjelp av kunstverk-ID
@@ -58,7 +63,10 @@ export default function ArtDetails() {
         fetchCommentsFromFirebase(fetchedArtwork.comments); // Henter kommentarer for kunstverket
 
         // Henter utstillingsdetaljer hvis kunstverket har en tilknyttet utstilling
-        if (fetchedArtwork.exhibitionId) {
+        if (
+          fetchedArtwork.exhibitionId &&
+          fetchedArtwork.exhibitionId !== "undefined"
+        ) {
           const fetchedExhibition = await getExhibitionById(
             fetchedArtwork.exhibitionId
           );
@@ -175,13 +183,24 @@ export default function ArtDetails() {
           text: "Delete",
           style: "destructive",
           onPress: async () => {
+            setIsDeletingArtwork(true);
             try {
               if (artwork) {
-                await artworkApi.deleteArtworkById(artwork.id); // Sletter kunstverket
+                await deleteArtwork(artwork.id); // Sletter kunstverket
                 setArtwork(null); // Nullstiller kunstverk
+
+                Toast.show({
+                  type: "success",
+                  text1: "Success",
+                  text2: "The artwork has been deleted.",
+                });
+                //Alert.alert("Success", "The artwork has been deleted."); // Vis bekreftelse når kunstverket blir slettet
+                router.push("/gallery"); // Naviger til gallery etter sletting
               }
             } catch (error) {
               console.error("Error deleting artwork:", error); // Feilhåndtering ved sletting
+            } finally {
+              setIsDeletingArtwork(false); // Nullstill loading variabel
             }
           },
         },
@@ -220,8 +239,8 @@ export default function ArtDetails() {
     );
   }
 
-  if (loading) {
-    // Hvis dataene lastes, vises en lastesirkel
+  if (loading || isDeletingArtwork) {
+    // Hvis dataene lastes eller kunstverket slettes, vises en lastesirkel
     return (
       <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#0000ff" />
@@ -290,6 +309,98 @@ export default function ArtDetails() {
                 </TouchableOpacity>
               </View>
             )}
+
+            {/* Kommentarer-seksjonen */}
+            <View className="mt-4 p-4 bg-gray-300 rounded-lg">
+              <View>
+                <Text
+                  className="text-lg mb-2 font-bold"
+                  style={{ fontSize: textSize + 2 }}
+                >
+                  Comments
+                </Text>
+                <View>
+                  {/* Hvis kommentarer lastes, vis lastesirkel */}
+                  {isLoadingComments ? (
+                    <ActivityIndicator />
+                  ) : (
+                    comments.map((comment) => (
+                      // Viser hver individuell kommentar
+                      <View
+                        key={comment.id}
+                        className="flex-row py-2 border-b border-gray-300"
+                      >
+                        {deletingCommentId === comment.id ? (
+                          // Vis lastesirkel når kommentar slettes
+                          <ActivityIndicator size="small" color="#ff0000" />
+                        ) : (
+                          <>
+                            {/* Viser kommentarens forfatter og tekst */}
+                            <Text
+                              className="font-bold mr-2"
+                              style={{ fontSize: textSize }}
+                            >
+                              {comment.comment?.artistName ?? ""}
+                            </Text>
+                            <Text
+                              className="flex-1"
+                              style={{ fontSize: textSize - 2 }}
+                            >
+                              {comment.comment?.comment ?? ""}
+                            </Text>
+
+                            {/* Vist søppelbøtte-ikon for sletting av kommentar hvis eier */}
+                            {comment.comment.artistId === user?.uid && (
+                              <TouchableOpacity
+                                onPress={() => handleDeleteComment(comment.id)}
+                              >
+                                <FontAwesome
+                                  name="trash"
+                                  size={20}
+                                  color="red"
+                                />
+                              </TouchableOpacity>
+                            )}
+                          </>
+                        )}
+                      </View>
+                    ))
+                  )}
+                </View>
+              </View>
+
+              {/* Seksjon for å legge til kommentar */}
+              {!isLoadingComments && (
+                <View className="flex-row items-center w-full mt-4">
+                  <TextInput
+                    value={commentText}
+                    onChangeText={setCommentText}
+                    placeholder="Add a comment..."
+                    placeholderTextColor="gray"
+                    className="flex-1 border-b border-gray-400 p-2 mr-2"
+                    style={{ fontSize: textSize }}
+                  />
+
+                  <TouchableOpacity
+                    onPress={handleAddComment}
+                    disabled={isLoadingAddComment} // Deaktiverer knappen hvis kommentaren legges til
+                    className="px-4 py-2 bg-blue-500 rounded"
+                  >
+                    {isLoadingAddComment ? (
+                      // Vist lastesirkel mens kommentaren legges til
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <Text
+                        className="text-white font-bold"
+                        style={{ fontSize: textSize }}
+                      >
+                        Add
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
           </>
         ) : (
           // Hvis kunstverket ikke finnes, vises en feilmelding
@@ -299,94 +410,6 @@ export default function ArtDetails() {
             Artwork not found.
           </Text>
         )}
-
-        {/* Kommentarer-seksjonen */}
-        <View className="mt-4 p-4 bg-gray-300 rounded-lg">
-          <View>
-            <Text
-              className="text-lg mb-2 font-bold"
-              style={{ fontSize: textSize + 2 }}
-            >
-              Comments
-            </Text>
-            <View>
-              {/* Hvis kommentarer lastes, vis lastesirkel */}
-              {isLoadingComments ? (
-                <ActivityIndicator />
-              ) : (
-                comments.map((comment) => (
-                  // Viser hver individuell kommentar
-                  <View
-                    key={comment.id}
-                    className="flex-row py-2 border-b border-gray-300"
-                  >
-                    {deletingCommentId === comment.id ? (
-                      // Vis lastesirkel når kommentar slettes
-                      <ActivityIndicator size="small" color="#ff0000" />
-                    ) : (
-                      <>
-                        {/* Viser kommentarens forfatter og tekst */}
-                        <Text
-                          className="font-bold mr-2"
-                          style={{ fontSize: textSize }}
-                        >
-                          {comment.comment?.artistName ?? ""}
-                        </Text>
-                        <Text
-                          className="flex-1"
-                          style={{ fontSize: textSize - 2 }}
-                        >
-                          {comment.comment?.comment ?? ""}
-                        </Text>
-
-                        {/* Vist søppelbøtte-ikon for sletting av kommentar hvis eier */}
-                        {comment.comment.artistId === user?.uid && (
-                          <TouchableOpacity
-                            onPress={() => handleDeleteComment(comment.id)}
-                          >
-                            <FontAwesome name="trash" size={20} color="red" />
-                          </TouchableOpacity>
-                        )}
-                      </>
-                    )}
-                  </View>
-                ))
-              )}
-            </View>
-          </View>
-
-          {/* Seksjon for å legge til kommentar */}
-          {!isLoadingComments && (
-            <View className="flex-row items-center w-full mt-4">
-              <TextInput
-                value={commentText}
-                onChangeText={setCommentText}
-                placeholder="Add a comment..."
-                placeholderTextColor="gray"
-                className="flex-1 border-b border-gray-400 p-2 mr-2"
-                style={{ fontSize: textSize }}
-              />
-
-              <TouchableOpacity
-                onPress={handleAddComment}
-                disabled={isLoadingAddComment} // Deaktiverer knappen hvis kommentaren legges til
-                className="px-4 py-2 bg-blue-500 rounded"
-              >
-                {isLoadingAddComment ? (
-                  // Vist lastesirkel mens kommentaren legges til
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text
-                    className="text-white font-bold"
-                    style={{ fontSize: textSize }}
-                  >
-                    Add
-                  </Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
       </View>
     </ScrollView>
   );
