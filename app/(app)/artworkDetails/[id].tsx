@@ -1,4 +1,7 @@
-// screens/ArtDetails.tsx
+/**
+ * Viser detaljer om et artwork, inkludert kommentarer, liker-status og utstillingsinformasjon.
+ */
+
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -21,14 +24,18 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Exhibition } from "@/types/exhibition";
 import MapScreen from "../map";
 import { useExhibition } from "@/hooks/useExhibition";
-import { useAccessibility } from "@/hooks/useAccessibility"; // Import the accessibility hook
+import { useAccessibility } from "@/hooks/useAccessibility";
 import { useArtwork } from "@/hooks/useArtwork";
 import Toast from "react-native-toast-message";
 
 export default function ArtDetails() {
-  // Bruker tilpasset hook for tilgjengelighet (tekststørrelse og farger)
+  // Tilgjengelighetsinnstillinger
   const { textSize, currentColors } = useAccessibility();
-  // Initialisering av state for kunstverk, kommentarer og andre nødvendige variabler
+
+  // State-håndtering
+  // - Artwork-data og tilknyttet informasjon
+  // - Kommentarer og liker-status
+  // - Utstillingsdata
   const [artwork, setArtwork] = useState<Artwork | null>(null);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentObject[]>([]);
@@ -45,24 +52,30 @@ export default function ArtDetails() {
   );
   const [isDeletingArtwork, setIsDeletingArtwork] = useState(false);
 
-  const { id } = useLocalSearchParams(); // Henter ID fra URL-parametere
-  const router = useRouter(); // Bruker router for navigering
-  const { session, user, role } = useAuth(); // Henter autentiseringinformasjon
-  const { getExhibitionById } = useExhibition(); // Henter informasjon om utstilling
+  // Henter URL-parametere og router for navigasjon
+  const { id } = useLocalSearchParams();
+  const router = useRouter();
+
+  // Håndterer autentisering og tilgang til utstillingsdata
+  const { session, user, role } = useAuth();
+  const { getExhibitionById } = useExhibition();
   const { deleteArtwork } = useArtwork();
 
+  /**
+   * Henter detaljer om artwork og tilknyttede data.
+   * - Inkluderer kommentarer, liker-status og exhibition hvis aktuelt.
+   */
   const fetchArtworkFromFirebase = async () => {
     try {
-      // Henter kunstverk fra Firebase ved hjelp av kunstverk-ID
       const fetchedArtwork = await artworkApi.getArtworkById(id as string);
 
       if (fetchedArtwork) {
         setArtwork(fetchedArtwork);
-        setIsLiked(fetchedArtwork.likes.includes(user?.uid ?? "")); // Sjekker om brukeren har likt kunstverket
-        setNumLikes(fetchedArtwork.likes.length); // Oppdaterer antall liker
-        fetchCommentsFromFirebase(fetchedArtwork.comments); // Henter kommentarer for kunstverket
+        setIsLiked(fetchedArtwork.likes.includes(user?.uid ?? ""));
+        setNumLikes(fetchedArtwork.likes.length);
+        fetchCommentsFromFirebase(fetchedArtwork.comments);
 
-        // Henter utstillingsdetaljer hvis kunstverket har en tilknyttet utstilling
+        // Hent tilknyttet exhibition om tilgjengelig
         if (
           fetchedArtwork.exhibitionId &&
           fetchedArtwork.exhibitionId !== "undefined"
@@ -75,62 +88,75 @@ export default function ArtDetails() {
       }
       setLoading(false);
     } catch (error) {
-      // Feilhåndtering ved henting av kunstverk
-      console.log("error fetching artwork", error);
+      console.log("Error fetching artwork:", error);
     }
   };
 
+  /**
+   * Initialiserer data ved første lasting.
+   */
   useEffect(() => {
-    // Henter kunstverk og tilhørende data når komponenten lastes
     fetchArtworkFromFirebase();
-  }, []); // Tom array betyr at effekten bare kjøres ved første render
+  }, []);
 
+  /**
+   * Navigerer til kartskjermen for å vise exhibitiondetaljer.
+   */
   const goToExhibitionOnMap = () => {
     if (exhibition) {
-      // Navigerer til kart-skjerm med utstillingsdetaljer
       router.push({
         pathname: "/map",
-        params: {
-          exhibition: JSON.stringify(exhibition),
-        },
+        params: { exhibition: JSON.stringify(exhibition) },
       });
     }
   };
-
+  /**
+   * Håndterer liker-funksjonalitet.
+   * - Oppdaterer lokal liker-status og antall liker.
+   * - Synkroniserer endringer med Firebase.
+   */
   const toggleLike = async () => {
     if (!artwork) return;
 
     const updatedLikes = isLiked
-      ? artwork.likes.filter((uid) => uid !== user?.uid) // Fjerner liker hvis allerede likt
-      : [...artwork.likes, user?.uid ?? ""]; // Legger til liker
+      ? artwork.likes.filter((uid) => uid !== user?.uid)
+      : [...artwork.likes, user?.uid ?? ""];
 
     setIsLiked(!isLiked);
-    setNumLikes(updatedLikes.length); // Oppdaterer antall liker
-    setArtwork({ ...artwork, likes: updatedLikes }); // Oppdaterer kunstverkets data
+    setNumLikes(updatedLikes.length);
+    setArtwork({ ...artwork, likes: updatedLikes });
 
     try {
       // Oppdaterer likes på Firebase
       await artworkApi.updateArtworkLikes(artwork.id, user?.uid ?? "");
     } catch (error) {
-      console.log("Error updating likes:", error); // Feilhåndtering ved oppdatering
+      console.log("Error updating likes:", error);
     }
   };
 
+  /**
+   * Henter kommentarer fra Firebase basert på kommentar-ID-er.
+   * - Oppdaterer state med de hentede kommentarene.
+   */
   const fetchCommentsFromFirebase = async (commentsIds: string[]) => {
     try {
       setIsLoadingComments(true);
-      // Henter kommentarer fra Firebase
       const comments = await commentApi.getCommentsByIds(commentsIds);
 
       if (comments) {
-        setComments(comments); // Setter kommentarer i state
+        setComments(comments);
       }
       setIsLoadingComments(false);
     } catch (error) {
-      console.log("error fetching comments", error); // Feilhåndtering ved henting av kommentarer
+      console.log("error fetching comments", error);
     }
   };
 
+  /**
+   * Legger til en ny kommentar.
+   * - Validerer at kommentarfeltet ikke er tomt.
+   * - Oppdaterer Firebase og lokal state med den nye kommentaren.
+   */
   const handleAddComment = async () => {
     if (artwork && commentText !== "") {
       setIsLoadingAddComment(true);
@@ -143,28 +169,33 @@ export default function ArtDetails() {
         });
 
         if (newCommentId) {
-          setCommentText(""); // Tømmer kommentarfeltet
+          setCommentText("");
 
           const updatedCommentsIds = [
             ...(artwork.comments || []),
             newCommentId,
           ];
-          setArtwork({ ...artwork, comments: updatedCommentsIds }); // Oppdaterer kunstverkets kommentarer
+          setArtwork({ ...artwork, comments: updatedCommentsIds });
 
           // Henter og legger til den nylig kommentaren
           const newComment = await commentApi.getCommentsByIds([newCommentId]);
           if (newComment) {
-            setComments((prevComments) => [...prevComments, ...newComment]); // Oppdaterer kommentarliste
+            setComments((prevComments) => [...prevComments, ...newComment]);
           }
         }
       } catch (error) {
-        console.log("Error adding comment:", error); // Feilhåndtering ved legg til kommentar
+        console.log("Error adding comment:", error);
       } finally {
-        setIsLoadingAddComment(false); // Resetter lastestatus
+        setIsLoadingAddComment(false);
       }
     }
   };
 
+  /**
+   * Håndterer sletting av artwork.
+   * - Sjekker at brukeren eier artwork før sletting.
+   * - Viser en bekreftelsesdialog før artwork slettes fra Firebase.
+   */
   const handleDeleteArtwork = async () => {
     if (artwork?.artistId !== user?.uid) {
       Alert.alert("Error", "You can only delete artworks that you created.");
@@ -186,21 +217,20 @@ export default function ArtDetails() {
             setIsDeletingArtwork(true);
             try {
               if (artwork) {
-                await deleteArtwork(artwork.id); // Sletter kunstverket
-                setArtwork(null); // Nullstiller kunstverk
+                await deleteArtwork(artwork.id);
+                setArtwork(null);
 
                 Toast.show({
                   type: "success",
                   text1: "Success",
                   text2: "The artwork has been deleted.",
                 });
-                //Alert.alert("Success", "The artwork has been deleted."); // Vis bekreftelse når kunstverket blir slettet
-                router.push("/gallery"); // Naviger til gallery etter sletting
+                router.push("/gallery");
               }
             } catch (error) {
-              console.error("Error deleting artwork:", error); // Feilhåndtering ved sletting
+              console.error("Error deleting artwork:", error);
             } finally {
-              setIsDeletingArtwork(false); // Nullstill loading variabel
+              setIsDeletingArtwork(false);
             }
           },
         },
@@ -208,13 +238,16 @@ export default function ArtDetails() {
     );
   };
 
+  /**
+   * Håndterer sletting av kommentar.
+   * - Fjerner kommentaren fra Firebase og oppdaterer lokal state.
+   */
   const handleDeleteComment = async (commentId: string) => {
     try {
       if (artwork) {
-        setDeletingCommentId(commentId); // Setter slettet kommentar-ID for tilbakemelding
+        setDeletingCommentId(commentId);
 
-        await commentApi.deleteComment(commentId, artwork?.id); // Sletter kommentaren
-        console.log("Comment deleted");
+        await commentApi.deleteComment(commentId, artwork?.id);
 
         // Oppdaterer kommentarliste etter sletting
         setComments((prevComments) =>
@@ -222,13 +255,16 @@ export default function ArtDetails() {
         );
       }
     } catch (error) {
-      console.log("Error deleting comment", error); // Feilhåndtering ved sletting av kommentar
+      console.log("Error deleting comment", error);
     } finally {
-      setDeletingCommentId(null); // Nullstiller slettet kommentar-ID etter fullført prosess
+      setDeletingCommentId(null);
     }
   };
 
-  // Hvis bruker ikke er logget inn, hvis denne meldingen
+  /**
+   * Viser en melding for gjestebrukere.
+   * - Krever innlogging for å få tilgang til artworkdetaljer.
+   */
   if (role === "guest") {
     return (
       <View className="flex-1 justify-center items-center">
@@ -239,8 +275,10 @@ export default function ArtDetails() {
     );
   }
 
+  /**
+   * Viser en lastesirkel under lasting eller sletting av artwork.
+   */
   if (loading || isDeletingArtwork) {
-    // Hvis dataene lastes eller kunstverket slettes, vises en lastesirkel
     return (
       <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#0000ff" />
@@ -253,14 +291,14 @@ export default function ArtDetails() {
       <View className="flex-1 px-4 mb-6">
         {artwork ? (
           <>
-            {/* Viser kunstverkets kort med informasjon, liker-status og antall liker */}
+            {/* Viser artwork card med informasjon, liker-status og antall liker */}
             <ArtworkCard
               artwork={artwork}
               isLiked={isLiked}
               numLikes={numLikes}
               toggleLike={toggleLike}
             />
-            {/* Hvis kunstverket er opprettet av den nåværende brukeren, vis en knapp for å slette */}
+            {/* Hvis artwork er opprettet av den nåværende brukeren, vis en knapp for å slette */}
             {artwork.artistId === user?.uid && (
               <Pressable
                 onPress={handleDeleteArtwork}
@@ -269,7 +307,7 @@ export default function ArtDetails() {
                 <Text
                   style={{
                     color: "white",
-                    fontSize: textSize, // Bruker tekststørrelsen for konsistens
+                    fontSize: textSize,
                     fontWeight: "bold",
                   }}
                 >
@@ -278,7 +316,7 @@ export default function ArtDetails() {
               </Pressable>
             )}
 
-            {/* Viser utstillingsdetaljer hvis kunstverket har en tilknyttet utstilling */}
+            {/* Viser exhibitionsdetaljer hvis artwork har en tilknyttet utstilling */}
             {exhibition && (
               <View className="mt-4 p-4 bg-gray-300 rounded-lg">
                 <Text
@@ -301,7 +339,7 @@ export default function ArtDetails() {
                 </Text>
                 <TouchableOpacity
                   className="px-4 py-2 mt-4 bg-gray-700 rounded self-start"
-                  onPress={goToExhibitionOnMap} // Navigerer til kartet med utstillingens posisjon
+                  onPress={goToExhibitionOnMap}
                 >
                   <Text className="text-white font-bold">
                     View exhibition on map
@@ -383,7 +421,7 @@ export default function ArtDetails() {
 
                   <TouchableOpacity
                     onPress={handleAddComment}
-                    disabled={isLoadingAddComment} // Deaktiverer knappen hvis kommentaren legges til
+                    disabled={isLoadingAddComment}
                     className="px-4 py-2 bg-blue-500 rounded"
                   >
                     {isLoadingAddComment ? (
@@ -403,7 +441,7 @@ export default function ArtDetails() {
             </View>
           </>
         ) : (
-          // Hvis kunstverket ikke finnes, vises en feilmelding
+          // Hvis artworks ikke finnes, vises en feilmelding
           <Text
             style={{ textAlign: "center", color: "#555", fontSize: textSize }}
           >

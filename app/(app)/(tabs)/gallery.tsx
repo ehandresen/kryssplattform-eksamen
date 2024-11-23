@@ -1,5 +1,6 @@
 /**
- * Viser en liste over kunstverk med støtte for søk, filtrering og tilgjengelighetsalternativer.
+ * Viser en liste over artwork med støtte for
+ * søk, filtrering og tilgjengelighetsalternativer.
  */
 
 import React, { useState, useEffect } from "react";
@@ -19,10 +20,10 @@ export default function GalleryScreen() {
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [filteredData, setFilteredData] = useState<Artwork[]>([]);
 
-  // Henter kunstverk fra context
+  // Henter artwork fra context
   const { artworks, isLoading } = useArtwork();
 
-  // Oppdaterer filtrert data når kunstverk endres
+  // Oppdaterer filtrert data når artwork endres
   useEffect(() => {
     setFilteredData(artworks);
   }, [artworks]);
@@ -42,7 +43,7 @@ export default function GalleryScreen() {
     );
   }
 
-  // Viser hovedinnholdet med meny og kunstverkliste
+  // Viser hovedinnholdet med meny og ArtworkList
   return (
     <View className={`flex-1 p-4 bg-${currentColors.background}`}>
       <Menu
