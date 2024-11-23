@@ -1,18 +1,22 @@
+/**
+ * CRUD-operasjoner (Create, Read, Update, Delete)
+ * for exhibitions i Firebase.
+ */
+
 import { db } from "@/firebaseConfig";
 import { Exhibition } from "@/types/exhibition";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
-const EXHIBITIONS_COLLECTION = "exhibitions"; // Navn på Firestore-kolleksjonen for utstillinger
+const EXHIBITIONS_COLLECTION = "exhibitions";
 
 /**
- * Henter alle utstillinger fra Firestore
- * @returns En liste med alle utstillinger
+ * Henter alle exhibitions fra Firestore
+ * @returns
  */
 export const getAllExhibitions = async (): Promise<Exhibition[]> => {
   try {
     const exhibitions = await getDocs(collection(db, EXHIBITIONS_COLLECTION));
 
-    // Map hver dokument til et Exhibition-objekt med ID
     return exhibitions.docs.map((doc) => {
       return {
         ...doc.data(),
@@ -30,14 +34,13 @@ export const getAllExhibitions = async (): Promise<Exhibition[]> => {
 };
 
 /**
- * Henter en spesifikk utstilling basert på ID
- * @param id - Firestore-dokument-ID for utstillingen
- * @returns Data for utstillingen
+ * Henter en spesifikk exhibition basert på ID
+ * @param id
+ * @returns
  */
 export const getExhibitionById = async (id: string) => {
   try {
     const exhibitionDocRef = doc(db, EXHIBITIONS_COLLECTION, id);
-
     const exhibitionDoc = await getDoc(exhibitionDocRef);
 
     if (exhibitionDoc.exists()) {

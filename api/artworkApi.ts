@@ -1,3 +1,8 @@
+/**
+ * CRUD-operasjoner (Create, Read, Update, Delete)
+ * for å håndtere "Artwork" i Firebase.
+ */
+
 import { Artwork } from "@/types/artwork";
 import { uploadImageToFirebase } from "./imageApi";
 import { db, getDownloadUrl } from "@/firebaseConfig";
@@ -11,15 +16,14 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
-export const ARTWORKS_COLLECTION = "artworks"; // Navn på Firestore-kolleksjonen for kunstverk
+export const ARTWORKS_COLLECTION = "artworks";
 
 /**
- * Legger til et nytt kunstverk i Firestore
- * @param artwork - Kunstverksdata som skal lagres
+ * Legger til et nytt artwork i Firestore
+ * @param artwork
  */
 export const addArtworkToFirestore = async (artwork: Artwork) => {
   try {
-    // Last opp bildet til Firebase Storage
     const firebaseImage = await uploadImageToFirebase(artwork.imageUrl);
 
     if (firebaseImage === "error") {
@@ -27,16 +31,13 @@ export const addArtworkToFirestore = async (artwork: Artwork) => {
       return;
     }
 
-    // Hent den offentlige URL-en for det opplastede bildet
     const artworkImageDownloadUrl = await getDownloadUrl(firebaseImage);
 
-    // Opprett nytt kunstverk-objekt med den oppdaterte URL-en
     const artworkWithNewImageUrl: Artwork = {
       ...artwork,
       imageUrl: artworkImageDownloadUrl,
     };
 
-    // Lagre kunstverket i Firestore
     const docRef = await addDoc(
       collection(db, ARTWORKS_COLLECTION),
       artworkWithNewImageUrl
@@ -48,8 +49,8 @@ export const addArtworkToFirestore = async (artwork: Artwork) => {
 };
 
 /**
- * Henter alle kunstverk fra Firestore
- * @returns Liste over kunstverk
+ * Henter alle artworks fra Firestore
+ * @returns
  */
 export const getAllArtworks = async (): Promise<Artwork[]> => {
   try {
@@ -68,22 +69,20 @@ export const getAllArtworks = async (): Promise<Artwork[]> => {
 };
 
 /**
- * Henter unike kategorier fra kunstverkene
- * @returns Liste over unike kategorier
+ * Henter unike kategorier fra artworks
+ * @returns
  */
 export const getUniqueCategories = async (): Promise<string[]> => {
   try {
     const artworks = await getAllArtworks();
     const categoriesSet = new Set<string>();
 
-    // Legg til hver kategori i et Set for å sikre unike verdier
     artworks.forEach((artwork) => {
       if (artwork.category) {
-        categoriesSet.add(artwork.category); // Legg til kategorien hvis den finnes
+        categoriesSet.add(artwork.category);
       }
     });
 
-    // Returner en liste med unike kategorier
     return Array.from(categoriesSet);
   } catch (error) {
     console.error("Feil ved henting av kategorier:", error);
@@ -92,9 +91,9 @@ export const getUniqueCategories = async (): Promise<string[]> => {
 };
 
 /**
- * Henter et kunstverk fra Firestore ved hjelp av ID
- * @param id - Kunstverkets ID
- * @returns Kunstverket med spesifisert ID
+ * Henter et artwork fra Firestore ved hjelp av ID
+ * @param id
+ * @returns
  */
 export const getArtworkById = async (id: string) => {
   try {
@@ -114,8 +113,8 @@ export const getArtworkById = async (id: string) => {
 };
 
 /**
- * Sletter et kunstverk fra Firestore ved hjelp av ID
- * @param id - Kunstverkets ID
+ * Sletter et artwork fra Firestore ved hjelp av ID
+ * @param id
  */
 export const deleteArtworkById = async (id: string) => {
   try {
@@ -128,9 +127,9 @@ export const deleteArtworkById = async (id: string) => {
 };
 
 /**
- * Oppdaterer et kunstverk i Firestore
- * @param id - Kunstverkets ID
- * @param updatedArtwork - Det oppdaterte kunstverket
+ * Oppdaterer et artwork i Firestore
+ * @param id
+ * @param updatedArtwork
  */
 export const updateArtworkById = async (
   id: string,
@@ -146,13 +145,13 @@ export const updateArtworkById = async (
 };
 
 /**
- * Oppdaterer likes for et kunstverk
- * @param id - Firestore-dokument-ID for kunstverket
- * @param userId - Bruker-ID som liker eller unliker kunstverket
+ * Oppdaterer likes for et artwork
+ * @param id
+ * @param userId
  */
 export const updateArtworkLikes = async (id: string, userId: string) => {
   try {
-    const artworkRef = doc(db, ARTWORKS_COLLECTION, id); // Referanse til Firestore-dokumentet
+    const artworkRef = doc(db, ARTWORKS_COLLECTION, id);
     const artworkSnapshot = await getDoc(artworkRef);
 
     if (!artworkSnapshot.exists()) {
@@ -164,16 +163,14 @@ export const updateArtworkLikes = async (id: string, userId: string) => {
     }
 
     const artworkData = artworkSnapshot.data();
-    const likes = artworkData?.likes || []; // Initialiser likes til tom array hvis den ikke eksisterer
+    const likes = artworkData?.likes || [];
 
-    // Oppdater likes basert på om bruker-ID allerede finnes i listen
     const updatedLikes = likes.includes(userId)
-      ? likes.filter((like: string) => like !== userId) // Fjern bruker-ID fra likes
-      : [...likes, userId]; // Legg til bruker-ID i likes
+      ? likes.filter((like: string) => like !== userId)
+      : [...likes, userId];
 
     console.log("Oppdaterte likes for ID:", id, updatedLikes);
 
-    // Lagre de oppdaterte likes i Firestore
     await updateDoc(artworkRef, { likes: updatedLikes });
   } catch (error) {
     console.error("Feil ved oppdatering av likes for kunstverk:", error);

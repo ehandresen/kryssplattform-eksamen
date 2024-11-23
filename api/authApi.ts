@@ -1,3 +1,9 @@
+/**
+ * Autentiserings- og brukerregistrering for Firebase.
+ * Innlogging, utlogging og opprettelse av nye brukere,
+ * samt lagring av brukerdata i Firestore.
+ */
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -9,13 +15,13 @@ import { auth } from "@/firebaseConfig";
 import { setDoc, doc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 
-const ARTISTS_COLLECTION = "artists"; // Navn på Firestore-kolleksjonen for artister
+const ARTISTS_COLLECTION = "artists";
 
 /**
  * Logger en bruker inn med e-post og passord
- * @param email - Brukerens e-post
- * @param password - Brukerens passord
- * @returns UserCredential eller void hvis innlogging mislykkes
+ * @param email
+ * @param password
+ * @returns
  */
 export const signIn = async (
   email: string,
@@ -56,9 +62,9 @@ export const signOut = async () => {
 
 /**
  * Registrerer en ny bruker og legger dem til i Firestore
- * @param email - Brukerens e-post
- * @param password - Brukerens passord
- * @param username - Brukerens ønskede brukernavn
+ * @param email
+ * @param password
+ * @param username
  */
 export const signUp = async (
   email: string,
@@ -66,7 +72,6 @@ export const signUp = async (
   username: string
 ): Promise<void> => {
   try {
-    // Opprett en ny bruker i Firebase Authentication
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -74,7 +79,6 @@ export const signUp = async (
     );
     const user = userCredential.user;
 
-    // Oppdater brukerens profil med visningsnavn
     await updateProfile(user, {
       displayName: username,
     });
@@ -82,13 +86,12 @@ export const signUp = async (
     console.log("Ny bruker opprettet:", user.email);
     console.log("Brukernavn satt til:", user.displayName);
 
-    // Opprett et nytt dokument i Firestore for den nye artisten
     const artist = {
       displayName: username,
-      email: user.email || "", // Standard tom e-post hvis e-post mangler
-      profileImageUrl: "", // Standard tom URL for profilbilde
-      bio: "", // Standard tom bio
-      createdAt: new Date().toISOString(), // Tidspunkt for opprettelse
+      email: user.email || "",
+      profileImageUrl: "",
+      bio: "",
+      createdAt: new Date().toISOString(),
     };
 
     await setDoc(doc(db, ARTISTS_COLLECTION, user.uid), artist);
