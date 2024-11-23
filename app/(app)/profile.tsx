@@ -9,10 +9,11 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   Image,
   TouchableOpacity,
   Modal,
+  ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { useAuth } from "@/hooks/useAuth";
 import { updateDoc, doc, getDoc } from "firebase/firestore";
@@ -20,6 +21,9 @@ import * as ImagePicker from "expo-image-picker";
 import { db } from "@/firebaseConfig";
 import CameraScreen from "@/components/CameraScreen";
 import { uploadImageToFirebase } from "@/api/imageApi";
+import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import { useArtwork } from "@/hooks/useArtwork";
+import { Artwork } from "@/types/artwork";
 
 export default function ProfileScreen() {
   const { user, reloadUser } = useAuth();
@@ -29,6 +33,9 @@ export default function ProfileScreen() {
   const [profileImageUrl, setProfileImageUrl] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
+  const [userArtworks, setUserArtworks] = useState<Artwork[]>([]);
+
+  const { artworks, isLoading } = useArtwork();
 
   /**
    * Henter innlogget brukers data fra Firestore og oppdaterer state.
@@ -48,6 +55,12 @@ export default function ProfileScreen() {
             setProfileImageUrl(
               data.profileImageUrl || "https://via.placeholder.com/150"
             );
+
+            // Filtrer kunstverk som matcher brukerens ID
+            const filteredArtworks = artworks.filter(
+              (artwork) => artwork.artistId === user.uid
+            );
+            setUserArtworks(filteredArtworks);
           }
         } catch (error) {
           console.error("Feil ved henting av artistdata:", error);
@@ -56,7 +69,7 @@ export default function ProfileScreen() {
     };
 
     fetchArtistData();
-  }, [user]);
+  }, [user, artworks]);
 
   /**
    * Oppdaterer brukerdata i Firestore når brukeren lagrer endringer.
@@ -124,67 +137,122 @@ export default function ProfileScreen() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="#007aff" />
+      </View>
+    );
+  }
+
   return (
-    <View className="flex-1 items-center bg-white p-5">
-      {/* Viser profilbilde med alternativer for kamera og galleri */}
-      <View className="relative">
+    <ScrollView className="flex-1 bg-gray-100 p-4">
+      {/* Profile Image Section */}
+      <View className="items-center mb-6">
         <Image
           source={{ uri: profileImageUrl || "https://via.placeholder.com/150" }}
-          className="w-36 h-36 rounded-full"
+          className="w-36 h-36 rounded-full border-4 border-blue-500 shadow-lg"
         />
         {isEditing && (
-          <>
+          <View className="flex-row space-x-4 mt-4">
+            {/* Kamera Knapp */}
             <TouchableOpacity
-              className="absolute bottom-1 right-2 bg-black p-2 rounded-md"
+              className="bg-blue-500 p-3 mr-2 rounded-full"
               onPress={() => setShowCamera(true)}
             >
-              <Text className="text-white text-xs">Kamera</Text>
+              <FontAwesome5 name="camera" size={16} color="white" />
             </TouchableOpacity>
+            {/* Galleri knapp */}
             <TouchableOpacity
-              className="absolute bottom-1 left-2 bg-black p-2 rounded-md"
+              className="bg-blue-500 p-3 rounded-full"
               onPress={pickImageFromGallery}
             >
-              <Text className="text-white text-xs">Last opp</Text>
+              <MaterialIcons name="photo-library" size={16} color="white" />
             </TouchableOpacity>
-          </>
+          </View>
         )}
       </View>
 
       {/* Viser eller redigerer brukerens profil */}
       {isEditing ? (
-        <View>
+        <View className="space-y-4">
           <TextInput
-            className="w-4/5 p-3 border border-gray-300 rounded-md mb-3"
-            placeholder="Navn"
+            className="w-full bg-white p-4 rounded-lg border border-gray-300"
+            placeholder="Name"
             value={displayName}
             onChangeText={setDisplayName}
           />
           <TextInput
-            className="w-4/5 p-3 border border-gray-300 rounded-md mb-3"
-            placeholder="E-post"
+            className="w-full bg-white p-4 rounded-lg border border-gray-300"
+            placeholder="Email"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
           />
           <TextInput
-            className="w-4/5 p-3 border border-gray-300 rounded-md mb-3"
+            className="w-full bg-white p-4 rounded-lg border border-gray-300"
             placeholder="Bio"
             value={bio}
             onChangeText={setBio}
           />
-          <Button title="Lagre endringer" onPress={updateArtistInFirestore} />
-          <Button title="Avbryt" onPress={() => setIsEditing(false)} />
+          <TouchableOpacity
+            className="bg-blue-500 p-4 rounded-lg my-2"
+            onPress={updateArtistInFirestore}
+          >
+            <Text className="text-white text-center font-bold">
+              Save Changes
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-red-500 p-4 rounded-lg"
+            onPress={() => setIsEditing(false)}
+          >
+            <Text className="text-white text-center font-bold">Cancel</Text>
+          </TouchableOpacity>
         </View>
       ) : (
-        <View>
-          <Text className="text-2xl font-bold">{displayName}</Text>
+        <View className="items-center space-y-3">
+          <Text className="text-xl font-bold text-gray-900">{displayName}</Text>
           <Text className="text-lg text-gray-600">{email}</Text>
-          <Text className="text-sm text-gray-500">{bio}</Text>
-          <TouchableOpacity onPress={() => setIsEditing(true)}>
-            <Text className="text-blue-500">Rediger profil</Text>
+          <Text className="text-sm text-gray-500 text-center">{bio}</Text>
+          <TouchableOpacity
+            onPress={() => setIsEditing(true)}
+            className="bg-blue-500 px-6 py-2 rounded-lg mt-4"
+          >
+            <Text className="text-white font-bold">Edit Profile</Text>
           </TouchableOpacity>
         </View>
       )}
+
+      {/* Viser brukerens kunstverk */}
+      <View>
+        <Text className="text-lg font-bold text-gray-900 my-4">
+          Your Artworks
+        </Text>
+        {userArtworks.length === 0 ? (
+          <Text className="text-gray-500">No artworks uploaded yet.</Text>
+        ) : (
+          <View className="space-y-4">
+            {userArtworks.map((artwork) => (
+              <TouchableOpacity
+                key={artwork.id}
+                className="bg-white rounded-lg shadow-md p-4 mb-2"
+              >
+                <Image
+                  source={{ uri: artwork.imageUrl }}
+                  className="w-full h-40 rounded-md"
+                />
+                <Text className="mt-2 font-bold text-gray-800">
+                  {artwork.title}
+                </Text>
+                <Text className="text-sm text-gray-500">
+                  {artwork.description}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+      </View>
 
       {/* Viser kamera-modus */}
       {showCamera && (
@@ -195,6 +263,6 @@ export default function ProfileScreen() {
           />
         </Modal>
       )}
-    </View>
+    </ScrollView>
   );
 }
