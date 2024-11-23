@@ -58,6 +58,12 @@ export default function AppLayout() {
             title: "Exhibition Details",
           }}
         />
+        <Stack.Screen
+          name="profile"
+          options={{
+            title: "Profil",
+          }}
+        />
       </Stack>
     </SafeAreaView>
   );
