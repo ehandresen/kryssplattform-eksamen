@@ -1,11 +1,14 @@
+/**
+ * Viser en liste over kunstverk med støtte for søk, filtrering og tilgjengelighetsalternativer.
+ */
+
 import React, { useState, useEffect } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 import ArtworkList from "../../../components/ArtworkList";
 import Menu from "@/components/menu/Menu";
-import { getAllArtworks } from "@/api/artworkApi";
-import { Artwork } from "@/types/artwork";
-import { useAccessibility } from "@/hooks/useAccessibility"; // Unified accessibility hook
+import { useAccessibility } from "@/hooks/useAccessibility";
 import { useArtwork } from "@/hooks/useArtwork";
+import { Artwork } from "@/types/artwork";
 
 export default function GalleryScreen() {
   const { textSize, currentColors, toggleColorBlindFilter, increaseTextSize } =
@@ -16,17 +19,20 @@ export default function GalleryScreen() {
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [filteredData, setFilteredData] = useState<Artwork[]>([]);
 
-  // bruk artworks fra context
+  // Henter kunstverk fra context
   const { artworks, isLoading } = useArtwork();
 
+  // Oppdaterer filtrert data når kunstverk endres
   useEffect(() => {
-    setFilteredData(artworks); // Standardvisning
+    setFilteredData(artworks);
   }, [artworks]);
 
+  // Håndterer visning av opplastingsmodal
   const handleUploadPress = () => {
     setIsUploadVisible(!isUploadVisible);
   };
 
+  // Viser laster-indikator mens data hentes
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-100">
@@ -36,6 +42,7 @@ export default function GalleryScreen() {
     );
   }
 
+  // Viser hovedinnholdet med meny og kunstverkliste
   return (
     <View className={`flex-1 p-4 bg-${currentColors.background}`}>
       <Menu
