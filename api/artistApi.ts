@@ -32,12 +32,12 @@ export const addArtistToFirestore = async (
     };
 
     const docRef = await addDoc(collection(db, ARTISTS_COLLECTION), newArtist);
-    console.log("Artist lagt til med ID:", docRef.id);
+    console.log("Artist added with ID:", docRef.id);
     return docRef.id;
   } catch (error) {
-    console.error("Feil ved oppretting av artist:", error);
+    console.error("Error creating artist:", error);
     // Debugging for feilhåndtering
-    console.debug("Feil oppstod med data:", artist);
+    console.debug("Error with data:", artist);
   }
 };
 
@@ -55,7 +55,7 @@ export const getAllArtists = async (): Promise<Artist[]> => {
       } as Artist;
     });
   } catch (error) {
-    console.error("Feil ved henting av artister fra Firestore:", error);
+    console.error("Error fetching artists from Firebase:", error);
     return [];
   }
 };
@@ -74,11 +74,11 @@ export const getArtistById = async (id: string): Promise<Artist | void> => {
         id: artistDoc.id,
       } as Artist;
     } else {
-      console.log("Ingen artist funnet med ID:", id);
+      console.log("No artist found with ID:", id);
     }
   } catch (error) {
-    console.error("Feil ved henting av artist etter ID:", error);
-    console.debug("Feil oppstod med ID:", id);
+    console.error("Error fetching artist by ID:", error);
+    console.debug("Error occured with ID:", id);
   }
 };
 
@@ -97,10 +97,10 @@ export const updateArtist = async (
       ...updatedData,
       updatedAt: new Date().toISOString(),
     });
-    console.log("Artist oppdatert med ID:", id);
+    console.log("Artist updated with ID:", id);
   } catch (error) {
-    console.error("Feil ved oppdatering av artist:", error);
-    console.debug("Feil oppstod med data:", updatedData);
+    console.error("Error updating artist:", error);
+    console.debug("Error occured with data:", updatedData);
   }
 };
 
@@ -111,9 +111,9 @@ export const updateArtist = async (
 export const deleteArtist = async (id: string): Promise<void> => {
   try {
     await deleteDoc(doc(db, ARTISTS_COLLECTION, id));
-    console.log("Artist slettet med ID:", id);
+    console.log("Artist deleted with ID:", id);
   } catch (error) {
-    console.error("Feil ved sletting av artist:", error);
-    console.debug("Feil oppstod med ID:", id);
+    console.error("Error with deleting artist artist:", error);
+    console.debug("Error occured with ID:", id);
   }
 };

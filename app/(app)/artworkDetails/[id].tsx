@@ -270,7 +270,7 @@ export default function ArtDetails() {
     return (
       <View className="flex-1 justify-center items-center">
         <Text className="text-xl text-gray-600 text-center">
-          Du må være logget inn for å se kunstverk.
+          You have to be logged in to see artwork
         </Text>
       </View>
     );

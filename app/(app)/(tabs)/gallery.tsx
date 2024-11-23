@@ -38,7 +38,7 @@ export default function GalleryScreen() {
     return (
       <View className="flex-1 justify-center items-center bg-gray-100">
         <ActivityIndicator size="large" color="#0000ff" />
-        <Text className="mt-2 text-lg text-gray-700">Laster kunstverk...</Text>
+        <Text className="mt-2 text-lg text-gray-700">Loading artworks...</Text>
       </View>
     );
   }

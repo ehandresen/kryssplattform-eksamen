@@ -28,7 +28,7 @@ export default function ArtistsScreen() {
         setAllArtists(artists);
         setFilteredData(artists);
       } catch (error) {
-        console.error("Feil ved henting av artists:", error);
+        console.error("Error fetching artists:", error);
       } finally {
         setIsLoading(false);
       }
@@ -42,7 +42,7 @@ export default function ArtistsScreen() {
       <View className="flex-1 justify-center items-center bg-gray-100">
         {/* Laster-indikator som vises mens data hentes */}
         <ActivityIndicator size="large" color="#008080" />
-        <Text className="mt-4 text-lg text-gray-600">Laster artister...</Text>
+        <Text className="mt-4 text-lg text-gray-600">Loading artists...</Text>
       </View>
     );
   }

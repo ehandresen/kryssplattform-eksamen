@@ -16,7 +16,7 @@ export default function AppLayout() {
    * Hvis brukeren ikke er logget inn, omdirigeres de til påloggingssiden.
    */
   if (!session) {
-    console.log("Ingen aktiv sesjon, omdirigerer til login."); // Debugging
+    console.log("No active session, redirecting to login."); // Debugging
     return <Redirect href="/login" />;
   }
 
@@ -61,7 +61,7 @@ export default function AppLayout() {
         <Stack.Screen
           name="profile"
           options={{
-            title: "Profil",
+            title: "Profile",
           }}
         />
       </Stack>

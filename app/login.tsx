@@ -37,7 +37,7 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Valideringsfeil", "E-post og passord er påkrevd.");
+      Alert.alert("Validationerror", "Email and password is required.");
       return;
     }
 
@@ -48,8 +48,8 @@ const LoginScreen = () => {
         router.navigate("/(app)/(tabs)/gallery");
       }
     } catch (error) {
-      console.error("Feil under innlogging:", error);
-      Alert.alert("Feil", "Ugyldig e-post eller passord.");
+      console.error("Error with login:", error);
+      Alert.alert("Error", "Unvalid email or password.");
     } finally {
       setIsLoading(false);
     }
@@ -60,8 +60,8 @@ const LoginScreen = () => {
   const handleSignUp = async () => {
     if (!email || !password || !username) {
       Alert.alert(
-        "Valideringsfeil",
-        "Alle feltene må fylles ut for å opprette en bruker."
+        "Validationerror",
+        "All fields must be filled out to create user"
       );
       return;
     }
@@ -69,10 +69,10 @@ const LoginScreen = () => {
     setIsLoading(true);
     try {
       await signUp(email, password, username);
-      Alert.alert("Suksess", "Bruker opprettet!");
+      Alert.alert("Success", "User created!");
     } catch (error) {
-      console.error("Feil under opprettelse av bruker:", error);
-      Alert.alert("Feil ved opprettelse", "En feil oppsto under opprettelsen.");
+      console.error("Error creating user under:", error);
+      Alert.alert("Erro creating user", "An error occured during creation.");
     } finally {
       setIsLoading(false);
     }
@@ -88,14 +88,14 @@ const LoginScreen = () => {
   return (
     <View className="flex-1 justify-center p-4 bg-white">
       <Text className="text-2xl font-bold mb-6 text-center text-teal-600">
-        {isSignUpMode ? "Opprett bruker" : "Logg inn"}
+        {isSignUpMode ? "Create user" : "Log in"}
       </Text>
 
       {/* Input-felt for brukernavn (kun ved opprettelse) */}
       {isSignUpMode && (
         <TextInput
           className="h-10 border border-gray-300 rounded-md p-2 mb-4"
-          placeholder="Brukernavn"
+          placeholder="Username"
           value={username}
           onChangeText={setUsername}
           autoCapitalize="none"
@@ -106,7 +106,7 @@ const LoginScreen = () => {
       {/* Input-felt for e-post */}
       <TextInput
         className="h-10 border border-gray-300 rounded-md p-2 mb-4"
-        placeholder="E-post"
+        placeholder="Email"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -117,7 +117,7 @@ const LoginScreen = () => {
       {/* Input-felt for passord */}
       <TextInput
         className="h-10 border border-gray-300 rounded-md p-2 mb-4"
-        placeholder="Passord"
+        placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry={true}
@@ -135,7 +135,7 @@ const LoginScreen = () => {
             onPress={isSignUpMode ? handleSignUp : handleLogin}
           >
             <Text style={styles.buttonText}>
-              {isSignUpMode ? "Opprett bruker" : "Logg inn"}
+              {isSignUpMode ? "Create user" : "Log in"}
             </Text>
           </TouchableOpacity>
 
@@ -145,7 +145,7 @@ const LoginScreen = () => {
             onPress={() => setIsSignUpMode(!isSignUpMode)}
           >
             <Text style={styles.switchButtonText}>
-              {isSignUpMode ? "Bytt til innlogging" : "Bytt til opprettelse"}
+              {isSignUpMode ? "Switch to login" : "Switch to registration"}
             </Text>
           </TouchableOpacity>
 

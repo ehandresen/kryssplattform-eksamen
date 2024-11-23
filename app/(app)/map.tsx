@@ -26,7 +26,7 @@ const MapScreen = () => {
     if (exhibitionData) {
       Alert.alert(
         "Exhibition",
-        `Du trykket på ${exhibitionData.title}\nLokasjon: ${exhibitionData.location}`
+        `You pressed on ${exhibitionData.title}\nLocation: ${exhibitionData.location}`
       );
     }
   };
@@ -85,7 +85,7 @@ const MapScreen = () => {
         </MapView>
       ) : (
         <View className="flex-1 justify-center items-center">
-          <Text>Ingen exhibition-data tilgjengelig!</Text>
+          <Text>No exhibition available!</Text>
         </View>
       )}
     </View>

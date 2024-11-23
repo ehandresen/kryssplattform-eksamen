@@ -60,7 +60,7 @@ export default function ArtistDetails() {
     return (
       <View className="flex-1 justify-center items-center">
         <Text className="text-xl text-gray-600 text-center">
-          Du må være logget inn for å se artist detaljer.
+          You have to be logged in to see artist details
         </Text>
       </View>
     );
@@ -73,7 +73,7 @@ export default function ArtistDetails() {
     return (
       <View className="flex-1 justify-center items-center bg-gray-100">
         <ActivityIndicator size="large" color={currentColors.secondary} />
-        <Text className="mt-2 text-lg text-gray-700">Laster data...</Text>
+        <Text className="mt-2 text-lg text-gray-700">Loading...</Text>
       </View>
     );
   }
@@ -95,7 +95,7 @@ export default function ArtistDetails() {
   if (!artist) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-100">
-        <Text className="text-xl text-red-600">Fant ingen artist.</Text>
+        <Text className="text-xl text-red-600">Found no artist</Text>
       </View>
     );
   }
@@ -111,7 +111,7 @@ export default function ArtistDetails() {
           className="text-lg font-bold text-primary mb-3"
           style={{ fontSize: textSize }}
         >
-          Kunstverk av {artist.displayName}
+          Artworks by {artist.displayName}
         </Text>
         <ArtworkList
           data={artworks}

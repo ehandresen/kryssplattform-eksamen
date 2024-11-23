@@ -25,7 +25,7 @@ const ExhibitionScreen = () => {
       <View className="flex-1 justify-center items-center bg-gray-100">
         <ActivityIndicator size="large" color="#0000ff" />
         <Text className="mt-2 text-lg text-gray-700">
-          Laster utstillinger...
+          Loading exhibitions...
         </Text>
       </View>
     );
@@ -36,7 +36,7 @@ const ExhibitionScreen = () => {
    */
   const renderEmptyList = () => (
     <Text className="text-center text-lg text-gray-400">
-      Ingen utstillinger tilgjengelig.
+      No exhibitions available.
     </Text>
   );
 

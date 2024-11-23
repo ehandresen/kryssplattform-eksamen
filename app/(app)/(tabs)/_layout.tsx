@@ -74,9 +74,9 @@ const TabsLayout = () => {
   } catch (error) {
     // Feilhåndtering for TabsLayout
     if (error instanceof Error) {
-      console.error("Feil i TabsLayout:", error.message);
+      console.error("Error in TabsLayout:", error.message);
     } else {
-      console.error("Ukjent feil i TabsLayout:", error);
+      console.error("Unknown error in TabsLayout:", error);
     }
     return (
       <View className="flex-1">
@@ -87,7 +87,7 @@ const TabsLayout = () => {
         />
         <View className="mt-20">
           <Text className="text-red-600 text-lg text-center">
-            Det oppstod en feil i navigasjonen. Prøv igjen senere.
+            An error occured in navigation. try again later.
           </Text>
         </View>
       </View>

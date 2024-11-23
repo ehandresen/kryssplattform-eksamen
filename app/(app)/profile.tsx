@@ -63,7 +63,7 @@ export default function ProfileScreen() {
             setUserArtworks(filteredArtworks);
           }
         } catch (error) {
-          console.error("Feil ved henting av artistdata:", error);
+          console.error("Error fetching artistdata:", error);
         }
       }
     };
@@ -84,11 +84,11 @@ export default function ProfileScreen() {
           bio,
           profileImageUrl,
         });
-        console.log("Artistdata oppdatert i Firestore.");
+        console.log("Artist data updated in Firestore.");
         setIsEditing(false);
       }
     } catch (error) {
-      console.error("Feil ved oppdatering av artistdata:", error);
+      console.error("Error fetching artistdata:", error);
     }
   };
 
@@ -107,7 +107,7 @@ export default function ProfileScreen() {
 
       setShowCamera(false);
     } catch (error) {
-      console.error("Feil ved lagring av bilde:", error);
+      console.error("Error saving image", error);
     }
   };
 
@@ -133,7 +133,7 @@ export default function ProfileScreen() {
         }
       }
     } catch (error) {
-      console.error("Feil ved bildeopplasting:", error);
+      console.error("Error uploading image", error);
     }
   };
 
