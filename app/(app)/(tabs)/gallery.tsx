@@ -21,7 +21,7 @@ export default function GalleryScreen() {
 
   useEffect(() => {
     setFilteredData(artworks); // Standardvisning
-  }, []);
+  }, [artworks]);
 
   const handleUploadPress = () => {
     setIsUploadVisible(!isUploadVisible);

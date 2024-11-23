@@ -2,6 +2,7 @@ import { Slot } from "expo-router";
 import AppProviders from "@/context/AppProviders"; // Import av konteksten som samler alle globale tilbydere
 import "../global.css"; // Global stilimport
 import { AccessibilityProvider } from "@/context/accessibilityContext"; // Import av tilgjengelighetskonteksten
+import Toast from "react-native-toast-message";
 
 /**
  * RootLayout er den øverste layout-komponenten for applikasjonen.
@@ -16,6 +17,9 @@ const RootLayout = () => {
       <AccessibilityProvider>
         {/* Slot er en plassholder som blir fylt med innhold fra de gjeldende sidene */}
         <Slot />
+
+        {/* Toast må legges til i root for å være tilgjennlig for bruk i andre komponenter */}
+        <Toast />
       </AccessibilityProvider>
     </AppProviders>
   );

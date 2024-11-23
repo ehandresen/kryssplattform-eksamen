@@ -47,7 +47,8 @@ export const ArtworkProvider = ({ children }: { children: ReactNode }) => {
     try {
       await artworkApi.addArtworkToFirestore(artwork);
       // Refresh the artwork list after adding a new artwork
-      await fetchArtworks();
+      setArtworks((prevArtworks) => [artwork, ...prevArtworks]);
+      fetchArtworks(); // holder listen oppdatert
     } catch (error) {
       console.error("Error adding artwork:", error);
     }

@@ -13,6 +13,7 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import CameraScreen from "@/components/CameraScreen";
@@ -22,6 +23,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { formatToEuropeanDate } from "@/utils/helpers";
 import { useExhibition } from "@/hooks/useExhibition";
 import { Picker } from "@react-native-picker/picker";
+import { useArtwork } from "@/hooks/useArtwork";
+import Toast from "react-native-toast-message";
 
 type UploadProps = {
   visible: boolean;
@@ -39,9 +42,11 @@ const Upload = ({ visible, onClose }: UploadProps) => {
   const [exhibitionId, setExhibitionId] = useState<string | undefined>(
     undefined
   );
+  const [isUploadingArtwork, setIsUploadingArtwork] = useState(false);
 
   const { user, role } = useAuth(); // Henter brukerinformasjon
   const { exhibitions, isLoading } = useExhibition(); // Henter utstillinger
+  const { addArtwork } = useArtwork();
 
   /**
    * Håndterer opplasting av bilde fra galleri.
@@ -86,22 +91,29 @@ const Upload = ({ visible, onClose }: UploadProps) => {
     };
 
     try {
-      await addArtworkToFirestore(artwork);
+      setIsUploadingArtwork(true);
+      await addArtwork(artwork);
       console.log("Kunstverk lagt til:", artwork);
+
+      Toast.show({
+        type: "success",
+        text1: "Kunstverk lastet opp",
+        text2: "Ditt kunstverk er nå tilgjengelig!",
+      });
+
       onClose(); // Lukker modal etter opplasting
     } catch (error) {
       console.error("Feil ved opplasting av kunstverk:", error);
+
+      Toast.show({
+        type: "error",
+        text1: "Feil ved opplasting",
+        text2: "Kunne ikke laste opp kunstverket. Prøv igjen.",
+      });
+    } finally {
+      setIsUploadingArtwork(false);
     }
   };
-
-  // Viser lasteskjerm hvis utstillinger laster
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Laster utstillinger...</Text>
-      </View>
-    );
-  }
 
   // Hvis bruker ikke er logget inn, hvis denne meldingen
   if (role === "guest") {
@@ -141,88 +153,101 @@ const Upload = ({ visible, onClose }: UploadProps) => {
             onClose={() => setShowCamera(false)}
           />
         ) : (
-          <View>
-            <Text style={styles.title}>Last opp kunstverk</Text>
+          <>
+            <View>
+              <Text style={styles.title}>Last opp kunstverk</Text>
 
-            {/* Forhåndsvisning av bilde */}
-            <View style={styles.imageContainer}>
-              {image ? (
-                <Image source={{ uri: image }} style={styles.imagePreview} />
-              ) : (
-                <View style={styles.imagePlaceholder}>
-                  <Text>Ingen bilde valgt</Text>
-                </View>
-              )}
-              <Button title="Velg bilde fra galleri" onPress={pickImage} />
-              <Button title="Åpne kamera" onPress={() => setShowCamera(true)} />
-            </View>
-
-            {/* Skjemafelter */}
-            <TextInput
-              placeholder="Tittel på kunstverket"
-              placeholderTextColor="#999"
-              value={title}
-              onChangeText={setTitle}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Bildetekst"
-              placeholderTextColor="#999"
-              value={caption}
-              onChangeText={setCaption}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Beskrivelse"
-              placeholderTextColor="#999"
-              value={description}
-              onChangeText={setDescription}
-              style={styles.input}
-              multiline
-            />
-            <TextInput
-              placeholder="Kategori"
-              placeholderTextColor="#999"
-              value={category}
-              onChangeText={setCategory}
-              style={styles.input}
-            />
-
-            {/* Valgfritt valg av utstilling */}
-            <View style={styles.dropdownContainer}>
-              {/* <Text>Velg en utstilling (valgfritt)</Text> */}
-              <Picker
-                selectedValue={exhibitionId}
-                onValueChange={(itemValue) =>
-                  setExhibitionId(itemValue || undefined)
-                }
-                style={{ width: "100%" }}
-              >
-                <Picker.Item
-                  label="Velg en utstilling (valgfritt)"
-                  value={undefined}
+              {/* Forhåndsvisning av bilde */}
+              <View style={styles.imageContainer}>
+                {image ? (
+                  <Image source={{ uri: image }} style={styles.imagePreview} />
+                ) : (
+                  <View style={styles.imagePlaceholder}>
+                    <Text>Ingen bilde valgt</Text>
+                  </View>
+                )}
+                <Button title="Velg bilde fra galleri" onPress={pickImage} />
+                <Button
+                  title="Åpne kamera"
+                  onPress={() => setShowCamera(true)}
                 />
-                {exhibitions.map((item) => (
+              </View>
+
+              {/* Skjemafelter */}
+              <TextInput
+                placeholder="Tittel på kunstverket"
+                placeholderTextColor="#999"
+                value={title}
+                onChangeText={setTitle}
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="Bildetekst"
+                placeholderTextColor="#999"
+                value={caption}
+                onChangeText={setCaption}
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="Beskrivelse"
+                placeholderTextColor="#999"
+                value={description}
+                onChangeText={setDescription}
+                style={styles.input}
+                multiline
+              />
+              <TextInput
+                placeholder="Kategori"
+                placeholderTextColor="#999"
+                value={category}
+                onChangeText={setCategory}
+                style={styles.input}
+              />
+
+              {/* Valgfritt valg av utstilling */}
+              <View style={styles.dropdownContainer}>
+                {/* <Text>Velg en utstilling (valgfritt)</Text> */}
+                <Picker
+                  selectedValue={exhibitionId}
+                  onValueChange={(itemValue) =>
+                    setExhibitionId(itemValue || undefined)
+                  }
+                  style={{ width: "100%" }}
+                >
                   <Picker.Item
-                    key={item.id}
-                    label={item.title}
-                    value={item.id}
+                    label="Velg en utstilling (valgfritt)"
+                    value={undefined}
                   />
-                ))}
-              </Picker>
+                  {exhibitions.map((item) => (
+                    <Picker.Item
+                      key={item.id}
+                      label={item.title}
+                      value={item.id}
+                    />
+                  ))}
+                </Picker>
+              </View>
+
+              {/* Lagre og avbryt-knapper */}
+              <TouchableOpacity
+                onPress={handleSubmit}
+                style={styles.submitButton}
+              >
+                <Text style={styles.buttonText}>Lagre</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
+                <Text style={styles.buttonText}>Avbryt</Text>
+              </TouchableOpacity>
             </View>
 
-            {/* Lagre og avbryt-knapper */}
-            <TouchableOpacity
-              onPress={handleSubmit}
-              style={styles.submitButton}
-            >
-              <Text style={styles.buttonText}>Lagre</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
-              <Text style={styles.buttonText}>Avbryt</Text>
-            </TouchableOpacity>
-          </View>
+            {/* Viser lasteskjerm */}
+            {(isLoading || isUploadingArtwork) && (
+              <View style={styles.overlay}>
+                <ActivityIndicator size="large" color="#0000ff" />
+                <Text style={styles.loadingText}>Laster opp...</Text>
+              </View>
+            )}
+          </>
         )}
       </View>
     </Modal>
@@ -235,7 +260,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    marginBottom: 100,
+    // marginBottom: 100,
   },
   title: {
     fontSize: 22,
@@ -289,6 +314,22 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
   },
 });
 
