@@ -136,9 +136,6 @@ const ExhibitionDetails = () => {
               <Text className="text-lg font-bold text-gray-800">
                 {item.title}
               </Text>
-              <Text className="text-sm text-gray-600 mt-1">
-                Artist: {item.artistId}
-              </Text>
             </TouchableOpacity>
           )}
         />

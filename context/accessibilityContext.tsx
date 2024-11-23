@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Colors } from "../constants/colors"; // Import your color constants
-import { TextSize } from "../constants/textSize"; // Import your text size constants
+import { Colors } from "../constants/colors";
+import { TextSize } from "../constants/textSize";
 
 type AccessibilityContextType = {
   // Color Blind Filter

@@ -10,5 +10,5 @@ export type Artwork = {
   views?: number;
   likes: string[];
   comments: string[];
-  exhibitionId?: string; // Make exhibitionId optional
+  exhibitionId?: string;
 };

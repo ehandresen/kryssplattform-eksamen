@@ -6,7 +6,7 @@ export type Exhibition = {
     latitude: number;
     longitude: number;
   };
-  artworks: string[]; // array of artwork ids
+  artworks: string[];
   startDate: string;
   endDate: string;
 };

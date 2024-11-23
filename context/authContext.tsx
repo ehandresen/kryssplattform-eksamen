@@ -14,7 +14,7 @@ import { onAuthStateChanged, User, UserCredential } from "firebase/auth";
 type AuthContextType = {
   signIn: (email: string, password: string) => Promise<UserCredential | void>;
   signOut: () => Promise<void>;
-  reloadUser: () => Promise<void>; // New function to refresh user data
+  reloadUser: () => Promise<void>;
   session?: string | null;
   user: User | null;
   isLoading: boolean;
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const loginAsGuest = () => {
     console.log("role from auth:", role);
     setRole("guest");
-    setSession("guest-session"); // dummy data for guest logg inn
+    setSession("guest-session");
     setUser(null);
   };
 
@@ -64,8 +64,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const userCredential = await authApi.signIn(email, password);
       if (userCredential) {
-        setSession(userCredential.user.email); // Update session with user email after sign-in
-        setUser(userCredential.user); // Update user state after sign-in
+        setSession(userCredential.user.email);
+        setUser(userCredential.user);
         return userCredential;
       }
     } catch (error) {
@@ -76,8 +76,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signOut = async () => {
     try {
       await authApi.signOut();
-      setSession(null); // Clear session on sign-out
-      setUser(null); // Clear user on sign-out
+      setSession(null);
+      setUser(null);
     } catch (error) {
       console.error("Error during sign-out:", error);
     }
@@ -96,7 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         signIn,
         signOut,
-        reloadUser, // Pass reloadUser to context
+        reloadUser,
         session,
         user,
         isLoading,

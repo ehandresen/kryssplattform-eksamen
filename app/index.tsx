@@ -21,11 +21,9 @@ export default function Index() {
   }, [router]);
 
   return (
-    <View className="flex-1 justify-center items-center p-4 bg-white">
+    <View className="flex-1 justify-center items-center p-4 bg-black">
       {/* Viser velkomsttekst */}
-      <Text className="text-4xl font-bold text-center text-teal-600">
-        ArtVista
-      </Text>
+      <Text className="text-4xl font-bold text-center white">ArtVista</Text>
     </View>
   );
 }

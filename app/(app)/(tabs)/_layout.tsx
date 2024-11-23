@@ -8,6 +8,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import React from "react";
 import Header from "../../../components/header/Header";
 import { View, Text } from "react-native";
+import { Colors } from "@/constants/colors";
 
 const TabsLayout = () => {
   try {
@@ -79,7 +80,7 @@ const TabsLayout = () => {
       console.error("Unknown error in TabsLayout:", error);
     }
     return (
-      <View className="flex-1">
+      <View style={{ flex: 1, backgroundColor: Colors.normal.background }}>
         <Header
           subtitle="Error"
           showLogoutButton={false}

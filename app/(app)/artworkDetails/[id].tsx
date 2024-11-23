@@ -29,8 +29,7 @@ import { useArtwork } from "@/hooks/useArtwork";
 import Toast from "react-native-toast-message";
 
 export default function ArtDetails() {
-  // Tilgjengelighetsinnstillinger
-  const { textSize, currentColors } = useAccessibility();
+  const { textSize } = useAccessibility();
 
   // State-håndtering
   // - Artwork-data og tilknyttet informasjon

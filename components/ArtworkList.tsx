@@ -8,13 +8,13 @@ import React, { useEffect, useState } from "react";
 import { FlatList, RefreshControl, TouchableOpacity } from "react-native";
 import ArtworkCard from "./ArtworkCard";
 import { Artwork } from "../types/artwork";
-import { useRouter } from "expo-router"; // Navigasjon
-import { useAuth } from "@/hooks/useAuth"; // Håndterer brukerens autentisering
-import * as artworkApi from "@/api/artworkApi"; // API for å hente og oppdatere kunstverk
+import { useRouter } from "expo-router";
+import { useAuth } from "@/hooks/useAuth";
+import * as artworkApi from "@/api/artworkApi";
 
 interface ArtworkListProps {
-  data: Artwork[]; // Array av kunstverk som skal vises
-  textSize: number; // Dynamisk tekststørrelse
+  data: Artwork[];
+  textSize: number;
   disableRefresh?: boolean;
 }
 
@@ -22,10 +22,10 @@ export default function ArtworkList({
   data,
   disableRefresh,
 }: ArtworkListProps) {
-  const [artworks, setArtworks] = useState<Artwork[]>(data); // Lokal state for kunstverk
-  const [refreshing, setRefreshing] = useState(false); // Kontroll for oppdatering
-  const router = useRouter(); // Router for navigasjon
-  const { user } = useAuth(); // Henter autentisert bruker
+  const [artworks, setArtworks] = useState<Artwork[]>(data);
+  const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter();
+  const { user } = useAuth();
 
   /**
    * Oppdaterer lokal state når nye data sendes som prop.
@@ -39,15 +39,15 @@ export default function ArtworkList({
    * Vises ved å dra ned for å oppdatere.
    */
   const fetchArtworks = async () => {
-    if (disableRefresh) return; // Hindrer oppdatering hvis deaktivert
+    if (disableRefresh) return;
     setRefreshing(true);
     try {
       const updatedArtworks = await artworkApi.getAllArtworks();
-      setArtworks(updatedArtworks); // Oppdaterer lokal state
+      setArtworks(updatedArtworks);
     } catch (error) {
-      console.error("Feil ved henting av kunstverk:", error); // Debugging
+      console.error("Error fetching artwork:", error);
     } finally {
-      setRefreshing(false); // Deaktiver oppdateringsindikatoren
+      setRefreshing(false);
     }
   };
 
@@ -63,12 +63,12 @@ export default function ArtworkList({
         if (artwork.id === id) {
           const isLiked = artwork.likes.includes(user?.uid ?? "");
           const updatedLikes = isLiked
-            ? artwork.likes.filter((uid) => uid !== user?.uid) // Fjern "like"
-            : [...artwork.likes, user?.uid ?? ""]; // Legg til "like"
+            ? artwork.likes.filter((uid) => uid !== user?.uid)
+            : [...artwork.likes, user?.uid ?? ""];
 
           return { ...artwork, likes: updatedLikes };
         }
-        return artwork; // Returner uendret kunstverk
+        return artwork;
       })
     );
 
@@ -76,36 +76,36 @@ export default function ArtworkList({
     try {
       await artworkApi.updateArtworkLikes(id, user?.uid ?? "");
     } catch (error) {
-      console.error("Feil ved oppdatering av likes:", error); // Debugging
+      console.error("Feil ved oppdatering av likes:", error);
     }
   };
 
   return (
     <FlatList
-      data={artworks} // Data for kunstverk
-      keyExtractor={(item) => item.id} // Unik nøkkel for hvert element
+      data={artworks}
+      keyExtractor={(item) => item.id}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={fetchArtworks} />
       }
       renderItem={({ item }) => (
         <TouchableOpacity
-          onPress={() => router.push(`/artworkDetails/${item.id}`)} // Naviger til detaljer
+          onPress={() => router.push(`/artworkDetails/${item.id}`)}
           style={{
             backgroundColor: "white",
             marginVertical: 16,
           }}
         >
           <ArtworkCard
-            artwork={item} // Sender kunstverket som prop til ArtworkCard
-            isLiked={item.likes.includes(user?.uid ?? "")} // Sjekker om brukeren har likt
-            numLikes={item.likes.length} // Viser antall likes
-            toggleLike={() => handleToggleLike(item.id)} // Funksjon for å like/unlike
+            artwork={item}
+            isLiked={item.likes.includes(user?.uid ?? "")}
+            numLikes={item.likes.length}
+            toggleLike={() => handleToggleLike(item.id)}
           />
         </TouchableOpacity>
       )}
       contentContainerStyle={{
         paddingHorizontal: 8,
-        paddingBottom: 16, // Justering for spacing
+        paddingBottom: 16,
       }}
     />
   );
