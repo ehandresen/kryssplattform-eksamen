@@ -1,3 +1,9 @@
+/*
+ * Kode tilpasset "commentApi" av Brage Hveding Ersdal (Foreleser) i Git-repo "Kryssplattform-HK-H24".
+ * URL: https://github.com/studBrage/Kryssplattform-HK-H24
+ * Dato: 22.11.2024
+ */
+
 /**
  * CRUD-operasjoner (Create, Read, Update, Delete)
  * for å håndtere kommentarer i Firebase.

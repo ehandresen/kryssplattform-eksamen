@@ -1,3 +1,9 @@
+/*
+ * Kode tilpasset "authApi" av Brage Hveding Ersdal (Foreleser) i Git-repo "Kryssplattform-HK-H24".
+ * URL: https://github.com/studBrage/Kryssplattform-HK-H24
+ * Dato: 22.11.2024
+ */
+
 /**
  * Autentiserings- og brukerregistrering for Firebase.
  * Innlogging, utlogging og opprettelse av nye brukere,
