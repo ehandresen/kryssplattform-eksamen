@@ -68,6 +68,18 @@ const ExhibitionDetails = () => {
   };
 
   /**
+   * Navigerer til kartskjermen for å vise exhibitiondetaljer.
+   */
+  const goToExhibitionOnMap = () => {
+    if (exhibition) {
+      router.push({
+        pathname: "/map",
+        params: { exhibition: JSON.stringify(exhibition) },
+      });
+    }
+  };
+
+  /**
    * Viser melding for gjestebrukere som ikke er logget inn.
    */
   if (role === "guest") {
@@ -119,8 +131,16 @@ const ExhibitionDetails = () => {
         {exhibition.startDate} - {exhibition.endDate}
       </Text>
 
+      {/* Knapp som viser exhibition på kartet */}
+      <TouchableOpacity
+        className="px-4 py-2 mt-4 bg-gray-700 rounded self-start"
+        onPress={goToExhibitionOnMap}
+      >
+        <Text className="text-white font-bold">View exhibition on map</Text>
+      </TouchableOpacity>
+
       {/* Seksjon for relaterte artwork */}
-      <Text className="text-xl font-semibold text-gray-800 mb-2">
+      <Text className="text-xl font-semibold text-gray-800 my-3">
         Related Artworks:
       </Text>
       {relatedArtworks.length > 0 ? (
