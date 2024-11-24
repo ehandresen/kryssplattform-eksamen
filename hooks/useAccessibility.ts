@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { AccessibilityContext } from "../context/accessibilityContext"; // Adjust the path if necessary
+import { AccessibilityContext } from "../context/accessibilityContext";
 
 export const useAccessibility = () => {
   const context = useContext(AccessibilityContext);

@@ -1,11 +1,5 @@
 // ExhibitionContext.js
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, ReactNode, useEffect, useState } from "react";
 import * as exhibitionApi from "@/api/exhibitionApi";
 import { Exhibition } from "@/types/exhibition";
 

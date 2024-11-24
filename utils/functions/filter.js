@@ -1,33 +1,31 @@
-// utils/functions/filter.js
-
 /**
  * Filtrerer en liste med objekter basert på en søkestreng og en nøkkel (key).
  * Funksjonen sjekker om søkestrengen finnes i verdien til den spesifikke nøkkelen.
  *
- * @param {Array} data - Listen med data som skal filtreres (kan være hvilken som helst datatype).
- * @param {string} query - Søkestrengen som brukes for filtrering.
- * @param {string} key - Nøkkelen i objektene som vi skal søke i.
- * @returns {Array} - Den filtrerte listen.
+ * @param {Array} data
+ * @param {string} query
+ * @param {string} key
+ * @returns {Array}
  */
 export function filterByKey(data, query, key) {
-  if (!query) return data; // Hvis søkestrengen er tom, returneres original data.
+  if (!query) return data;
 
-  const lowercasedQuery = query.toLowerCase(); // Gjør søkestrengen til små bokstaver for case-insensitiv søk.
+  const lowercasedQuery = query.toLowerCase();
 
   return data.filter((item) => {
-    const value = item[key]; // Hent verdien til den spesifikke nøkkelen
+    const value = item[key];
     if (typeof value === "string") {
-      return value.toLowerCase().includes(lowercasedQuery); // Sjekk om verdien inneholder søkestrengen.
+      return value.toLowerCase().includes(lowercasedQuery);
     }
-    return false; // Hvis verdien ikke er en streng, filtreres det ut.
+    return false;
   });
 }
 
 /**
  * Nullstiller filteret og returnerer den originale listen.
  *
- * @param {Array} data - Listen med data som skal vises uten filter.
- * @returns {Array} - Den originale listen.
+ * @param {Array} data
+ * @returns {Array}
  */
 export function clearFilter(data) {
   return data;
