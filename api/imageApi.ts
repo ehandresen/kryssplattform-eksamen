@@ -1,3 +1,9 @@
+/*
+ * Kode tilpasset "imageApi" av Brage Hveding Ersdal (Foreleser) i Git-repo "Kryssplattform-HK-H24".
+ * URL: https://github.com/studBrage/Kryssplattform-HK-H24
+ * Dato: 22.11.2024
+ */
+
 /**
  * Håndterer opplasting av bilder til Firebase Storage.
  * Funksjonen laster opp et bilde og returnerer en nedlastnings-URL.

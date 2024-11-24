@@ -1,11 +1,15 @@
+/*
+ * Kode tilpasset "local_storage" av Brage Hveding Ersdal (Foreleser) i Git-repo "Kryssplattform-HK-H24".
+ * URL: https://github.com/studBrage/Kryssplattform-HK-H24
+ * Dato: 22.11.2024
+ */
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const storeData = async (key: string, data: string) => {
   try {
     await AsyncStorage.setItem(key, data);
-  } catch (e) {
-    // console.error(e);
-  }
+  } catch (e) {}
 };
 
 export const getData = async (key: string) => {
@@ -15,17 +19,13 @@ export const getData = async (key: string) => {
       console.log(data);
       return data;
     }
-  } catch (e) {
-    // console.error(e);
-  }
+  } catch (e) {}
 };
 
 export const deleteData = async (key: string) => {
   try {
     await AsyncStorage.removeItem(key);
-  } catch (e) {
-    // Error wæææ
-  }
+  } catch (e) {}
 };
 
 export const getPostFromLocalById = async (id: string) => {
@@ -36,9 +36,7 @@ export const getPostFromLocalById = async (id: string) => {
       const post = parsedPosts.find((post: any) => post.id === id);
       return post;
     }
-  } catch (e) {
-    // console.error(e);
-  }
+  } catch (e) {}
 };
 
 export const isUserLoggedIn = async () => {
@@ -73,8 +71,6 @@ export const getItemWithSetter = async (
 export const clearAll = async () => {
   try {
     await AsyncStorage.clear();
-  } catch (e) {
-    // clear error
-  }
+  } catch (e) {}
   console.log("Done.");
 };
