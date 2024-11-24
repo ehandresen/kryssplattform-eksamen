@@ -183,12 +183,14 @@ export default function ProfileScreen() {
           <TextInput
             className="w-full bg-white p-4 rounded-lg border border-gray-300"
             placeholder="Name"
+            placeholderTextColor="#999"
             value={displayName}
             onChangeText={setDisplayName}
           />
           <TextInput
             className="w-full bg-white p-4 rounded-lg border border-gray-300"
             placeholder="Email"
+            placeholderTextColor="#999"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -196,6 +198,7 @@ export default function ProfileScreen() {
           <TextInput
             className="w-full bg-white p-4 rounded-lg border border-gray-300"
             placeholder="Bio"
+            placeholderTextColor="#999"
             value={bio}
             onChangeText={setBio}
           />
