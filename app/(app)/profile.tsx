@@ -34,13 +34,15 @@ export default function ProfileScreen() {
   const [isEditing, setIsEditing] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [userArtworks, setUserArtworks] = useState<Artwork[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { artworks, isLoading } = useArtwork();
+  const { artworks } = useArtwork();
 
   /**
    * Henter innlogget brukers data fra Firestore og oppdaterer state.
    */
   useEffect(() => {
+    setIsLoading(true);
     const fetchArtistData = async () => {
       if (user?.uid) {
         try {
@@ -64,6 +66,8 @@ export default function ProfileScreen() {
           }
         } catch (error) {
           console.error("Error fetching artistdata:", error);
+        } finally {
+          setIsLoading(false);
         }
       }
     };
