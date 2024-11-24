@@ -7,10 +7,10 @@ export const Colors = {
     error: "red",
   },
   colorBlind: {
-    text: "#white",
-    card: "#black",
-    special: "#blue",
-    background: "#black",
-    error: "#FF0000",
+    text: "white",
+    card: "black",
+    special: "green",
+    background: "white",
+    error: "purple",
   },
 };

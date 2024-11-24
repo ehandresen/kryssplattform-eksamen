@@ -1,6 +1,3 @@
-// components/Accessibility.tsx
-
-// Importerer nødvendige React- og React Native-moduler for å bygge en tilgjengelighetskomponent.
 import React, { useState } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import {
@@ -13,10 +10,9 @@ import {
 
 // Definerer typer for komponentens props.
 type AccessibilityProps = {
-  onIncreaseTextSize: () => void; // Funksjon for å øke tekststørrelsen.
-  onEnableColorBlindFilter: () => void; // Funksjon for å aktivere fargeblindfilter.
-  isTextSizeIncreased: boolean; // Holder oversikt over om tekststørrelsen er økt.
-  style?: ViewStyle; // Valgfri egendefinert stil for komponenten.
+  onIncreaseTextSize: () => void;
+  onEnableColorBlindFilter: () => void;
+  style?: ViewStyle;
 };
 
 /**
@@ -27,7 +23,6 @@ type AccessibilityProps = {
 const Accessibility = ({
   onIncreaseTextSize,
   onEnableColorBlindFilter,
-  isTextSizeIncreased,
   style,
 }: AccessibilityProps) => {
   const [isAccessibilityOptionsVisible, setIsAccessibilityOptionsVisible] =
@@ -54,27 +49,23 @@ const Accessibility = ({
           {/* Knapp for å øke eller tilbakestille tekststørrelsen */}
           <TouchableOpacity
             onPress={() => {
-              console.log("Knapp for å justere tekststørrelse trykket"); // Debug-logg
+              console.log("Button for adjusting text size");
               onIncreaseTextSize();
             }}
             style={styles.optionButton}
           >
-            <Text style={styles.optionText}>
-              {isTextSizeIncreased
-                ? "Tilbakestill tekststørrelse"
-                : "Øk tekststørrelse"}
-            </Text>
+            <Text style={styles.optionText}>Increase Text</Text>
           </TouchableOpacity>
 
           {/* Knapp for å aktivere fargeblindfilter */}
           <TouchableOpacity
             onPress={() => {
-              console.log("Knapp for å aktivere fargeblindfilter trykket"); // Debug-logg
+              console.log("Button for activating colorblind colors");
               onEnableColorBlindFilter();
             }}
             style={styles.optionButton}
           >
-            <Text style={styles.optionText}>Fargeblindfilter</Text>
+            <Text style={styles.optionText}>Colorblind</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -102,7 +93,7 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     position: "absolute", // Posisjonerer alternativene i forhold til hovedknappen.
-    left: -100, // Flytter alternativene til venstre.
+    left: -125, // Flytter alternativene til venstre.
     alignItems: "center", // Sentraliserer knappene horisontalt.
   },
   optionButton: {
