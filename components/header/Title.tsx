@@ -1,18 +1,14 @@
-// Title.tsx
-
-// Importerer nødvendige moduler for å lage en tittelkomponent.
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-// Definerer typer for komponentens props
 type TitleProps = {
-  subtitle: string; // Obligatorisk undertekst som vises under hovedtittelen
+  subtitle: string;
 };
 
 /**
  * Title-komponent:
  * - Viser en hovedtittel ("ArtVista") og en undertekst som tilpasses dynamisk basert på prop-verdier.
- * @param subtitle Teksten som vises som undertekst.
+ * @param subtitle
  */
 const Title = ({ subtitle }: TitleProps) => {
   return (
@@ -26,21 +22,19 @@ const Title = ({ subtitle }: TitleProps) => {
   );
 };
 
-// Stiler for Title-komponenten
 const styles = StyleSheet.create({
   titleContainer: {
-    flex: 1, // Fyller tilgjengelig plass for å sentrere innholdet
-    alignItems: "center", // Sentrerer tekst horisontalt
+    flex: 1,
+    alignItems: "center",
   },
   title: {
-    fontSize: 20, // Størrelse på hovedtittel
-    fontWeight: "bold", // Fet tekst for hovedtittel
+    fontSize: 20,
+    fontWeight: "bold",
   },
   subtitle: {
-    fontSize: 12, // Mindre tekststørrelse for undertekst
-    color: "#555", // Grå farge for å indikere sekundær betydning
+    fontSize: 12,
+    color: "#555",
   },
 });
 
-// Eksporterer komponenten som standard
 export default Title;

@@ -1,3 +1,8 @@
+/**
+ * Komponent for å håndtere sortering av kunstverk.
+ * Gir brukeren mulighet til å sortere alfabetisk (A-Z) eller etter dato.
+ */
+
 import React, { useState } from "react";
 import {
   View,
@@ -16,29 +21,25 @@ import {
 
 /**
  * Props for Sort-komponenten
- * @param filteredData - Listen over filtrerte kunstverk som skal sorteres
- * @param setFilteredData - Funksjon for å oppdatere den sorterte listen
- * @param style - Valgfri tilpasset stil for hovedkomponenten
- * @param sortTitle - En boolsk prop for å bestemme hvilken sortering som skal vises (true for Title, false for Name)
+ * @param filteredData
+ * @param setFilteredData
+ * @param style
+ * @param sortTitle
  */
 type SortProps = {
   filteredData: any[];
   setFilteredData: React.Dispatch<React.SetStateAction<any[]>>;
   style?: ViewStyle;
-  sortTitle: boolean; // Determines whether to show title-based or name-based sorting
+  sortTitle: boolean;
 };
 
-/**
- * Komponent for å håndtere sortering av kunstverk.
- * Gir brukeren mulighet til å sortere alfabetisk (A-Z) eller etter dato.
- */
 const Sort = ({
   filteredData,
   setFilteredData,
   style,
   sortTitle,
 }: SortProps) => {
-  const [isSortOptionsVisible, setIsSortOptionsVisible] = useState(false); // Controls whether the sort options are visible
+  const [isSortOptionsVisible, setIsSortOptionsVisible] = useState(false);
 
   /**
    * Toggles the visibility of the sort options
@@ -49,8 +50,8 @@ const Sort = ({
 
   /**
    * Handles sorting based on the selected key (either title or name) and the order (asc or desc)
-   * @param key - Key to sort by (title or name)
-   * @param order - Sort order (asc or desc)
+   * @param key
+   * @param order
    */
   const handleSort = (key: string, order: string) => {
     let sortedData;
@@ -119,38 +120,38 @@ const Sort = ({
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center", // Sentrerer innholdet horisontalt
+    alignItems: "center",
   },
   mainButton: {
-    width: 60, // Bredde på hovedknappen
-    height: 60, // Høyde på hovedknappen
-    backgroundColor: "#e0b3b3", // Rosa bakgrunnsfarge
-    borderRadius: 30, // Runde kanter
-    alignItems: "center", // Sentrerer ikon horisontalt
-    justifyContent: "center", // Sentrerer ikon vertikalt
-    shadowColor: "#000", // Skjermfarge for skygge
-    shadowOffset: { width: 0, height: 2 }, // Skyggeforskyvning
-    shadowOpacity: 0.3, // Skyggegjenomsiktighet
-    shadowRadius: 2, // Skyggeradius
-    elevation: 5, // Skyggeeffekt på Android
+    width: 60,
+    height: 60,
+    backgroundColor: "#e0b3b3",
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 5,
   },
   optionsContainer: {
-    position: "absolute", // Plasserer alternativene utenfor hovedknappen
-    right: 70, // Plasserer alternativene til høyre
-    alignItems: "center", // Sentrerer alternativene
+    position: "absolute",
+    right: 70,
+    alignItems: "center",
   },
   optionButton: {
-    width: 60, // Bredde på hver sorteringsknapp
-    height: 40, // Høyde på hver sorteringsknapp
-    backgroundColor: "#e0b3b3", // Samme rosa bakgrunn som hovedknappen
-    borderRadius: 5, // Runde kanter
-    alignItems: "center", // Sentrerer teksten horisontalt
-    justifyContent: "center", // Sentrerer teksten vertikalt
-    marginVertical: 5, // Vertikal avstand mellom knappene
+    width: 60,
+    height: 40,
+    backgroundColor: "#e0b3b3",
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 5,
   },
   optionText: {
-    color: "black", // Tekstfarge
-    fontSize: 12, // Størrelse på tekst
+    color: "black",
+    fontSize: 12,
   },
 });
 

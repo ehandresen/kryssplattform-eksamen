@@ -1,21 +1,3 @@
-// Header.tsx
-
-import React from "react";
-import { View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Title from "./Title"; // Viser en sentrert tittel
-import ProfileBtn from "./ProfileBtn"; // Knapp for å navigere til profil
-import ReturnBtn from "./ReturnBtn"; // Knapp for å navigere tilbake
-import LogOutBtn from "./LogOutBtn"; // Knapp for å logge ut
-
-// Definerer hvilke data som sendes til Header-komponenten via props.
-type HeaderProps = {
-  subtitle: string; // Undertekst som vises midt i headeren
-  showProfileButton?: boolean; // Valgfritt: Skal profil-knappen vises?
-  showReturnButton?: boolean; // Valgfritt: Skal tilbake-knappen vises?
-  showLogoutButton?: boolean; // Valgfritt: Skal logg ut-knappen vises?
-};
-
 /**
  * Header-komponent:
  * - Ansvarlig for å vise en toppseksjon som inneholder:
@@ -23,24 +5,31 @@ type HeaderProps = {
  *   - En tittel i midten.
  *   - En valgfri knapp på høyre side (Profil eller Log Out).
  */
-const Header = ({
-  subtitle, // Tekst som vises i midten av headeren
-  showProfileButton = false, // Standardverdi er at profil-knappen ikke vises
-  showReturnButton = false, // Standardverdi er at tilbake-knappen ikke vises
-  showLogoutButton = false, // Standardverdi er at logg ut-knappen ikke vises
-}: HeaderProps) => {
-  // Debugging: Logger hvilke props som sendes til komponenten
-  console.debug("Header props:", {
-    subtitle,
-    showProfileButton,
-    showReturnButton,
-    showLogoutButton,
-  });
 
-  // Feilhåndtering: Sikrer at `subtitle` alltid er definert.
+import React from "react";
+import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Title from "./Title";
+import ProfileBtn from "./ProfileBtn";
+import ReturnBtn from "./ReturnBtn";
+import LogOutBtn from "./LogOutBtn";
+
+type HeaderProps = {
+  subtitle: string;
+  showProfileButton?: boolean;
+  showReturnButton?: boolean;
+  showLogoutButton?: boolean;
+};
+
+const Header = ({
+  subtitle,
+  showProfileButton = false,
+  showReturnButton = false,
+  showLogoutButton = false,
+}: HeaderProps) => {
   if (!subtitle) {
     console.error("Feil: `subtitle` er påkrevd for Header-komponenten.");
-    return null; // Stopper rendering hvis `subtitle` mangler
+    return null;
   }
 
   return (
@@ -52,7 +41,7 @@ const Header = ({
         ) : showLogoutButton ? (
           <LogOutBtn />
         ) : (
-          <View className="w-10" /> // Sørger for visuell balanse hvis ingen knapp vises
+          <View className="w-10" />
         )}
 
         {/* Midten: Tittel */}
@@ -64,12 +53,11 @@ const Header = ({
         ) : showLogoutButton && showReturnButton ? (
           <LogOutBtn />
         ) : (
-          <View className="w-10" /> // Sørger for visuell balanse hvis ingen knapp vises
+          <View className="w-10" />
         )}
       </View>
     </SafeAreaView>
   );
 };
 
-// Eksporterer komponenten som standard
 export default Header;

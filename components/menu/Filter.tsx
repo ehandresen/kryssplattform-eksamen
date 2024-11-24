@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from "react-native";
 import { getUniqueCategories } from "@/api/artworkApi";
-import { Artwork } from "@/types/artwork"; // For å definere datatypen for kunstverk
+import { Artwork } from "@/types/artwork";
 
-// Definer props-typen for Filter-komponenten
 type FilterProps = {
   visible: boolean;
   onClose: () => void;
-  allArtworks: Artwork[]; // Kunstverksliste
-  setFilteredData: React.Dispatch<React.SetStateAction<Artwork[]>>; // Oppdatere filtrert data
-  selectedFilter: string | null; // Nåværende valgte filter
-  setSelectedFilter: React.Dispatch<React.SetStateAction<string | null>>; // Oppdater valgte filter
+  allArtworks: Artwork[];
+  setFilteredData: React.Dispatch<React.SetStateAction<Artwork[]>>;
+  selectedFilter: string | null;
+  setSelectedFilter: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 const Filter: React.FC<FilterProps> = ({

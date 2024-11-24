@@ -4,8 +4,8 @@ import { AntDesign, Entypo } from "@expo/vector-icons";
 import Accessibility from "./Accessibility";
 import Filter from "./Filter";
 import Sort from "./Sort";
-import Search from "./Search"; // Import Search component
-import Upload from "./Upload"; // Import Upload component
+import Search from "./Search";
+import Upload from "./Upload";
 
 type MenuProps = {
   sortTitle: boolean;
@@ -13,17 +13,17 @@ type MenuProps = {
   onSortZA: () => void;
   onIncreaseTextSize: () => void;
   onEnableColorBlindFilter: () => void;
-  onUploadPress: () => void; // Function to toggle upload visibility
+  onUploadPress: () => void;
   isVisible: boolean;
-  allData: any[]; // Generic data for Search (artists or artworks)
+  allData: any[];
   setFilteredData: React.Dispatch<React.SetStateAction<any[]>>;
   selectedFilter: string | null;
   setSelectedFilter: React.Dispatch<React.SetStateAction<string | null>>;
   isSearchVisible: boolean;
   setIsSearchVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  isUploadVisible: boolean; // Add the upload visibility state
-  setIsUploadVisible: React.Dispatch<React.SetStateAction<boolean>>; // Add the upload visibility setter
-  searchKey: string; // Key to use for searching in Search component
+  isUploadVisible: boolean;
+  setIsUploadVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  searchKey: string;
 };
 
 const Menu = ({
@@ -41,16 +41,16 @@ const Menu = ({
   setIsUploadVisible,
   searchKey,
 }: MenuProps) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Toggle menu visibility
-  const [isFilterVisible, setIsFilterVisible] = useState(false); // Filter modal visibility
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen); // Toggle menu visibility
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  const onFilterPress = () => setIsFilterVisible(true); // Open filter modal
+  const onFilterPress = () => setIsFilterVisible(true);
 
-  const closeFilter = () => setIsFilterVisible(false); // Close filter modal
+  const closeFilter = () => setIsFilterVisible(false);
 
-  if (!isVisible) return null; // If menu is not visible, return null
+  if (!isVisible) return null;
 
   return (
     <View style={styles.container}>
@@ -127,7 +127,6 @@ const Menu = ({
             onIncreaseTextSize={onIncreaseTextSize}
             onEnableColorBlindFilter={onEnableColorBlindFilter}
             style={styles.accessibilityButton}
-            isTextSizeIncreased={false}
           />
         </>
       )}
@@ -145,7 +144,7 @@ const Menu = ({
       {/* Upload modal */}
       <Upload
         visible={isUploadVisible}
-        onClose={() => setIsUploadVisible(false)} // Close upload modal
+        onClose={() => setIsUploadVisible(false)}
       />
     </View>
   );

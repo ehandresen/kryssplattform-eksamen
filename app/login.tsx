@@ -154,7 +154,7 @@ const LoginScreen = () => {
             style={[styles.button, styles.guestButton]}
             onPress={handleGuestLogin}
           >
-            <Text style={styles.guestButtonText}>Fortsett som Gjest</Text>
+            <Text style={styles.guestButtonText}>Continue as Guest</Text>
           </TouchableOpacity>
         </>
       )}

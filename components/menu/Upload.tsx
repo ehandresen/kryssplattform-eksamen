@@ -18,7 +18,6 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import CameraScreen from "@/components/CameraScreen";
 import { Artwork } from "@/types/artwork";
-import { addArtworkToFirestore } from "@/api/artworkApi";
 import { useAuth } from "@/hooks/useAuth";
 import { formatToEuropeanDate } from "@/utils/helpers";
 import { useExhibition } from "@/hooks/useExhibition";
@@ -44,8 +43,8 @@ const Upload = ({ visible, onClose }: UploadProps) => {
   );
   const [isUploadingArtwork, setIsUploadingArtwork] = useState(false);
 
-  const { user, role } = useAuth(); // Henter brukerinformasjon
-  const { exhibitions, isLoading } = useExhibition(); // Henter utstillinger
+  const { user, role } = useAuth();
+  const { exhibitions, isLoading } = useExhibition();
   const { addArtwork } = useArtwork();
 
   /**
@@ -58,13 +57,13 @@ const Upload = ({ visible, onClose }: UploadProps) => {
         setImage(result.assets[0].uri);
       }
     } catch (error) {
-      console.error("Feil ved opplasting av bilde:", error);
+      console.error("Error uploading image:", error);
     }
   };
 
   /**
    * Håndterer bilde tatt med kamera.
-   * @param capturedImageUri URI for det tatt bilde
+   * @param capturedImageUri
    */
   const handleCameraCapture = (capturedImageUri: string) => {
     setImage(capturedImageUri);
@@ -76,7 +75,7 @@ const Upload = ({ visible, onClose }: UploadProps) => {
    */
   const handleSubmit = async () => {
     const artwork: Artwork = {
-      id: Math.random().toFixed(7).toString(), // Midlertidig ID
+      id: Math.random().toFixed(7).toString(),
       title,
       artistId: user?.uid,
       imageUrl: image || "",
@@ -93,22 +92,22 @@ const Upload = ({ visible, onClose }: UploadProps) => {
     try {
       setIsUploadingArtwork(true);
       await addArtwork(artwork);
-      console.log("Kunstverk lagt til:", artwork);
+      console.log("Artwork added:", artwork);
 
       Toast.show({
         type: "success",
-        text1: "Kunstverk lastet opp",
-        text2: "Ditt kunstverk er nå tilgjengelig!",
+        text1: "Artwork uploaded",
+        text2: "Your artwork is now available!",
       });
 
-      onClose(); // Lukker modal etter opplasting
+      onClose();
     } catch (error) {
-      console.error("Feil ved opplasting av kunstverk:", error);
+      console.error("Error uploading artwork ved:", error);
 
       Toast.show({
         type: "error",
-        text1: "Feil ved opplasting",
-        text2: "Kunne ikke laste opp kunstverket. Prøv igjen.",
+        text1: "Error uploading",
+        text2: "Could not upload artwork. try again.",
       });
     } finally {
       setIsUploadingArtwork(false);
@@ -126,13 +125,13 @@ const Upload = ({ visible, onClose }: UploadProps) => {
       >
         <View className="flex-1 justify-center items-center">
           <Text className="text-xl text-gray-600 text-center mb-2">
-            Du må være logget inn for å laste opp kunstverk.
+            You have to be logged in to upload artwork.
           </Text>
           <TouchableOpacity
             onPress={onClose}
             className="w-full py-2 bg-gray-100 rounded-lg items-center"
           >
-            <Text className="text-gray-600 font-medium">Gå tilbake</Text>
+            <Text className="text-gray-600 font-medium">Return</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -155,7 +154,7 @@ const Upload = ({ visible, onClose }: UploadProps) => {
         ) : (
           <>
             <View>
-              <Text style={styles.title}>Last opp kunstverk</Text>
+              <Text style={styles.title}>Upload artwork</Text>
 
               {/* Forhåndsvisning av bilde */}
               <View style={styles.imageContainer}>
@@ -163,33 +162,36 @@ const Upload = ({ visible, onClose }: UploadProps) => {
                   <Image source={{ uri: image }} style={styles.imagePreview} />
                 ) : (
                   <View style={styles.imagePlaceholder}>
-                    <Text>Ingen bilde valgt</Text>
+                    <Text>No image is chosen</Text>
                   </View>
                 )}
-                <Button title="Velg bilde fra galleri" onPress={pickImage} />
                 <Button
-                  title="Åpne kamera"
+                  title="Choose an image from gallery"
+                  onPress={pickImage}
+                />
+                <Button
+                  title="Open camera"
                   onPress={() => setShowCamera(true)}
                 />
               </View>
 
               {/* Skjemafelter */}
               <TextInput
-                placeholder="Tittel på kunstverket"
+                placeholder="Title"
                 placeholderTextColor="#999"
                 value={title}
                 onChangeText={setTitle}
                 style={styles.input}
               />
               <TextInput
-                placeholder="Bildetekst"
+                placeholder="Caption"
                 placeholderTextColor="#999"
                 value={caption}
                 onChangeText={setCaption}
                 style={styles.input}
               />
               <TextInput
-                placeholder="Beskrivelse"
+                placeholder="Description"
                 placeholderTextColor="#999"
                 value={description}
                 onChangeText={setDescription}
@@ -197,7 +199,7 @@ const Upload = ({ visible, onClose }: UploadProps) => {
                 multiline={true}
               />
               <TextInput
-                placeholder="Kategori"
+                placeholder="Category"
                 placeholderTextColor="#999"
                 value={category}
                 onChangeText={setCategory}
@@ -215,7 +217,7 @@ const Upload = ({ visible, onClose }: UploadProps) => {
                   style={{ width: "100%" }}
                 >
                   <Picker.Item
-                    label="Velg en utstilling (valgfritt)"
+                    label="Choose an exhibition (optional)"
                     value={undefined}
                   />
                   {exhibitions.map((item) => (
@@ -233,10 +235,10 @@ const Upload = ({ visible, onClose }: UploadProps) => {
                 onPress={handleSubmit}
                 style={styles.submitButton}
               >
-                <Text style={styles.buttonText}>Lagre</Text>
+                <Text style={styles.buttonText}>Save</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
-                <Text style={styles.buttonText}>Avbryt</Text>
+                <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
 
@@ -244,7 +246,7 @@ const Upload = ({ visible, onClose }: UploadProps) => {
             {(isLoading || isUploadingArtwork) && (
               <View style={styles.overlay}>
                 <ActivityIndicator size="large" color="#0000ff" />
-                <Text style={styles.loadingText}>Laster opp...</Text>
+                <Text style={styles.loadingText}>Uploading...</Text>
               </View>
             )}
           </>
@@ -292,7 +294,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   dropdownContainer: {
-    // width: "100%",
     marginBottom: 12,
   },
   submitButton: {

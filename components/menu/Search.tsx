@@ -1,3 +1,8 @@
+/**
+ * Generisk Search-komponent for filtrering av data basert på en søkestreng.
+ * Kan brukes både for kunstverk og artister.
+ */
+
 import React, { useState, useRef, useEffect } from "react";
 import {
   View,
@@ -7,15 +12,15 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { searchByKey } from "@/utils/functions/search"; // Import searchByKey function
+import { searchByKey } from "@/utils/functions/search";
 
 /**
  * Props for Search-komponenten
- * @param allData - Liste over data som skal filtreres (artworks eller artists)
- * @param setFilteredData - Funksjon for å oppdatere filtrerte data
- * @param isSearchVisible - Bestemmer om søkefeltet er synlig
- * @param setIsSearchVisible - Funksjon for å oppdatere synlighet av søkefeltet
- * @param searchKey - Nøkkelen i dataobjektene som skal brukes til søk (f.eks. "title" eller "name")
+ * @param allData
+ * @param setFilteredData
+ * @param isSearchVisible
+ * @param setIsSearchVisible
+ * @param searchKey
  */
 interface SearchProps<T> {
   allData: T[];
@@ -25,10 +30,6 @@ interface SearchProps<T> {
   searchKey: keyof T;
 }
 
-/**
- * Generisk Search-komponent for filtrering av data basert på en søkestreng.
- * Kan brukes både for kunstverk og artister.
- */
 export default function Search<T>({
   allData,
   setFilteredData,
@@ -36,15 +37,15 @@ export default function Search<T>({
   setIsSearchVisible,
   searchKey,
 }: SearchProps<T>) {
-  const [searchQuery, setSearchQuery] = useState(""); // Tilstand for søketekst
-  const searchInputRef = useRef<TextInput>(null); // Referanse til søkefeltet
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<TextInput>(null);
 
   // Effekt som filtrerer data når søkestrengen endres
   useEffect(() => {
     const filtered = searchQuery
       ? searchByKey(allData, searchQuery, searchKey as string)
       : allData;
-    setFilteredData(filtered); // Oppdaterer listen med filtrerte data
+    setFilteredData(filtered);
   }, [searchQuery, allData, setFilteredData, searchKey]);
 
   // Effekt som skjuler søkefeltet når tastaturet lukkes
