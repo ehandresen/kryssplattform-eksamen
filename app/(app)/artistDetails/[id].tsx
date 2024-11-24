@@ -32,7 +32,7 @@ export default function ArtistDetails() {
       try {
         const artistData = await getArtistById(id as string);
         if (!artistData) {
-          setError("Fant ingen artist med gitt ID.");
+          setError("Found no artist with that ID.");
           setLoading(false);
           return;
         }
@@ -44,7 +44,7 @@ export default function ArtistDetails() {
         );
         setArtworks(filteredArtworks);
       } catch (error) {
-        setError("En feil oppsto under henting av data.");
+        setError("An error occured fetching data.");
       } finally {
         setLoading(false);
       }

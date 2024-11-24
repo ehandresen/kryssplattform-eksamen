@@ -49,7 +49,7 @@ const ExhibitionDetails = () => {
    */
   const fetchExhibition = async () => {
     try {
-      console.log("Henter exhibition med ID:", id); // Debugging
+      console.log("Fetching exhibition with ID:", id);
 
       // Hent data om exhibition
       const fetchedExhibition = await getExhibitionById(id as string);
@@ -61,7 +61,7 @@ const ExhibitionDetails = () => {
       );
       setRelatedArtworks(filteredArtworks);
     } catch (error) {
-      console.error("Feil ved henting av exhibition:", error);
+      console.error("Error fetching exhibition:", error);
     } finally {
       setLoading(false);
     }
@@ -86,7 +86,7 @@ const ExhibitionDetails = () => {
     return (
       <View className="flex-1 justify-center items-center">
         <Text className="text-xl text-gray-600 text-center">
-          Du må være logget inn for å se exhibition detaljer.
+          You must login to see exhibition details.
         </Text>
       </View>
     );
@@ -100,7 +100,7 @@ const ExhibitionDetails = () => {
       <View className="flex-1 justify-center items-center bg-gray-100">
         <ActivityIndicator size="large" color="#0000ff" />
         <Text className="mt-2 text-lg text-gray-700">
-          Laster exhibition-data...
+          Loading exhibition-data...
         </Text>
       </View>
     );
@@ -112,7 +112,7 @@ const ExhibitionDetails = () => {
   if (!exhibition) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-100">
-        <Text className="text-xl text-red-600">Fant ingen exhibition.</Text>
+        <Text className="text-xl text-red-600">Found no exhibition.</Text>
       </View>
     );
   }

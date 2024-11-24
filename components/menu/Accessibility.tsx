@@ -8,7 +8,6 @@ import {
   ViewStyle,
 } from "react-native";
 
-// Definerer typer for komponentens props.
 type AccessibilityProps = {
   onIncreaseTextSize: () => void;
   onEnableColorBlindFilter: () => void;
@@ -26,7 +25,7 @@ const Accessibility = ({
   style,
 }: AccessibilityProps) => {
   const [isAccessibilityOptionsVisible, setIsAccessibilityOptionsVisible] =
-    useState(false); // State for å spore synligheten av tilgjengelighetsalternativene.
+    useState(false);
 
   // Funksjon for å veksle synlighet for tilgjengelighetsalternativer.
   const toggleAccessibilityOptions = () => {
@@ -76,38 +75,38 @@ const Accessibility = ({
 // Stiler for komponenten.
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center", // Sentraliserer innhold horisontalt.
+    alignItems: "center",
   },
   mainButton: {
     width: 60,
     height: 60,
-    backgroundColor: "#e0b3b3", // Lys bakgrunnsfarge for hovedknappen.
-    borderRadius: 30, // Gjør knappen sirkulær.
-    alignItems: "center", // Sentraliserer ikonet horisontalt.
-    justifyContent: "center", // Sentraliserer ikonet vertikalt.
-    shadowColor: "#000", // Legger til en skygge.
+    backgroundColor: "#e0b3b3",
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
-    elevation: 5, // For ekstra dybdeeffekt på Android.
+    elevation: 5,
   },
   optionsContainer: {
-    position: "absolute", // Posisjonerer alternativene i forhold til hovedknappen.
-    left: -125, // Flytter alternativene til venstre.
-    alignItems: "center", // Sentraliserer knappene horisontalt.
+    position: "absolute",
+    left: -125,
+    alignItems: "center",
   },
   optionButton: {
-    width: 120, // Bredde på hver alternativ-knapp.
-    height: 40, // Høyde på hver alternativ-knapp.
-    backgroundColor: "#e0b3b3", // Lys bakgrunnsfarge for knappene.
-    borderRadius: 5, // Runde kanter for knappene.
-    alignItems: "center", // Sentraliserer tekst horisontalt.
-    justifyContent: "center", // Sentraliserer tekst vertikalt.
-    marginVertical: 5, // Avstand mellom knappene.
+    width: 120,
+    height: 40,
+    backgroundColor: "#e0b3b3",
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 5,
   },
   optionText: {
-    color: "black", // Svart tekstfarge.
-    fontSize: 12, // Tekststørrelse for alternativene.
+    color: "black",
+    fontSize: 12,
   },
 });
 
