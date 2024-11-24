@@ -163,7 +163,7 @@ export default function ArtDetails() {
       try {
         const newCommentId = await commentApi.addComment(artwork.id, {
           artistId: user?.uid ?? "unknown",
-          artistName: session as string,
+          artistName: user?.displayName as string,
           comment: commentText,
         });
 
